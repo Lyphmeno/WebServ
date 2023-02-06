@@ -24,7 +24,6 @@ Webserv &Webserv::operator=(const Webserv &rhs)
 	}
 	return (*this);
 }
-
 /////////////////////////////
 // Assignation contructors //
 /////////////////////////////
