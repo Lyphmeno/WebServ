@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Config.hpp                                         :+:      :+:    :+:   */
+/*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/06 15:29:54 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/06 15:30:57 by hlevi            ###   ########.fr       */
+/*   Created: 2023/02/06 15:37:50 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/06 15:38:37 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,17 @@ namespace ft {
 #include <string>
 #include <vector>
 
-class Config
+class Webserv
 {
-private:
+public:
 	std::vector<ft::Server>		_servers;
+
 public:
 	// Coplien //
-	Config();
-	Config(const Config &cpy);
-	~Config();
-	Config &operator=(const Config &rhs);
+	Webserv();
+	Webserv(const Webserv &cpy);
+	~Webserv();
+	Webserv &operator=(const Webserv &rhs);
 	// Assignation contructors //
 	// Operators //
 	// Getters //
