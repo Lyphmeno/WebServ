@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/06 15:10:51 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/06 15:31:27 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#pragma once
 
 namespace ft {
 
@@ -22,24 +21,24 @@ namespace ft {
 #include "location.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-//                                   server                                   //
+//                                   Server                                   //
 ////////////////////////////////////////////////////////////////////////////////
 
-class server
+class Server
 {
-//server methods
+//Server methods
 public:
-	//server constructor
-	server();
-	server(const server &x);
+	//Server constructor
+	Server();
+	Server(const Server &x);
 
-	//server assignement operators
-	server	&operator=(const server &x);
+	//Server assignement operators
+	Server	&operator=(const Server &x);
 	
-	//server destructor
-	~server();
+	//Server destructor
+	~Server();
 
-//server variables
+//Server variables
 private:
 	std::map<int, std::vector<int> >	_ports_hosts;
 	std::string							_name;
