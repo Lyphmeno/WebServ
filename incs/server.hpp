@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/06 14:50:55 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/06 15:10:51 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,10 @@ public:
 
 //server variables
 private:
-	std::map<std::vector<int>, int>	hosts_ports;
-	std::string						name;
-	std::string						error_path;
-	std::vector<ft::location>		locations;
+	std::map<int, std::vector<int> >	ports_hosts;
+	std::string							name;
+	std::string							error_path;
+	std::vector<ft::location>			locations;
 };
 }
 
