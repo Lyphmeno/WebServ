@@ -41,10 +41,10 @@ public:
 
 //server variables
 private:
-	std::map<int, std::vector<int> >	ports_hosts;
-	std::string							name;
-	std::string							error_path;
-	std::vector<ft::location>			locations;
+	std::map<int, std::vector<int> >	_ports_hosts;
+	std::string							_name;
+	std::string							_error_path;
+	std::vector<ft::location>			_locations;
 };
 }
 
