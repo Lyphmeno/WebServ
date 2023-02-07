@@ -53,15 +53,15 @@ fclean: clean
 _STOP		:=	\e[0m
 _PINK		:=	\033[38;5;223m\e[1m
 _ORANGE		:=	\033[38;5;209m\e[1m
-VAL			:=	76
+VAL			:=	66
 _CREAM		:=	\033[38;5;${VAL}m\e[1m
 INDEX		:=	1
-BUILD_SIZE	:=	$(shell find $(SRCDIR) -type f -name "*.c" | wc -l)
+BUILD_SIZE	:=	$(shell find $(SRCDIR) -type f -name "*.cpp" | wc -l)
 PRC			:=	$(shell echo "$(INDEX) / $(BUILD_SIZE) * 100" | bc -l)
 progress	:=	$(shell echo "$(INDEX) / ($(BUILD_SIZE) / 20)" | bc -l)
 
 define update_bar =
-    E_BAR		:=	$(_PINK)-->$(_ORANGE)[$(_STOP)$(_CREAM)$(shell python -c 'print("█" * int($(progress)))')$(shell python -c 'print(" " * (20 - int($(progress))))')$(_ORANGE)]$(_PINK)<--$(_ORANGE)[$(_CREAM)$(shell echo $(PRC) / 1 | bc)%$(_ORANGE)]$(_STOP)
+    E_BAR		:=	$(_PINK)-->$(_ORANGE)[$(_STOP)$(_CREAM)$(shell python3 -c 'print("█" * int($(progress)))')$(shell python3 -c 'print(" " * (20 - int($(progress))))')$(_ORANGE)]$(_PINK)<--$(_ORANGE)[$(_CREAM)$(shell echo $(PRC) / 1 | bc)%$(_ORANGE)]$(_STOP)
 	INDEX		:=	$(shell echo $(INDEX) + 1 | bc -l)
     progress	:=	$(shell echo "$(INDEX) / ($(BUILD_SIZE) / 20)" | bc -l)
 	PRC			:=	$(shell echo "$(INDEX) / $(BUILD_SIZE) * 100" | bc -l)
