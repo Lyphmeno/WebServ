@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:58:13 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/07 16:22:29 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/07 22:50:42 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
 //                             server constructor                             //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Server::Server()
+ft::Server::Server() : sock(), addr()
 {
 }
 
-ft::Server::Server(const Server &x)
+ft::Server::Server(const Server &x) : sock(x.sock), addr(x.addr)
 {
 }
 
@@ -36,7 +36,7 @@ ft::Server	&ft::Server::operator=(const Server &x)
 //                             server destructor                              //
 ////////////////////////////////////////////////////////////////////////////////
 
-~ft::Server::Server()
+ft::Server::~Server()
 {
 }
 
@@ -44,13 +44,14 @@ ft::Server	&ft::Server::operator=(const Server &x)
 //                          server inititialization                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-int	ft::Server::socket_init()
+int	ft::Server::sockinit()
 {
-	this->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->socket_fd == -1)
+	this->sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->sock == -1)
 		return (-1);
-	sockaddr_in	socket_addr;
-	socket_addr.sin_family = AF_INET;
-	socket_addr.sin_port = this->port;
-	socket_addr.sin_addr = this->addr;
+
+	if (bind(this->sock, (sockaddr *)&addr, sizeof(addr)) == -1)
+		return (-1);
+
+	return (0);
 }

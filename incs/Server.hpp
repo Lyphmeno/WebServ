@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/07 15:38:51 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/07 22:50:40 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@
 #include <netinet/in.h>
 
 namespace ft {
-
-#include "location.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                   server                                   //
@@ -43,10 +41,11 @@ public:
 	~Server();
 
 	//Server initialization
-	void	socket_init();
+	int	sockinit();
 
 //Server variables
 public:
-	int	socket;
+	int			sock;
+	sockaddr_in	addr;
 };
 }
