@@ -6,28 +6,26 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/06 18:24:18 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/07 15:00:38 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
-#include <string>
-#include <fstream>
-#include <iostream>
 
 int main(int ac, char **av)
 {
-    if (ac != 2)
+	ft::Webserv		base;
+
+	if (ac != 2)
+		return (-1);
+	base._filename = av[1];
+    if (base.open_file())
         return (-1);
-    filename = av[1];
-    file.open(filename);
-    if (!file.is_open())
-        return (-1);
-    while (file)
+    while (base._file)
     {
-        std::getline(file, line, '\n');
-        std::cout << line << std::endl;
+        std::getline(base._file, base._line, ';');
+        std::cout << "| " << base._line << " |" << std::endl;
     }
-    file.close();
+    base._file.close();
     return (0);
 }

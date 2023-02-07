@@ -6,19 +6,19 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/06 15:31:27 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/07 13:24:03 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
-namespace ft {
 
 #include <string>
 #include <map>
 #include <vector>
 
 #include "location.hpp"
+
+namespace ft {
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                   Server                                   //
@@ -46,5 +46,3 @@ private:
 	std::vector<ft::location>			_locations;
 };
 }
-
-#endif
