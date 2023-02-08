@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 12:49:43 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 17:25:29 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #include <string>
 #include <vector>
+#include <sys/epoll.h>
+
 #include "../incs/Server.hpp"
 
 namespace ft {
@@ -34,10 +36,11 @@ public:
 	//Webserv destructor
 	~Webserv();
 private:
-	int	epollinit();
+	int	epinit();
 //Webserv variables
 private:
-	int						epollfd;
-	std::vector<ft::Server>	servers;
+	int							epfd;
+	std::vector<epoll_event>	epdata;
+	std::vector<ft::Server>		servers;
 };
 }
