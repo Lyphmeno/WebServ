@@ -1,34 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:51:03 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 15:07:42 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
 
+namespace ft {
 /////////////////////////////
 // Coplien                 //
 /////////////////////////////
-ft::Webserv::Webserv()
+Webserv::Webserv()
 {
 }
 
-ft::Webserv::Webserv(const Webserv &cpy)
+Webserv::Webserv(const Webserv &cpy)
 {
 	*this = cpy;
 }
 
-ft::Webserv::~Webserv()
+Webserv::~Webserv()
 {
 }
 
-ft::Webserv &ft::Webserv::operator=(const Webserv &rhs)
+Webserv &Webserv::operator=(const Webserv &rhs)
 {
 	if (this != &rhs)
 	{
@@ -53,3 +54,4 @@ ft::Webserv &ft::Webserv::operator=(const Webserv &rhs)
 /////////////////////////////
 // Exceptions              //
 /////////////////////////////
+}

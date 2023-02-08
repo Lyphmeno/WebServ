@@ -6,6 +6,7 @@ CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98
 SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
+				./srcs/Location.cpp\
 				./srcs/Parser.cpp\
 				./srcs/Server.cpp\
 				./srcs/Webserv.cpp\
@@ -14,6 +15,7 @@ SRC			:=	\
 INCDIR		:=	incs
 INCEXT		:=	hpp
 HEADERS		:=	\
+				./incs/Location.hpp\
 				./incs/Parser.hpp\
 				./incs/Server.hpp\
 				./incs/Webserv.hpp\

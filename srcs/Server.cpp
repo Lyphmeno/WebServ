@@ -6,21 +6,22 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:58:13 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 12:55:59 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 15:07:31 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Server.hpp"
 
+namespace ft {
 ////////////////////////////////////////////////////////////////////////////////
 //                             server constructor                             //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Server::Server() : sock(), addr()
+Server::Server() : sock(), addr()
 {
 }
 
-ft::Server::Server(const Server &x) : sock(x.sock), addr(x.addr)
+Server::Server(const Server &x) : sock(x.sock), addr(x.addr)
 {
 }
 
@@ -28,7 +29,7 @@ ft::Server::Server(const Server &x) : sock(x.sock), addr(x.addr)
 //                        server assignement operator                         //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Server	&ft::Server::operator=(const Server &x)
+Server	&Server::operator=(const Server &x)
 {
 	if (this != &x)
 	{
@@ -40,7 +41,7 @@ ft::Server	&ft::Server::operator=(const Server &x)
 //                             server destructor                              //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Server::~Server()
+Server::~Server()
 {
 }
 
@@ -48,7 +49,7 @@ ft::Server::~Server()
 //                          server inititialization                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-int	ft::Server::sockinit()
+int	Server::sockinit()
 {
 	this->sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->sock == -1)
@@ -58,4 +59,5 @@ int	ft::Server::sockinit()
 		return (-1);
 
 	return (0);
+}
 }

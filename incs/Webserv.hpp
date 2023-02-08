@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 12:49:43 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 15:04:16 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ private:
 	int	epollinit();
 //Webserv variables
 private:
-	int						epollfd;
-	std::vector<ft::Server>	servers;
+	int					epollfd;
+	std::vector<Server>	servers;
 };
 }

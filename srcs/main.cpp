@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:56:26 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 14:49:35 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 int	parsing(ft::Parser base)
 {
-    if (base.open_file())
+    if (base.openfile())
         return (-1);
-    while (base._file)
+    while (base.file)
     {
-        std::getline(base._file, base._line, '\n');
-		base._line.erase(std::remove(base._line.begin(), base._line.end(), '\n'), base._line.end());
-		if (!base._line.empty())
-			base._buffer.push_back(base._line);
+        std::getline(base.file, base.line, '\n');
+		base.line.erase(std::remove(base.line.begin(), base.line.end(), '\n'), base.line.end());
+		if (!base.line.empty())
+			base.buffer.push_back(base.line);
 		/* PARSING algorithm
 		 *	- depends on bracket level
 		 *	- if lvl 0 -> check for global tag, if else error 
@@ -31,7 +31,7 @@ int	parsing(ft::Parser base)
 		 */
     }
 	base.printv();
-    base._file.close();
+    base.file.close();
 	return (0);
 }
 
@@ -41,7 +41,7 @@ int main(int ac, char **av)
 
 	if (ac != 2)
 		return (-1);
-	base._filename = av[1];
+	base.filename = av[1];
 	if (parsing(base))
 		return (-1);
     return (0);
