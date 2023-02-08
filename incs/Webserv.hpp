@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 19:12:08 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/09 00:47:27 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ public:
 	//Webserv destructor
 	~Webserv();
 private:
-	int	epinit();
+	int		epinit();
+	void	clear();
 //Webserv variables
 private:
 	int							epfd;

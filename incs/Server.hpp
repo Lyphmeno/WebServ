@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 19:12:07 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/08 23:59:59 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <errno.h>
 #include <iostream>
 #include <netinet/in.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 namespace ft {
 
@@ -39,6 +41,8 @@ public:
 	~Server();
 	//Server initialization
 	int	sockinit();
+	//Server clear
+	void	clear();
 //Server variables
 public:
 	// hlevi
