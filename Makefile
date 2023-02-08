@@ -7,16 +7,18 @@ SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
 				./srcs/route.cpp\
+				./srcs/parser.cpp\
 				./srcs/server.cpp\
-				./srcs/Webserv.cpp\
+				./srcs/webserv.cpp\
 				./srcs/main.cpp\
 
 INCDIR		:=	incs
 INCEXT		:=	hpp
 HEADERS		:=	\
 				./incs/location.hpp\
+				./incs/parser.hpp\
 				./incs/server.hpp\
-				./incs/Webserv.hpp\
+				./incs/webserv.hpp\
 
 OBJDIR		:=	objs
 OBJEXT		:=	o
