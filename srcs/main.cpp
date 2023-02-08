@@ -6,13 +6,13 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:17:57 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 12:56:26 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incs/parser.hpp"
+#include "../incs/Parser.hpp"
 
-int	parsing(ft::parser base)
+int	parsing(ft::Parser base)
 {
     if (base.open_file())
         return (-1);
@@ -37,7 +37,7 @@ int	parsing(ft::parser base)
 
 int main(int ac, char **av)
 {
-	ft::parser		base;
+	ft::Parser		base;
 
 	if (ac != 2)
 		return (-1);

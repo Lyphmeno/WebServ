@@ -1,36 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   location.hpp                                       :+:      :+:    :+:   */
+/*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 12:21:06 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 12:49:43 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-
-////////////////////////////////////////////////////////////////////////////////
-//                                   route                                    //
-////////////////////////////////////////////////////////////////////////////////
-
 #include <string>
 #include <vector>
+#include "../incs/Server.hpp"
 
 namespace ft {
-struct location
+
+////////////////////////////////////////////////////////////////////////////////
+//                                  webserv                                   //
+////////////////////////////////////////////////////////////////////////////////
+
+class Webserv
 {
-//route variables
+//Webserv methods
 public:
-	std::string					path;
-	std::vector<std::string>	methods;
-	std::string					root;
-	bool						autoindex;
-	std::string					fileIsDir_error_path;
-	std::string					cgi_pass;
-	int							client_body_buffer_size;
+	//Webserv constructor
+	Webserv();
+	Webserv(const Webserv &x);
+	//Webserv assignement operators
+	Webserv	&operator=(const Webserv &x);
+	//Webserv destructor
+	~Webserv();
+private:
+	int	epollinit();
+//Webserv variables
+private:
+	int						epollfd;
+	std::vector<ft::Server>	servers;
 };
 }

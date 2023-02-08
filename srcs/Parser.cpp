@@ -6,32 +6,32 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:25:50 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/08 12:51:53 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incs/parser.hpp"
+#include "../incs/Parser.hpp"
 
 /////////////////////////////
 // Coplien                 //
 /////////////////////////////
-ft::parser::parser()
+ft::Parser::Parser()
 {
 	this->_inbrackets = 0;
 	this->_filename = "";
 	this->_line = "";
 }
 
-ft::parser::parser(const parser &cpy)
+ft::Parser::Parser(const Parser &cpy)
 {
 	*this = cpy;
 }
 
-ft::parser::~parser()
+ft::Parser::~Parser()
 {
 }
 
-ft::parser &ft::parser::operator=(const parser &rhs)
+ft::Parser &ft::Parser::operator=(const Parser &rhs)
 {
 	if (this != &rhs)
 	{
@@ -57,7 +57,7 @@ ft::parser &ft::parser::operator=(const parser &rhs)
 /////////////////////////////
 // Methods                 //
 /////////////////////////////
-int	ft::parser::open_file()
+int	ft::Parser::open_file()
 {
 	this->_file.open(this->_filename.c_str());
 	if (!this->_file.is_open())
@@ -65,7 +65,7 @@ int	ft::parser::open_file()
 	return (0);
 }
 
-void	ft::parser::printv()
+void	ft::Parser::printv()
 {
 	for (std::vector<std::string>::iterator it = this->_buffer.begin(); it != this->_buffer.end(); it++) {
         std::cout << "| " << *it << " |" << std::endl;;

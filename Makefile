@@ -6,19 +6,17 @@ CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98
 SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
-				./srcs/route.cpp\
-				./srcs/parser.cpp\
-				./srcs/server.cpp\
-				./srcs/webserv.cpp\
+				./srcs/Parser.cpp\
+				./srcs/Server.cpp\
+				./srcs/Webserv.cpp\
 				./srcs/main.cpp\
 
 INCDIR		:=	incs
 INCEXT		:=	hpp
 HEADERS		:=	\
-				./incs/location.hpp\
-				./incs/parser.hpp\
-				./incs/server.hpp\
-				./incs/webserv.hpp\
+				./incs/Parser.hpp\
+				./incs/Server.hpp\
+				./incs/Webserv.hpp\
 
 OBJDIR		:=	objs
 OBJEXT		:=	o

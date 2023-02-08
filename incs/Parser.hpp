@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/06 15:37:50 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:24:35 by hlevi            ###   ########.fr       */
+/*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/08 12:54:39 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,25 +18,32 @@
 #include <fstream>
 #include <algorithm>
 
-#include "../incs/server.hpp"
+#define GLOB 1
+#define SERV 2
+#define SLOC 3
 
 namespace ft {
-class Webserv
+class Parser
 {
-private:
-//	std::vector<ft::Server>		_servers;
-
+public:
+	std::fstream    			_file;
+	std::string     			_filename;
+    std::string     			_line;
+	std::vector<std::string>	_buffer;
+	int							_inbrackets;
 public:
 	// Coplien //
-	Webserv();
-	Webserv(const Webserv &cpy);
-	~Webserv();
-	Webserv &operator=(const Webserv &rhs);
+	Parser();
+	Parser(const Parser &cpy);
+	~Parser();
+	Parser &operator=(const Parser &rhs);
 	// Assignation contructors //
 	// Operators //
 	// Getters //
 	// Setters //
 	// Methods //
+	int	open_file();
+	void	printv();
 	// Exceptions //
 };
 }
