@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:58:13 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/08 17:38:28 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/08 19:12:05 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,12 @@ int	ft::Server::sockinit()
 	if (this->sock == -1)
 		return (-1);
 
+	if (fcntl(socket, F_SETFL, ))
+
 	if (bind(this->sock, (sockaddr *)&addr, sizeof(addr)) == -1)
+		return (-1);
+
+	if (listen(sock, 128) == -1)
 		return (-1);
 
 	return (0);
