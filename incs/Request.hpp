@@ -29,8 +29,15 @@ public:
         //Operators
         Request & operator=(Request const & value);
 
+        //Getters
+        std::string getMethod(void){return _method;};
+        std::string getUrl(void){return _url;};
+        std::string getProtVersion(void){return _protocolVersion;};
+        std::string getRequestLine(void){return _requestLine;};
+
         void fillRequest(std::string line);
         void parseRequest(void);
+
         void getRequestLine(std::string line);
 private:
        std::string  _method;
