@@ -33,3 +33,13 @@ ft::Response & ft::Response::operator=(Response const & value) {
     }
     return *this;
 }
+
+void ft::Response::setProtVersion(std::string version){
+    this->_protVersion = version;
+}
+
+void ft::Response::setContentType(std::string contentType){
+    this->_contentType = contentType;
+    std::cout << "content " << contentType << std::endl;
+}
+        

@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include "Response.hpp"
+#include "ContentType.hpp"
 
 #define COLOR_START "\033[1;100m"
 #define COLOR_RED "\033[31m" 
@@ -39,6 +41,8 @@ public:
         void parseRequest(void);
 
         void getRequestLine(std::string line);
+        const std::string & getContentType(void);
+
 private:
        std::string  _method;
        std::string _url;

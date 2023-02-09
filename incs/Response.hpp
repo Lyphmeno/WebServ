@@ -30,9 +30,18 @@ public:
         Response & operator=(Response const & value);
 
         //Getters
+
+        //Setters
+        void setProtVersion(std::string version);
+        void setContentType(std::string contentType);
+        
       
 private:
- 
+        std::string _protVersion;
+        // std::string _status;
+        // //int _code;
+        std::string _contentType;
+        //std::string _contentLenght;
 };
 
 }
