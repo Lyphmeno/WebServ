@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 14:50:58 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/09 16:34:25 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,10 @@ public:
 	// Getters //
 	// Setters //
 	// Methods //
+	void	print_info();
 	int		openfile();
-	void	printv();
+	int		retrieve_file();
+	int		parsing(std::string);
 	// Exceptions //
 };
 }
