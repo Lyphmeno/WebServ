@@ -1,43 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.cpp                                         :+:      :+:    :+:   */
+/*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:51:53 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/09 16:34:21 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
+#include <pthread.h>
 
+namespace ft {
 /////////////////////////////
 // Coplien                 //
 /////////////////////////////
-ft::Parser::Parser()
+Parser::Parser()
 {
-	this->_inbrackets = 0;
-	this->_filename = "";
-	this->_line = "";
+	this->inbrackets = 0;
+	this->filename = "";
+	this->line = "";
 }
 
-ft::Parser::Parser(const Parser &cpy)
+Parser::Parser(const Parser &cpy)
 {
 	*this = cpy;
 }
 
-ft::Parser::~Parser()
+Parser::~Parser()
 {
 }
 
-ft::Parser &ft::Parser::operator=(const Parser &rhs)
+Parser &Parser::operator=(const Parser &rhs)
 {
 	if (this != &rhs)
 	{
-		this->_filename = rhs._filename;
-		this->_line = rhs._line;
-		this->_inbrackets = rhs._inbrackets;
+		this->filename = rhs.filename;
+		this->line = rhs.line;
+		this->inbrackets = rhs.inbrackets;
 	}
 	return (*this);
 }
@@ -57,20 +59,51 @@ ft::Parser &ft::Parser::operator=(const Parser &rhs)
 /////////////////////////////
 // Methods                 //
 /////////////////////////////
-int	ft::Parser::open_file()
+void	Parser::print_info()
 {
-	this->_file.open(this->_filename.c_str());
-	if (!this->_file.is_open())
+	for (std::vector<std::string>::iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
+        std::cout << *it << std::endl;;
+    }
+}
+
+int	Parser::openfile()
+{
+	this->file.open(this->filename.c_str());
+	if (!this->file.is_open())
+	{
+		std::cerr << "Error: Invalid File" << std::endl; 
 		return (-1);
+	}
 	return (0);
 }
 
-void	ft::Parser::printv()
+int	Parser::retrieve_file()
 {
-	for (std::vector<std::string>::iterator it = this->_buffer.begin(); it != this->_buffer.end(); it++) {
-        std::cout << "| " << *it << " |" << std::endl;;
+    if (this->openfile())
+        return (-1);
+    while (this->file)
+    {
+        std::getline(this->file, this->line, '\n');
+		this->line.erase(std::remove(this->line.begin(), this->line.end(), '\n'), this->line.end());
+		if (!this->line.empty())
+		{
+			this->line.erase(0, this->line.find_first_not_of(" \t"));
+			this->line.erase(this->line.find_last_not_of(" \t") + 1, this->line.size());
+			this->buffer.push_back(this->line);
+		}
     }
+    this->file.close();
+	return (0);
+}
+
+int	Parser::parsing(std::string arg)
+{
+	this->filename = arg;
+	this->retrieve_file();
+	this->print_info();
+	return (0);
 }
 /////////////////////////////
 // Exceptions              //
 /////////////////////////////
+}

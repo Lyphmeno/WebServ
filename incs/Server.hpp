@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/09 17:15:31 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/10 13:49:15 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,18 @@
 
 #include <netinet/ip.h> //sockaddr_in
 #include <string>
+#include "../incs/Location.hpp"
 
 namespace ft {
 
 struct Server
 {
 	// hlevi
-	std::string	name;
-	std::string	error_path;
+	std::string				server_name;
+	std::string				listen;
+	std::vector<Location>	location;
 	// avarnier
 	int			sock;
 	sockaddr_in	addr;
 };
-
 }
