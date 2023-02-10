@@ -1,10 +1,11 @@
 #include "../incs/Response.hpp"
+#include <fstream>
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void){
+ft::Response::Response(void) {
 
 }
 
@@ -34,12 +35,84 @@ ft::Response & ft::Response::operator=(Response const & value) {
     return *this;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//                                GETTERS                                     //
+////////////////////////////////////////////////////////////////////////////////
+
+const std::string & ft::Response::getProtVersion(void){
+    return this->_protVersion;
+}
+
+const std::string & ft::Response::getContentType(void){
+    return this->_contentType;
+    
+}
+
+const std::string & ft::Response::getURL(void){
+    return this->_url;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                 SETTERS                                    //
+////////////////////////////////////////////////////////////////////////////////
+
+
 void ft::Response::setProtVersion(std::string version){
     this->_protVersion = version;
 }
 
 void ft::Response::setContentType(std::string contentType){
     this->_contentType = contentType;
-    std::cout << "content " << contentType << std::endl;
 }
-        
+
+void ft::Response::setURL(std::string url){
+    this->_url = url;
+}
+
+void ft::Response::handleErrors(){
+    if (_code == "404"){
+        _body = "<html>\n"
+        "<head><title>404 Not Found</title></head>\n"
+        "<center><h1>404 Not Found</h1></center>\n"
+        "<hr><center>nginx/0.8.54</center>\n"
+        "</body>\n"
+        "</html>\n";
+    }
+}
+
+void ft::Response::createBody(const std::string & url){
+
+    if (_contentType.find("text", 0) != std::string::npos)
+    {
+        std::ifstream ifs(url.c_str());
+        std::string buff;
+
+        if (!ifs.is_open())
+        {
+            _code = "404";
+            _status = _codeStatus.getStatus("404");
+            handleErrors();
+            return ;
+        }
+        _code = "200";
+        _status = _codeStatus.getStatus("200");
+        while (std::getline(ifs, buff) != 0)
+        {
+            _body += buff;
+            _body += "\n";
+        }
+    }
+}
+
+void ft::Response::buildFullResponse(){
+    std::string full;
+
+    full = _protVersion + " " + _code + " " + _status;
+    full += "\n";
+    full += "Content-type: " + _contentType;
+    full += "\n\n";
+    full += _body;
+
+    std::cout << full << std::endl;
+}

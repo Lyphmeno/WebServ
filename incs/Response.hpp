@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include "StatusCode.hpp"
 
 #define COLOR_START "\033[1;100m"
 #define COLOR_RED "\033[31m" 
@@ -34,14 +35,31 @@ public:
         //Setters
         void setProtVersion(std::string version);
         void setContentType(std::string contentType);
-        
+        void setURL(std::string url);
+
+        const std::string & getProtVersion(void);
+        const std::string & getContentType(void);
+        const std::string & getURL(void);
+
+        void createBody(const std::string & url);
+        void buildFullResponse();
+        void handleErrors();
       
 private:
         std::string _protVersion;
-        // std::string _status;
-        // //int _code;
+
+        std::string _code;
+        std::string _status;
+
         std::string _contentType;
-        //std::string _contentLenght;
+        std::string _server;
+        std::string _body;
+        std::string _url;
+
+        ft::StatusCode _codeStatus;
+
+        
+        // int _contentLenght;
 };
 
 }

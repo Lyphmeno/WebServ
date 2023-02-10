@@ -38,7 +38,7 @@ public:
         std::string getRequestLine(void){return _requestLine;};
 
         void fillRequest(std::string line);
-        void parseRequest(void);
+        void parseRequest(ft::Response *reponse);
 
         void getRequestLine(std::string line);
         const std::string & getContentType(void);
