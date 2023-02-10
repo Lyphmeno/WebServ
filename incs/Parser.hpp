@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 12:54:39 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/09 16:34:25 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@ namespace ft {
 class Parser
 {
 public:
-	std::fstream    			_file;
-	std::string     			_filename;
-    std::string     			_line;
-	std::vector<std::string>	_buffer;
-	int							_inbrackets;
+	std::fstream    			file;
+	std::string     			filename;
+    std::string     			line;
+	std::vector<std::string>	buffer;
+	int							inbrackets;
 public:
 	// Coplien //
 	Parser();
@@ -42,8 +42,10 @@ public:
 	// Getters //
 	// Setters //
 	// Methods //
-	int	open_file();
-	void	printv();
+	void	print_info();
+	int		openfile();
+	int		retrieve_file();
+	int		parsing(std::string);
 	// Exceptions //
 };
 }

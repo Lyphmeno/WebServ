@@ -6,14 +6,13 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/09 19:53:47 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/10 19:06:02 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
 
 namespace ft {
-
 /////////////////////////////
 // Coplien                 //
 /////////////////////////////
@@ -105,16 +104,5 @@ int	Webserv::sockinit(Server &serv)
 /////////////////////////////
 // Exceptions              //
 /////////////////////////////
-
-
-const char *Webserv::epInitError::what() const throw()
-{
-	return ("Epoll failed to initialize");
-}
-
-const char *Webserv::sockInitError::what() const throw()
-{
-	return ("Sockets failed to initialize");
-}
 
 }

@@ -1,50 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/10 19:04:21 by avarnier         ###   ########.fr       */
+/*   Created: 2023/02/08 14:55:36 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/08 14:58:01 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <iostream>
+#include <string>
 #include <vector>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#include "../incs/Server.hpp"
+#include <fstream>
+#include <algorithm>
 
 namespace ft {
-
-class Webserv
+class Location
 {
-private:
-	int							epfd;
-	std::vector<ft::Server>		servers;
-
+public:
+	std::string	root;
+    std::string	err_page;
+    std::string	index;
+    std::string	auto_index;
+    std::string	max_client_body_size;
+    std::string	cgi_ext;
 public:
 	// Coplien //
-	Webserv();
-	Webserv(const Webserv &x);
-	Webserv	&operator=(const Webserv &x);
-	~Webserv();
-	
+	Location();
+	Location(const Location &cpy);
+	~Location();
+	Location &operator=(const Location &rhs);
 	// Assignation contructors //
 	// Operators //
 	// Getters //
 	// Setters //
 	// Methods //
 	// Exceptions //
-
-private:
-	//Webserv initialization
-	int	epinit();
-	int	sockinit(Server &serv);
 };
 }
