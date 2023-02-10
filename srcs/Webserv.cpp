@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/10 19:06:02 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/10 19:44:40 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ namespace ft {
 
 Webserv::Webserv() : epfd(-1), servers()
 {
+	this->epinit();
 }
 
 Webserv::Webserv(const Webserv &cpy)
@@ -28,6 +29,7 @@ Webserv::Webserv(const Webserv &cpy)
 
 Webserv::~Webserv()
 {
+	this->close();
 }
 
 Webserv &Webserv::operator=(const Webserv &rhs)
@@ -60,18 +62,21 @@ Webserv &Webserv::operator=(const Webserv &rhs)
 // Methods                 //
 /////////////////////////////
 
-int	Webserv::epinit()
+void	Webserv::epinit()
 {
 	size_t	serv_nb = this->servers.size();
 
 	this->epfd = epoll_create(serv_nb);
 	if (this->epfd == -1)
-		return (-1);
+		throw std::runtime_error("Epoll initialization failed");
 
 	for (size_t x = 0; x < serv_nb; x++)
 	{
 		if (sockinit(this->servers[x]) == -1)
-			return (-1);
+		{
+			this->close();
+			throw std::runtime_error("Socket initialization failed");
+		}
 	}
 }
 
@@ -99,6 +104,23 @@ int	Webserv::sockinit(Server &serv)
 		return (-1);
 
 	return (0);
+}
+
+void	Webserv::close()
+{
+	if (this->epfd != -1)
+	{
+		::close(this->epfd);
+		this->epfd = -1;
+	}
+	for (size_t x = 0, serv_nb = this->servers.size(); x < serv_nb; x++)
+	{
+		if (this->servers[x].sock != -1)
+		{
+			::close(this->servers[x].sock);
+			this->servers[x].sock = -1;
+		}
+	}
 }
 
 /////////////////////////////
