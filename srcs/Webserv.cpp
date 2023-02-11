@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/10 19:44:40 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 00:28:50 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,15 +64,16 @@ Webserv &Webserv::operator=(const Webserv &rhs)
 
 void	Webserv::epinit()
 {
-	size_t	serv_nb = this->servers.size();
+	size_t	server_nb = this->servers.size();
 
-	this->epfd = epoll_create(serv_nb);
+	this->epfd = epoll_create(server_nb);
 	if (this->epfd == -1)
 		throw std::runtime_error("Epoll initialization failed");
 
-	for (size_t x = 0; x < serv_nb; x++)
+	for (std::vector<ft::Server> it = this->servers.begin();
+	it != this->servers.end(); it++)
 	{
-		if (sockinit(this->servers[x]) == -1)
+		if (sockinit(it->addr) == -1)
 		{
 			this->close();
 			throw std::runtime_error("Socket initialization failed");
@@ -80,29 +81,31 @@ void	Webserv::epinit()
 	}
 }
 
-int	Webserv::sockinit(Server &serv)
+int	Webserv::sockinit(sockaddr_in addr)
 {
-	serv.sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (serv.sock == -1)
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == -1)
 		return (-1);
 
-	int flags = fcntl(serv.sock, F_GETFL);
+	int flags = fcntl(sock, F_GETFL);
 	if (flags == -1)
 		return (-1);
 
-	if (fcntl(serv.sock, F_SETFL, flags | O_NONBLOCK) == -1)
+	if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
 		return (-1);
 
-	if (bind(serv.sock, (sockaddr *)&serv.addr, sizeof(serv.addr)) == -1)
+	if (bind(sock, (sockaddr *)addr, sizeof(addr)) == -1)
 		return (-1);
 
-	if (listen(serv.sock, 128) == -1)
+	if (listen(sock, 128) == -1)
 		return (-1);
 
-	serv.epev.events = EPOLLIN | EPOLLET;
-	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, serv.sock, &serv.epev) == -1)
+	epoll_event	ev;
+	ev.events = EPOLLIN | EPOLLET;
+	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, sock, &ev) == -1)
 		return (-1);
 
+	this->sockets.push_back(sock);
 	return (0);
 }
 
@@ -113,13 +116,10 @@ void	Webserv::close()
 		::close(this->epfd);
 		this->epfd = -1;
 	}
-	for (size_t x = 0, serv_nb = this->servers.size(); x < serv_nb; x++)
+	while (this->sockets.size() != 0)
 	{
-		if (this->servers[x].sock != -1)
-		{
-			::close(this->servers[x].sock);
-			this->servers[x].sock = -1;
-		}
+		::close(*this->sockets.begin());
+		this->sockets.erase(this->sockets.begin());
 	}
 }
 

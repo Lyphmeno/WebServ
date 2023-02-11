@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/10 19:50:36 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 00:19:34 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,16 @@
 
 #include "Server.hpp"
 
+#define MAXEV 10
+
 namespace ft {
 
 class Webserv
 {
 private:
 	int							epfd;
+	epoll_event					epev[MAXEV];
+	std::vector<int>			sockets;
 	std::vector<ft::Server>		servers;
 
 public:

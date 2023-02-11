@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/10 19:48:59 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 00:07:37 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ struct Server
 	std::string				listen;
 	std::vector<Location>	location;
 	// avarnier
-	int						sock;
 	sockaddr_in				addr;
-	epoll_event				epev;
 };
 }
