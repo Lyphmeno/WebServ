@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/12 22:06:12 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 22:35:05 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,29 @@ void	Webserv::close()
 	{
 		::close(*this->sockets.begin());
 		this->sockets.erase(this->sockets.begin());
+	}
+}
+
+void Webserv::run()
+{
+	for (;;)
+	{
+		int n = epoll_wait(epoll_fd, this->epev, MAXEV, -1);
+		if (n == -1)
+			return (-1);
+		for (int i = 0; i < n; i++)
+		{
+			if ((this->epev[i].events & EPOLLERR)
+			|| (this->epev[i].events & EPOLLHUP)
+			|| !(this->epev[i].events & EPOLLIN))
+				::close(this->epev[i].data.fd);
+			else if (this->isSock(this->epev[i].data.fd) == true)
+			{
+			}
+			else ()
+			{
+			}
+		}
 	}
 }
 

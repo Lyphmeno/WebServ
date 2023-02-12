@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/12 22:01:48 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 22:34:57 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ private:
 	void	epinit();
 	void	sockinit(sockaddr_in addr);
 	void	close();
+	void	run();
 	bool	isSock(int sock);
 };
 }
