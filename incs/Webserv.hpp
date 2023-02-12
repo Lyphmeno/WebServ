@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/12 00:19:34 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 16:38:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,10 @@ public:
 	// Operators //
 	// Getters //
 	// Setters //
+
 	// Methods //
+	void	run();
+
 	// Exceptions //
 
 private:
@@ -53,5 +56,9 @@ private:
 
 	//Webserv clear
 	void	close();
+
+	//Webserv utils
+	bool	isSock(int sock);
+
 };
 }
