@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/12 22:01:50 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 22:06:12 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	Webserv::start()
 	}
 }
 
-void	init()
+void	Webserv::init()
 {
 	this->epinit();
 }
