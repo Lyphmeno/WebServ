@@ -94,7 +94,7 @@ int	Webserv::sockinit(sockaddr_in addr)
 	if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) == -1)
 		return (-1);
 
-	if (bind(sock, (sockaddr *)addr, sizeof(addr)) == -1)
+	if (bind(sock, (sockaddr *)&addr, sizeof(addr)) == -1)
 		return (-1);
 
 	if (listen(sock, 128) == -1)
