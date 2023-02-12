@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/12 16:35:19 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 17:23:53 by arcadia          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	Webserv::epinit()
 	if (this->epfd == -1)
 		throw std::runtime_error("Epoll initialization failed");
 
-	for (std::vector<ft::Server> it = this->servers.begin();
+	for (std::vector<ft::Server>::const_iterator it = this->servers.begin();
 	it != this->servers.end(); it++)
 	{
 		if (sockinit(it->addr) == -1)
