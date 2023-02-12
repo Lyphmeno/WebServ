@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/12 16:38:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 22:01:48 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,20 +45,16 @@ public:
 	// Setters //
 
 	// Methods //
-	void	run();
+	void	start();
 
 	// Exceptions //
 
 private:
-	//Webserv initialization
+	// Methods //
+	void	init();
 	void	epinit();
-	int	sockinit(sockaddr_in addr);
-
-	//Webserv clear
+	void	sockinit(sockaddr_in addr);
 	void	close();
-
-	//Webserv utils
 	bool	isSock(int sock);
-
 };
 }
