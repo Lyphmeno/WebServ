@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/12 00:28:50 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/12 16:35:19 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,29 @@ int	Webserv::sockinit(sockaddr_in addr)
 	return (0);
 }
 
+int	Webserv::run()
+{
+	for (;;)
+	{
+		int n = epoll_wait(epoll_fd, this->epev, MAXEV, -1);
+		if (n == -1)
+			return (-1);
+		for (int i = 0; i < n; i++)
+		{
+			if ((this->epev[i].events & EPOLLERR)
+			|| (this->epev[i].events & EPOLLHUP)
+			|| !(this->epev[i].events & EPOLLIN))
+				::close(this->epev[i].data.fd);
+			else if (this->isSock(this->epev[i].data.fd) == true)
+			{		
+			}
+			else ()
+			{
+			}
+		}
+	}
+}
+
 void	Webserv::close()
 {
 	if (this->epfd != -1)
@@ -121,6 +144,17 @@ void	Webserv::close()
 		::close(*this->sockets.begin());
 		this->sockets.erase(this->sockets.begin());
 	}
+}
+
+bool	Webserv::isSock(int sock)
+{
+	for (std::vector<int>::const_iterator it = this->sockets.begin();
+	it != this->sockets.end(); it++)
+	{
+		if (sock == *it)
+			return (true);
+	}
+	return (false);
 }
 
 /////////////////////////////
