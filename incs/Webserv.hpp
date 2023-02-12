@@ -49,7 +49,7 @@ public:
 private:
 	//Webserv initialization
 	void	epinit();
-	int		sockinit(Server &serv);
+	int	sockinit(sockaddr_in addr);
 
 	//Webserv clear
 	void	close();
