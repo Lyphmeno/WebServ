@@ -6,12 +6,13 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/13 15:37:45 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/13 17:56:41 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
-#include <sstream>
+#include <stdexcept>
+#include <string>
 
 namespace ft {
 /////////////////////////////
@@ -61,6 +62,28 @@ void	Parser::print_info()
     }
 }
 
+void	Parser::print_tabulation()
+{
+	for (int i = 0; i < this->inbrackets; i++)
+		std::cout << "\t";
+}
+
+int		Parser::semi_colon()
+{
+	if (this->line.str().at(this->line.str().size() - 1) != ';')
+		throw std::invalid_argument("Invalid Argument: semi-colon missing");
+	return (0);
+}
+
+void	Parser::print_words(std::string str)
+{
+	std::string	words;
+	this->print_tabulation();
+	std::cout << str << " -> ";
+	while (this->line >> words)
+		std::cout << words << " ";
+}
+
 int	Parser::openfile()
 {
 	this->file.open(this->filename.c_str());
@@ -93,57 +116,77 @@ int	Parser::retrieve_file()
 	return (0);
 }
 
+void	Parser::p_location()
+{
+	std::string	words;
+	this->print_tabulation();
+	if (this->line.str().at(this->line.str().size() - 1) != '{')
+		throw std::invalid_argument("Invalid Argument: Bracket missing after location");
+	std::cout << "location ";
+	while (this->line >> words)
+		std::cout << words << " ";
+	this->inbrackets++;
+}
 void	Parser::p_servername()
 {
-	std::cout << "Found a SERVERNAME" << std::endl;
+	this->semi_colon();
+	this->print_words("server_name");
 }
 
 void	Parser::p_listen()
 {
-	std::cout << "Found a LISTEN" << std::endl;
+	this->semi_colon();
+	this->print_words("listen");
 }
 
 void	Parser::p_root()
 {
-	std::cout << "Found a ROOT" << std::endl;
+	this->semi_colon();
+	this->print_words("root");
 }
 
 void	Parser::p_index()
 {
-	std::cout << "Found a INDEX" << std::endl;
+	this->semi_colon();
+	this->print_words("index");
 }
 
 void	Parser::p_autoindex()
 {
-	std::cout << "Found a AUTOINDEX" << std::endl;
+	this->semi_colon();
+	this->print_words("auto_index");
 }
 
 void	Parser::p_maxclientbodysize()
 {
-	std::cout << "Found a MCBS" << std::endl;
+	this->semi_colon();
+	this->print_words("max_client_body_size");
 }
 
 void	Parser::p_errorpage()
 {
-	std::cout << "Found a ERRORPAGE" << std::endl;
+	this->semi_colon();
+	this->print_words("error_page");
 }
 
 void	Parser::p_cgiext()
 {
-	std::cout << "Found a CGIEXT" << std::endl;
+	this->semi_colon();
+	this->print_words("cgi_ext");
 }
 
 void	Parser::p_allowmethods()
 {
-	std::cout << "Found a ALLOWMETHOD" << std::endl;
+	this->semi_colon();
+	this->print_words("allow_methods");
 }
 
 int	Parser::parse_server()
 {
+	int			i;
 	std::string	keyword;
-	this->line >> keyword;
-	std::cout << keyword << "\t-> ";
 	parsePtr	parserArray[FNUM] = {
+				&Parser::p_location,
 				&Parser::p_servername,
 				&Parser::p_listen,
 				&Parser::p_root,
@@ -155,6 +198,7 @@ int	Parser::parse_server()
 				&Parser::p_allowmethods,
 	};
 	std::string	strArray[FNUM] = {
+					"location",
 					"server_name",
 					"listen",
 					"root",
@@ -166,13 +210,15 @@ int	Parser::parse_server()
 					"allow_methods",
 	};
 
-	for (int i = 0; i < FNUM; i++)
-	{
-		if (keyword == strArray[i])
+	this->line >> keyword;
+	for (i = 0; i < FNUM; i++) {
+		if (keyword == strArray[i]) {
 			(this->*parserArray[i])();
-		else if (i == FNUM) {
-			std::cerr << "Error: Wrong keyword on configuration file\n";
+			break ;
 		}
+	}
+	if (i == FNUM) {
+		throw std::invalid_argument("Invalid Argument: Wrong TAG");
 	}
 	return (0);
 }
@@ -201,16 +247,23 @@ int	Parser::parsing_base()
 		if (this->inbrackets == GLOBAL) {
 			if (this->parse_global())
 				return (-1);
-			std::cout << "(entering server brackets)" << std::endl;
 		}
 		else if (this->inbrackets >= SERVER) {
-			this->parse_server();
+			if (!this->line.str().compare("}")) {
+				for (int i = 0; i < this->inbrackets - 1; i++)
+					std::cout << "\t";
+				std::cout << "}";
+				this->inbrackets--;
+			}
+			else
+				this->parse_server();
 		}
 		std::cout << std::endl;;
 		this->line.clear();
 	}
+	std::cerr << "Bracket: " << this->inbrackets << std::endl;
 	if (this->inbrackets) {
-		std::cerr << "Error: Bracket not closed: " << this->inbrackets << std::endl;
+		std::cerr << "Error: Bracket not closed" << std::endl;
 		return (-1);
 	}
 	return (0);
