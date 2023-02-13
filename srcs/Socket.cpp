@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 01:41:29 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 18:55:03 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:31:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ Socket::~Socket()
 // Constructor             //
 /////////////////////////////
 
-Socket::Socket(const int &epfd, const int &fd) try : fd(fd)
+Socket::Socket(const ft::EpSocket &epfd, const int &fd) try : fd(fd)
 {
 	this->addTo(epfd);
 }
@@ -59,10 +59,10 @@ catch (std::exception &e)
 	std::cout << e.what() << '\n';
 }
 
-Socket::Socket(const int &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
+Socket::Socket(const ft::EpSocket &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
 {
-	init(epfd);
-	addTo(epfd);
+	this->init();
+	this->addTo(epfd);
 }
 catch (std::exception &e)
 {
@@ -73,7 +73,7 @@ catch (std::exception &e)
 // Methods                 //
 /////////////////////////////
 
-void	Socket::init(const int &epfd)
+void	Socket::init()
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->fd == -1)
@@ -93,11 +93,11 @@ void	Socket::init(const int &epfd)
 		throw std::runtime_error("Runtime error: Can't listen socket");
 }
 
-void	Socket::addTo(const int &epfd) const
+void	Socket::addTo(const ft::EpSocket &epfd) const
 {
 	epoll_event	ev;
 	ev.events = EPOLLIN | EPOLLET;
-	if (epoll_ctl(epfd, EPOLL_CTL_ADD, this->fd, &ev) == -1)
+	if (epoll_ctl(epfd.fd, EPOLL_CTL_ADD, this->fd, &ev) == -1)
 		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
 

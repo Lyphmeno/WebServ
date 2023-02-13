@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 01:00:44 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 18:33:49 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:30:44 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,23 @@
 #include <netinet/ip.h>
 #include <iostream>
 
+#include "EpSocket.hpp"
+
 namespace ft {
 
 class Socket
 {
 	public:
-		Socket(const int &epfd, const int &fd);
-		Socket(const int &epfd, const sockaddr_in &addr);
+		Socket(const ft::EpSocket &epfd, const int &fd);
+		Socket(const ft::EpSocket &epfd, const sockaddr_in &addr);
 		Socket(const Socket &x);
 		Socket	&operator=(const Socket &x);
 		~Socket();
 
 	private:
 		Socket();
-		void	init(const int &epfd);
-		void	addTo(const int &epfd) const;
+		void	init();
+		void	addTo(const ft::EpSocket &epfd) const;
 
 	public:
 		int			fd;

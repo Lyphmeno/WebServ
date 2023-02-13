@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/13 18:58:55 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:31:19 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ namespace ft {
 
 Webserv::Webserv() try : epfd(), sockets(), servers()
 {
+	this->init();
 }
 catch (std::exception &e)
 {
@@ -76,6 +77,14 @@ bool	Webserv::isSock(int sock)
 		if (sock == it->fd)
 			return (true);
 	return (false);
+}
+
+void	Webserv::init()
+{
+	//parsing fill servers
+	for (std::vector<ft::Server>::const_iterator it = this->servers.begin();
+	it != this->servers.end(); it++)
+		this->sockets.push_back(ft::Socket(this->epfd, it->addr));
 }
 
 void	Webserv::run()
