@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/13 17:56:41 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/13 19:10:17 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,12 @@ void	Parser::print_tabulation()
 
 int		Parser::semi_colon()
 {
+	std::string	tmp;
 	if (this->line.str().at(this->line.str().size() - 1) != ';')
 		throw std::invalid_argument("Invalid Argument: semi-colon missing");
+	tmp = this->line.str();
+	tmp.erase(tmp.size() - 1);
+	this->line.str(tmp);
 	return (0);
 }
 
@@ -79,9 +83,11 @@ void	Parser::print_words(std::string str)
 {
 	std::string	words;
 	this->print_tabulation();
-	std::cout << str << " -> ";
+	std::cout << "[" << str << "]";
+	this->line >> words;
 	while (this->line >> words)
-		std::cout << words << " ";
+		std::cout << " " << words;
+	std::cout << ";";
 }
 
 int	Parser::openfile()
@@ -119,12 +125,18 @@ int	Parser::retrieve_file()
 void	Parser::p_location()
 {
 	std::string	words;
+	std::string	tmp;
 	this->print_tabulation();
 	if (this->line.str().at(this->line.str().size() - 1) != '{')
 		throw std::invalid_argument("Invalid Argument: Bracket missing after location");
-	std::cout << "location ";
+	tmp = this->line.str();
+	tmp.erase(tmp.size() - 1);
+	this->line.str(tmp);
+	std::cout << "[location]";
+	this->line >> words;
 	while (this->line >> words)
-		std::cout << words << " ";
+		std::cout << " " << words;
+	std::cout << " {";
 	this->inbrackets++;
 }
 void	Parser::p_servername()
@@ -227,10 +239,10 @@ int	Parser::parse_global()
 {
 	std::string	word;
 	while (this->line >> word) {
-		std::cout << word << " ";
 		if (this->inbrackets == GLOBAL) {
 			if (!word.compare("server")) {
 				this->inbrackets = SERVER;
+				std::cout << "[server] {";
 			}
 		}
 		else
