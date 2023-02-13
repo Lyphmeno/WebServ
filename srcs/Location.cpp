@@ -21,7 +21,6 @@ Location &Location::operator=(const Location &rhs)
 {
 	if (this != &rhs)
 	{
-		*this = rhs;
 	}
 	return (*this);
 }

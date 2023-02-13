@@ -6,11 +6,12 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/10 16:15:11 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/13 15:34:33 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
 #include <iostream>
 #include <sstream>
@@ -19,6 +20,8 @@
 #include <fstream>
 #include <algorithm>
 #include "../incs/Server.hpp"
+
+#define FNUM 9 // Number of functions for the funciton pointer array
 
 #define GLOBAL 0
 #define SERVER 1
@@ -51,6 +54,20 @@ public:
 	int		parse_global();
 	int		parsing_base();
 	int		parsing(std::string);
+
+private:
+	typedef void(Parser::*parsePtr)();
+	void	p_servername();
+	void	p_listen();
+	void	p_root();
+	void	p_index();
+	void	p_autoindex();
+	void	p_maxclientbodysize();
+	void	p_errorpage();
+	void	p_cgiext();
+	void	p_allowmethods();
 	// Exceptions //
 };
 }
+
+#endif

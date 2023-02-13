@@ -6,11 +6,12 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 14:55:36 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/08 14:58:01 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/13 14:35:55 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef LOCATION_HPP
+#define LOCATION_HPP
 
 #include <iostream>
 #include <string>
@@ -42,3 +43,5 @@ public:
 	// Exceptions //
 };
 }
+
+#endif

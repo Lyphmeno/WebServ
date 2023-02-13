@@ -6,20 +6,19 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/10 16:27:58 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/13 15:37:45 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
+#include <sstream>
 
 namespace ft {
 /////////////////////////////
 // Coplien                 //
 /////////////////////////////
-Parser::Parser()
+Parser::Parser():inbrackets(0)
 {
-	this->inbrackets = 0;
-	this->filename = "";
 }
 
 Parser::Parser(const Parser &cpy)
@@ -35,7 +34,6 @@ Parser &Parser::operator=(const Parser &rhs)
 {
 	if (this != &rhs)
 	{
-		this->filename = rhs.filename;
 		this->inbrackets = rhs.inbrackets;
 	}
 	return (*this);
@@ -95,21 +93,68 @@ int	Parser::retrieve_file()
 	return (0);
 }
 
+void	Parser::p_servername()
+{
+	std::cout << "Found a SERVERNAME" << std::endl;
+}
+
+void	Parser::p_listen()
+{
+	std::cout << "Found a LISTEN" << std::endl;
+}
+
+void	Parser::p_root()
+{
+	std::cout << "Found a ROOT" << std::endl;
+}
+
+void	Parser::p_index()
+{
+	std::cout << "Found a INDEX" << std::endl;
+}
+
+void	Parser::p_autoindex()
+{
+	std::cout << "Found a AUTOINDEX" << std::endl;
+}
+
+void	Parser::p_maxclientbodysize()
+{
+	std::cout << "Found a MCBS" << std::endl;
+}
+
+void	Parser::p_errorpage()
+{
+	std::cout << "Found a ERRORPAGE" << std::endl;
+}
+
+void	Parser::p_cgiext()
+{
+	std::cout << "Found a CGIEXT" << std::endl;
+}
+
+void	Parser::p_allowmethods()
+{
+	std::cout << "Found a ALLOWMETHOD" << std::endl;
+}
+
 int	Parser::parse_server()
 {
-	int	functionNumber = 8;
 	std::string	keyword;
-	parsePtr	parserArray[functionNumber] = {
-				&Parser::p_servername(),
-				&Parser::p_listen(),
-				&Parser::p_root(),
-				&Parser::p_index(),
-				&Parser::p_autoindex(),
-				&Parser::p_maxclientbodysize(),
-				&Parser::p_errorpage(),
-				&Parser::p_cgiext(),
+	this->line >> keyword;
+	std::cout << keyword << "\t-> ";
+	parsePtr	parserArray[FNUM] = {
+				&Parser::p_servername,
+				&Parser::p_listen,
+				&Parser::p_root,
+				&Parser::p_index,
+				&Parser::p_autoindex,
+				&Parser::p_maxclientbodysize,
+				&Parser::p_errorpage,
+				&Parser::p_cgiext,
+				&Parser::p_allowmethods,
 	};
-	std::string	strArray[functionNumber]{
+	std::string	strArray[FNUM] = {
 					"server_name",
 					"listen",
 					"root",
@@ -118,13 +163,14 @@ int	Parser::parse_server()
 					"max_client_body_size",
 					"error_page",
 					"cgi_ext",
+					"allow_methods",
 	};
 
-	for (int i = 0; i < functionNumber; i++)
+	for (int i = 0; i < FNUM; i++)
 	{
 		if (keyword == strArray[i])
 			(this->*parserArray[i])();
-		else if (i == functionNumber) {
+		else if (i == FNUM) {
 			std::cerr << "Error: Wrong keyword on configuration file\n";
 		}
 	}
@@ -155,14 +201,16 @@ int	Parser::parsing_base()
 		if (this->inbrackets == GLOBAL) {
 			if (this->parse_global())
 				return (-1);
+			std::cout << "(entering server brackets)" << std::endl;
 		}
-		if (this->inbrackets >= SERVER) {
+		else if (this->inbrackets >= SERVER) {
 			this->parse_server();
 		}
 		std::cout << std::endl;;
+		this->line.clear();
 	}
 	if (this->inbrackets) {
-		std::cerr << "Error: Bracket not closed" << std::endl;
+		std::cerr << "Error: Bracket not closed: " << this->inbrackets << std::endl;
 		return (-1);
 	}
 	return (0);
