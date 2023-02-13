@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/12 22:34:57 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/13 18:51:47 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,10 @@
 
 #include <vector>
 #include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <fcntl.h>
 
 #include "Server.hpp"
+#include "Socket.hpp"
+#include "EpSocket.hpp"
 
 #define MAXEV 10
 
@@ -27,9 +26,8 @@ namespace ft {
 class Webserv
 {
 private:
-	int							epfd;
-	epoll_event					epev[MAXEV];
-	std::vector<int>			sockets;
+	ft::EpSocket				epfd;
+	std::vector<ft::Socket>		sockets;
 	std::vector<ft::Server>		servers;
 
 public:
@@ -45,17 +43,12 @@ public:
 	// Setters //
 
 	// Methods //
-	void	start();
+	void	run();
 
 	// Exceptions //
 
 private:
 	// Methods //
-	void	init();
-	void	epinit();
-	void	sockinit(sockaddr_in addr);
-	void	close();
-	void	run();
 	bool	isSock(int sock);
 };
 }

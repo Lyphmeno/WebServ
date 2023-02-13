@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 01:41:29 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 01:43:22 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/13 18:55:03 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,11 @@
 
 namespace ft {
 
-Socket::Socket() try : fd(-1), conf()
+/////////////////////////////
+// Coplien                 //
+/////////////////////////////
+
+Socket::Socket() try : fd(-1)
 {
 }
 catch (std::exception &e)
@@ -22,17 +26,8 @@ catch (std::exception &e)
 	std::cout << e.what() << '\n';
 }
 
-Socket::Socket(const Socket &x) try : fd(x.fd), conf(x.conf)
+Socket::Socket(const Socket &x) try : fd(x.fd)
 {
-}
-catch (std::exception &e)
-{
-	std::cout << e.what() << '\n';
-}
-
-Socket::Socket(int epfd) try : fd(-1), conf()
-{
-	init(epfd);
 }
 catch (std::exception &e)
 {
@@ -41,6 +36,9 @@ catch (std::exception &e)
 
 Socket	&Socket::operator=(const Socket &x)
 {
+	if (this != &x)
+		this->fd = x.fd;
+	return (*this);
 }
 
 Socket::~Socket()
@@ -48,7 +46,34 @@ Socket::~Socket()
 	::close(this->fd);
 }
 
-void	Socket::init(int epfd)
+/////////////////////////////
+// Constructor             //
+/////////////////////////////
+
+Socket::Socket(const int &epfd, const int &fd) try : fd(fd)
+{
+	this->addTo(epfd);
+}
+catch (std::exception &e)
+{
+	std::cout << e.what() << '\n';
+}
+
+Socket::Socket(const int &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
+{
+	init(epfd);
+	addTo(epfd);
+}
+catch (std::exception &e)
+{
+	std::cout << e.what() << '\n';
+}
+
+/////////////////////////////
+// Methods                 //
+/////////////////////////////
+
+void	Socket::init(const int &epfd)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->fd == -1)
@@ -61,12 +86,15 @@ void	Socket::init(int epfd)
 	if (fcntl(this->fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
 
-	if (bind(this->fd, (sockaddr *)&this->conf.addr, sizeof(this->conf.addr)) == -1)
+	if (bind(this->fd, (sockaddr *)&addr, sizeof(addr)) == -1)
 		throw std::runtime_error("Runtime error: Can't bind socket");
 
 	if (listen(this->fd, 128) == -1)
 		throw std::runtime_error("Runtime error: Can't listen socket");
+}
 
+void	Socket::addTo(const int &epfd) const
+{
 	epoll_event	ev;
 	ev.events = EPOLLIN | EPOLLET;
 	if (epoll_ctl(epfd, EPOLL_CTL_ADD, this->fd, &ev) == -1)

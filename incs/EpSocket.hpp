@@ -1,43 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Socket.hpp                                         :+:      :+:    :+:   */
+/*   EpSocket.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/13 01:00:44 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 18:33:49 by avarnier         ###   ########.fr       */
+/*   Created: 2023/02/13 17:04:34 by avarnier          #+#    #+#             */
+/*   Updated: 2023/02/13 17:44:47 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdexcept>
+#include <vector>
 #include <sys/epoll.h>
 #include <netinet/ip.h>
+#include <stdexcept>
+#include <unistd.h>
 #include <iostream>
 
 namespace ft {
 
-class Socket
+class EpSocket
 {
 	public:
-		Socket(const int &epfd, const int &fd);
-		Socket(const int &epfd, const sockaddr_in &addr);
-		Socket(const Socket &x);
-		Socket	&operator=(const Socket &x);
-		~Socket();
+		EpSocket();
+		EpSocket(const EpSocket &x);
+		EpSocket	&operator=(const EpSocket &x);
+		~EpSocket();
 
 	private:
-		Socket();
-		void	init(const int &epfd);
-		void	addTo(const int &epfd) const;
+		void	init();
 
 	public:
-		int			fd;
-		sockaddr_in	addr;
+		int							fd;
+		std::vector<epoll_event>	ev;
 };
 
 }
