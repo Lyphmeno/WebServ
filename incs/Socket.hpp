@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 01:00:44 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 19:30:44 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 15:58:41 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,18 @@ namespace ft {
 class Socket
 {
 	public:
-		Socket(const ft::EpSocket &epfd, const int &fd);
-		Socket(const ft::EpSocket &epfd, const sockaddr_in &addr);
+		Socket(const int &epfd, const int &fd);
+		Socket(const int &epfd, const sockaddr_in &addr);
 		Socket(const Socket &x);
 		Socket	&operator=(const Socket &x);
 		~Socket();
+		
+		void	setNonBlock();
+		void	addTo(const int &epfd) const;
 
 	private:
 		Socket();
 		void	init();
-		void	addTo(const ft::EpSocket &epfd) const;
 
 	public:
 		int			fd;

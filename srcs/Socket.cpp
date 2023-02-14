@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 01:41:29 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 19:31:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 15:59:02 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Socket::Socket() try : fd(-1)
 catch (std::exception &e)
 {
 	std::cout << e.what() << '\n';
+	::close(this->fd);
 }
 
 Socket::Socket(const Socket &x) try : fd(x.fd)
@@ -32,6 +33,7 @@ Socket::Socket(const Socket &x) try : fd(x.fd)
 catch (std::exception &e)
 {
 	std::cout << e.what() << '\n';
+	::close(this->fd);
 }
 
 Socket	&Socket::operator=(const Socket &x)
@@ -50,7 +52,7 @@ Socket::~Socket()
 // Constructor             //
 /////////////////////////////
 
-Socket::Socket(const ft::EpSocket &epfd, const int &fd) try : fd(fd)
+Socket::Socket(const int &epfd, const int &fd) try : fd(fd)
 {
 	this->addTo(epfd);
 }
@@ -59,7 +61,7 @@ catch (std::exception &e)
 	std::cout << e.what() << '\n';
 }
 
-Socket::Socket(const ft::EpSocket &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
+Socket::Socket(const int &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
 {
 	this->init();
 	this->addTo(epfd);
@@ -79,13 +81,6 @@ void	Socket::init()
 	if (this->fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
 
-	int flags = fcntl(this->fd, F_GETFL);
-	if (flags == -1)
-		throw std::runtime_error("Runtime error: Can't get socket flags");
-
-	if (fcntl(this->fd, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw std::runtime_error("Runtime error: Can't set socket flags");
-
 	if (bind(this->fd, (sockaddr *)&addr, sizeof(addr)) == -1)
 		throw std::runtime_error("Runtime error: Can't bind socket");
 
@@ -93,11 +88,21 @@ void	Socket::init()
 		throw std::runtime_error("Runtime error: Can't listen socket");
 }
 
-void	Socket::addTo(const ft::EpSocket &epfd) const
+void	Socket::setNonBlock()
+{
+	int flags = fcntl(this->fd, F_GETFL);
+	if (flags == -1)
+		throw std::runtime_error("Runtime error: Can't get socket flags");
+
+	if (fcntl(this->fd, F_SETFL, flags | O_NONBLOCK) == -1)
+		throw std::runtime_error("Runtime error: Can't set socket flags");
+}
+
+void	Socket::addToEpoll(const int &epfd) const
 {
 	epoll_event	ev;
 	ev.events = EPOLLIN | EPOLLET;
-	if (epoll_ctl(epfd.fd, EPOLL_CTL_ADD, this->fd, &ev) == -1)
+	if (epoll_ctl(epfd, EPOLL_CTL_ADD, this->fd, &ev) == -1)
 		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
 
