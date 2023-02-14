@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 17:04:34 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 17:44:47 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 20:47:57 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <iostream>
+
+#incelude "defines.h"
 
 namespace ft {
 
@@ -34,7 +36,7 @@ class EpSocket
 
 	public:
 		int							fd;
-		std::vector<epoll_event>	ev;
+		epoll_event					ev[MAXEV];
 };
 
 }

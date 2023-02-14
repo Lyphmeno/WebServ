@@ -6,10 +6,11 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/14 13:11:04 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/14 13:11:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 20:48:59 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #define MAXEV 10
+#define BUFFSIZE 1024

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:38:39 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/14 13:11:33 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 20:35:32 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #include <vector>
 #include <sys/epoll.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include "Server.hpp"
 #include "Socket.hpp"
@@ -27,7 +29,7 @@ namespace ft {
 class Webserv
 {
 private:
-	ft::EpSocket				epfd;
+	ft::EpSocket				ep;
 	std::vector<ft::Socket>		sockets;
 	std::vector<ft::Server>		servers;
 
@@ -51,6 +53,7 @@ public:
 private:
 	// Methods //
 	void	init();
-	bool	isSock(int sock);
+	bool	isSock(int fd);
+	void	removeSock(int fd);
 };
 }

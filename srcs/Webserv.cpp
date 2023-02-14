@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/14 16:28:01 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 20:47:43 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,21 @@ Webserv::~Webserv()
 // Methods                 //
 /////////////////////////////
 
-bool	Webserv::isSock(int sock)
+bool	Webserv::isSock(int fd)
 {
 	for (std::vector<ft::Socket>::const_iterator it = this->sockets.begin();
 	it != this->sockets.end(); it++)
-		if (sock == it->fd)
+		if (fd == it->fd)
 			return (true);
 	return (false);
+}
+
+void	Webserv::removeSock(int fd)
+{
+	for (std::vector<ft::Socket>::const_iterator it = this->sockets.begin();
+	it != this->sockets.end(); it++)
+		if (fd == it->fd)
+			this->servers.erase(it);
 }
 
 void	Webserv::init()
@@ -110,16 +118,26 @@ void	Webserv::run()
 				client.fd = accept(this->ep[i].data.fd, &client.addr, len);
 				if (client.fd == -1)
 				{
-					if (errno == EAGAIN || errno == EWOULDBLOCK)
-						break ;
-					else
+					if (errno != EAGAIN && errno != EWOULDBLOCK)
 						throw std::system_error(errno, "System error: accept failed");
 				}
 				else
 				{
 					client.setNonBlock();
 					client.addToEpoll(this->ep.fd);
+					this->servers.push_back(client);
 				}
+			}
+			else
+			{
+				int byte = 0;
+				char buff[BUFFSIZE + 1];
+				memset(buff, '\0', BUFFSIZE);
+				byte = recv(this->ep.ev[i].data.fd, buff, BUFFSIZE, MSG_DONTWAIT);
+				if (byte > 0)
+					buff[byte] = '\0';
+				else
+					this->removeSock(this->ep.ev[i].data.fd);
 			}
 		}	
 	}

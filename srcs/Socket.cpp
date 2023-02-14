@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 01:41:29 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/14 15:59:02 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 20:48:25 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ Socket::~Socket()
 
 Socket::Socket(const int &epfd, const int &fd) try : fd(fd)
 {
-	this->addTo(epfd);
+	this->addToEpoll(epfd);
 }
 catch (std::exception &e)
 {
@@ -64,7 +64,7 @@ catch (std::exception &e)
 Socket::Socket(const int &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
 {
 	this->init();
-	this->addTo(epfd);
+	this->addToEpoll(epfd);
 }
 catch (std::exception &e)
 {

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 17:24:43 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/14 15:39:27 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/14 20:48:05 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ EpSocket::EpSocket() try : fd(-1), ev()
 catch (std::exception &e)
 {
 	std::cout << e.what() << '\n';
-	::close(this->fd);
 }
 
 EpSocket::EpSocket(const EpSocket &x) try : fd(x.fd), ev(x.ev)
@@ -34,7 +33,6 @@ EpSocket::EpSocket(const EpSocket &x) try : fd(x.fd), ev(x.ev)
 catch (std::exception &e)
 {
 	std::cout << e.what() << '\n';
-	::close(this->fd);
 }
 
 EpSocket	&EpSocket::operator=(const EpSocket &x)
