@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/13 01:41:29 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/13 18:55:03 by avarnier         ###   ########.fr       */
+/*   Created: 2023/02/15 16:13:30 by avarnier          #+#    #+#             */
+/*   Updated: 2023/02/15 18:32:30 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,69 +15,58 @@
 namespace ft {
 
 /////////////////////////////
-// Coplien                 //
+// Constructor             //
 /////////////////////////////
 
-Socket::Socket() try : fd(-1)
+Socket::Socket() : fd(-1), addr()
 {
-}
-catch (std::exception &e)
-{
-	std::cout << e.what() << '\n';
 }
 
-Socket::Socket(const Socket &x) try : fd(x.fd)
+Socket::Socket(const Socket &x) : fd(x.fd), addr(x.addr)
 {
-}
-catch (std::exception &e)
-{
-	std::cout << e.what() << '\n';
 }
 
 Socket	&Socket::operator=(const Socket &x)
 {
 	if (this != &x)
+	{
 		this->fd = x.fd;
+		this->addr = x.addr;
+	}
 	return (*this);
 }
 
 Socket::~Socket()
 {
-	::close(this->fd);
-}
-
-/////////////////////////////
-// Constructor             //
-/////////////////////////////
-
-Socket::Socket(const int &epfd, const int &fd) try : fd(fd)
-{
-	this->addTo(epfd);
-}
-catch (std::exception &e)
-{
-	std::cout << e.what() << '\n';
-}
-
-Socket::Socket(const int &epfd, const sockaddr_in &addr) try : fd(-1), addr(addr)
-{
-	init(epfd);
-	addTo(epfd);
-}
-catch (std::exception &e)
-{
-	std::cout << e.what() << '\n';
 }
 
 /////////////////////////////
 // Methods                 //
 /////////////////////////////
 
-void	Socket::init(const int &epfd)
+void	Socket::open()
 {
-	this->fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->fd == -1)
-		throw std::runtime_error("Runtime error: Socket creation failed");
+	if (this->fd < 0)
+	{
+		this->fd = socket(AF_INET, SOCK_STREAM, 0);
+		if (this->fd == -1)
+			throw std::runtime_error("Runtime error: Socket creation failed");
+	}
+}
+
+void	Socket::close()
+{
+	if (this->fd != -1)
+		::close(this->fd);
+}
+
+void	Socket::set()
+{
+	if (bind(this->fd, (sockaddr *)&addr, sizeof(addr)) == -1)
+		throw std::runtime_error("Runtime error: Can't bind socket");
+
+	if (listen(this->fd, 128) == -1)
+		throw std::runtime_error("Runtime error: Can't listen socket");
 
 	int flags = fcntl(this->fd, F_GETFL);
 	if (flags == -1)
@@ -85,15 +74,9 @@ void	Socket::init(const int &epfd)
 
 	if (fcntl(this->fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
-
-	if (bind(this->fd, (sockaddr *)&addr, sizeof(addr)) == -1)
-		throw std::runtime_error("Runtime error: Can't bind socket");
-
-	if (listen(this->fd, 128) == -1)
-		throw std::runtime_error("Runtime error: Can't listen socket");
 }
 
-void	Socket::addTo(const int &epfd) const
+void	Socket::add(const int &epfd)
 {
 	epoll_event	ev;
 	ev.events = EPOLLIN | EPOLLET;
