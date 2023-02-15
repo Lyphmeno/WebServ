@@ -1,11 +1,12 @@
 #include "../incs/Response.hpp"
 #include <fstream>
+#include <ctime>
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void) {
+ft::Response::Response(void) : _allowedMethod(0){
 
 }
 
@@ -70,6 +71,10 @@ void ft::Response::setURL(std::string url){
     this->_url = url;
 }
 
+void ft::Response::setAllowedMethod(int allowed){
+    this->_allowedMethod = allowed;
+}
+
 void ft::Response::handleErrors(){
     if (_code == "404"){
         _body = "<html>\n"
@@ -78,6 +83,37 @@ void ft::Response::handleErrors(){
         "</body>\n"
         "</html>\n";
     }
+    if (_code == "405"){
+        _body = "<html>\n"
+        "<head><title>405 Method Not Allowed</title></head>\n"
+        "<center><h1>405 Method Not Allowed</h1></center>\n"
+        "</body>\n"
+        "</html>\n";
+    }
+    if (_code == "500"){
+        _body = "<html>\n"
+        "<head><title>500 Internal Server Error</title></head>\n"
+        "<center><h1>500 Internal Server Error</h1></center>\n"
+        "</body>\n"
+        "</html>\n";
+    }
+}
+
+void ft::Response::setError(std::string code)
+{
+    _code = code;
+    _status = _codeStatus.getStatus(code);
+    _contentType = "html/text";
+    handleErrors();
+}
+
+const std::string & ft::Response::addContentType(void){
+    ft::ContentType Mime;
+
+    std::string extension = "";
+    size_t found = _url.find(".");
+    extension.insert(0, _url, found + 1);
+    return (Mime.getType(extension));
 }
 
 void ft::Response::createBody(const std::string & url){
@@ -85,30 +121,41 @@ void ft::Response::createBody(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    if (!ifs.is_open())
+    if (_allowedMethod == 0)
     {
-        _code = "404";
-        _status = _codeStatus.getStatus("404");
-        handleErrors();
+        if (!ifs.is_open())
+        {
+            setError("404");
+            return ;
+        }
+        _code = "200";
+        _status = _codeStatus.getStatus("200");
+        setContentType(addContentType());
+        while (std::getline(ifs, buff) != 0)
+        {
+            _body += buff;
+            _body += "\n";
+        }
+        _body.erase(_body.size() - 1,1);
         return ;
     }
-    _code = "200";
-    _status = _codeStatus.getStatus("200");
-    while (std::getline(ifs, buff) != 0)
-    {
-        _body += buff;
-        _body += "\n";
-    }
+    setError("405");
+    return ;
 }
 
 void ft::Response::buildFullResponse(){
     std::string full;
+    time_t now = std::time(0);
+
+    char* date_time = std::ctime(&now);
 
     full = _protVersion + " " + _code + " " + _status;
     full += "\n";
+    full += "Date: ";
+    full += date_time;
     full += "Content-type: " + _contentType;
     full += "\n\n";
     full += _body;
 
-    std::cout << full << std::endl;
+    std::cout << full;
 }

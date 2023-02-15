@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include "Response.hpp"
-#include "ContentType.hpp"
 
 #define COLOR_START "\033[1;100m"
 #define COLOR_RED "\033[31m" 
@@ -41,7 +40,7 @@ public:
         void parseRequest(ft::Response *reponse);
 
         void getRequestLine(std::string line);
-        const std::string & getContentType(void);
+        void checkMethodAllowed(ft::Response *response, std::string method);
 
 private:
        std::string  _method;
@@ -51,7 +50,7 @@ private:
        std::string _requestLine;
 
        std::vector<std::string> _requestFull;
-
+       
 };
 
 }

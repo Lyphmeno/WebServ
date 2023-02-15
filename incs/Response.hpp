@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "StatusCode.hpp"
+#include "ContentType.hpp"
 
 #define COLOR_START "\033[1;100m"
 #define COLOR_RED "\033[31m" 
@@ -35,15 +36,19 @@ public:
         //Setters
         void setProtVersion(std::string version);
         void setContentType(std::string contentType);
+        void setAllowedMethod(int allowed);
         void setURL(std::string url);
 
         const std::string & getProtVersion(void);
         const std::string & getContentType(void);
         const std::string & getURL(void);
 
+        const std::string & addContentType(void);
         void createBody(const std::string & url);
         void buildFullResponse();
         void handleErrors();
+        void setError(std::string code);
+
       
 private:
         std::string _protVersion;
@@ -58,7 +63,7 @@ private:
 
         ft::StatusCode _codeStatus;
 
-        
+        int _allowedMethod;
         // int _contentLenght;
 };
 
