@@ -6,11 +6,12 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 10:54:17 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 11:06:27 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
+#include <exception>
 #include <stdexcept>
 #include <string>
 
@@ -148,10 +149,17 @@ void	Parser::p_location()
 	this->print_location("location");
 	this->inbrackets++;
 }
+
 void	Parser::p_servername()
 {
+	std::string	tmp;
 	this->semi_colon();
 	this->print_words("server_name");
+	while (this->line >> tmp)
+	{
+		if (tmp.find_last_not_of(SERNAMES) != tmp.npos)
+			throw std::invalid_argument("Invalid Argument: Invalid server name");
+	}
 }
 
 void	Parser::p_listen()

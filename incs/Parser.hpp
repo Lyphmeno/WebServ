@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 10:54:04 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 11:04:13 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "../incs/Server.hpp"
 
 #define FNUM 10 // Number of functions for the funciton pointer array
+#define SERNAMES "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ-_."
 
 #define GLOBAL 0
 #define SERVER 1
