@@ -75,7 +75,6 @@ void ft::Response::handleErrors(){
         _body = "<html>\n"
         "<head><title>404 Not Found</title></head>\n"
         "<center><h1>404 Not Found</h1></center>\n"
-        "<hr><center>nginx/0.8.54</center>\n"
         "</body>\n"
         "</html>\n";
     }
@@ -83,25 +82,22 @@ void ft::Response::handleErrors(){
 
 void ft::Response::createBody(const std::string & url){
 
-    if (_contentType.find("text", 0) != std::string::npos)
-    {
-        std::ifstream ifs(url.c_str());
-        std::string buff;
+    std::ifstream ifs(url.c_str());
+    std::string buff;
 
-        if (!ifs.is_open())
-        {
-            _code = "404";
-            _status = _codeStatus.getStatus("404");
-            handleErrors();
-            return ;
-        }
-        _code = "200";
-        _status = _codeStatus.getStatus("200");
-        while (std::getline(ifs, buff) != 0)
-        {
-            _body += buff;
-            _body += "\n";
-        }
+    if (!ifs.is_open())
+    {
+        _code = "404";
+        _status = _codeStatus.getStatus("404");
+        handleErrors();
+        return ;
+    }
+    _code = "200";
+    _status = _codeStatus.getStatus("200");
+    while (std::getline(ifs, buff) != 0)
+    {
+        _body += buff;
+        _body += "\n";
     }
 }
 
