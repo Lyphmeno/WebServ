@@ -6,12 +6,13 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 11:06:27 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 15:39:40 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
 #include <exception>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -90,15 +91,15 @@ void	Parser::brackets()
 	this->line.str(tmp);
 }
 
-void	Parser::print_words(std::string str)
+void	Parser::print_words(std::string str, std::string color)
 {
 	std::string	words;
 	this->print_tabulation();
-	std::cout << "\033[33m[" << str << "]\033[0m";
+	std::cout << "\033[35m[" << str << "]\033[0m";
 	this->line >> words;
 	while (this->line >> words)
-		std::cout << " " << words;
-	std::cout << ";";
+		std::cout << color << " " << words;
+	std::cout << "\033[33m" << ";" << "\033[0m";
 	this->line.clear();
 	this->line.seekg(0);
 }
@@ -106,9 +107,10 @@ void	Parser::print_words(std::string str)
 void	Parser::print_location(std::string str)
 {
 	std::string	words;
-	std::cout << "\033[33m[" << str << "]\033[0m";
+	std::cout << "\033[36m[" << str << "]\033[0m";
+	this->line >> words;
 	while (this->line >> words)
-		std::cout << " " << words;
+		std::cout << " \033[34m" << words;
 	std::cout << "\033[33m" << " {" << "\033[0m";
 	this->line.clear();
 	this->line.seekg(0);
@@ -143,10 +145,21 @@ int	Parser::retrieve_file()
 	return (0);
 }
 
+void	Parser::dlt_first()
+{
+	std::string	tmp;
+	tmp = this->line.str();
+	tmp.erase(0, tmp.find_first_of(" ") + 1);
+	if (tmp.empty())
+		throw std::invalid_argument("Error: Argument missing after tag");
+	this->line.str(tmp);
+}
+
 void	Parser::p_location()
 {
 	this->brackets();
 	this->print_location("location");
+	this->dlt_first();
 	this->inbrackets++;
 }
 
@@ -154,10 +167,11 @@ void	Parser::p_servername()
 {
 	std::string	tmp;
 	this->semi_colon();
-	this->print_words("server_name");
+	this->print_words("server_name", "\033[34m");
+	this->dlt_first();
 	while (this->line >> tmp)
 	{
-		if (tmp.find_last_not_of(SERNAMES) != tmp.npos)
+		if (static_cast<int>(tmp.find_first_not_of(SERALL)) != -1)
 			throw std::invalid_argument("Invalid Argument: Invalid server name");
 	}
 }
@@ -165,49 +179,63 @@ void	Parser::p_servername()
 void	Parser::p_listen()
 {
 	this->semi_colon();
-	this->print_words("listen");
+	this->print_words("listen", "\033[0m");
+	this->dlt_first();
 }
 
 void	Parser::p_root()
 {
 	this->semi_colon();
-	this->print_words("root");
+	this->print_words("root", "\033[34m");
+	this->dlt_first();
 }
 
 void	Parser::p_index()
 {
 	this->semi_colon();
-	this->print_words("index");
+	this->print_words("index", "\033[34m");
+	this->dlt_first();
 }
 
 void	Parser::p_autoindex()
 {
 	this->semi_colon();
-	this->print_words("auto_index");
+	this->print_words("auto_index", "\033[0m");
+	this->dlt_first();
 }
 
 void	Parser::p_maxclientbodysize()
 {
 	this->semi_colon();
-	this->print_words("max_client_body_size");
+	this->print_words("max_client_body_size", "\033[0m");
+	this->dlt_first();
 }
 
 void	Parser::p_errorpage()
 {
 	this->semi_colon();
-	this->print_words("error_page");
+	this->print_words("error_page", "\033[0m");
+	this->dlt_first();
 }
 
 void	Parser::p_cgiext()
 {
 	this->semi_colon();
-	this->print_words("cgi_ext");
+	this->print_words("cgi_ext", "\033[0m");
+	this->dlt_first();
 }
 
 void	Parser::p_allowmethods()
 {
+	std::string	tmp;
 	this->semi_colon();
-	this->print_words("allow_methods");
+	this->print_words("allow_methods", "\033[34m");
+	this->dlt_first();
+	while (this->line >> tmp)
+	{
+		if (tmp.compare("GET") && tmp.compare("POST"))
+			throw std::invalid_argument("Invalid Argument: Invalid method");
+	}
 }
 
 int	Parser::parse_server()
@@ -259,7 +287,7 @@ int	Parser::parse_global()
 		if (this->inbrackets == GLOBAL) {
 			if (!word.compare("server")) {
 				this->inbrackets = SERVER;
-				std::cout << "\033[33m[server" << "] {\033[0m";
+				std::cout << "\033[32m[server" << "] \033[33m{\033[0m";
 			}
 		}
 		else

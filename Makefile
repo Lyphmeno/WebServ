@@ -1,7 +1,7 @@
 NAME		:=	webserv
 
 CXX			:=	c++
-CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -g3
+CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -pedantic -g3
 
 SRCDIR		:=	srcs
 SRCEXT		:=	cpp

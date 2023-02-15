@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 11:04:13 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 13:35:48 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <locale>
 #include "../incs/Server.hpp"
 
 #define FNUM 10 // Number of functions for the funciton pointer array
-#define SERNAMES "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ-_."
+#define SERALL "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ-_.1234567890"
+#define SERALPHA "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 #define GLOBAL 0
 #define SERVER 1
@@ -53,10 +55,11 @@ private:
 	void	print_tabulation();
 	void	semi_colon();
 	void	brackets();
-	void	print_words(std::string);
+	void	print_words(std::string, std::string);
 	void	print_location(std::string);
 	int		openfile();
 	int		retrieve_file();
+	void	dlt_first();
 	int		parse_server();
 	int		parse_global();
 	int		parsing_base();
