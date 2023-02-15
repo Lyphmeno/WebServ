@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/13 17:56:22 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 10:54:04 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,10 @@ public:
 private:
 	void	print_info();
 	void	print_tabulation();
-	int		semi_colon();
+	void	semi_colon();
+	void	brackets();
 	void	print_words(std::string);
+	void	print_location(std::string);
 	int		openfile();
 	int		retrieve_file();
 	int		parse_server();

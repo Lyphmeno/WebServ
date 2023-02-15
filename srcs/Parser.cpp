@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/13 19:10:17 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 10:54:17 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	Parser::print_tabulation()
 		std::cout << "\t";
 }
 
-int		Parser::semi_colon()
+void	Parser::semi_colon()
 {
 	std::string	tmp;
 	if (this->line.str().at(this->line.str().size() - 1) != ';')
@@ -76,28 +76,48 @@ int		Parser::semi_colon()
 	tmp = this->line.str();
 	tmp.erase(tmp.size() - 1);
 	this->line.str(tmp);
-	return (0);
+}
+
+void	Parser::brackets()
+{
+	std::string	tmp;
+	if (this->line.str().at(this->line.str().size() - 1) != '{')
+		throw std::invalid_argument("Invalid Argument: Bracket missing after location");
+	this->print_tabulation();
+	tmp = this->line.str();
+	tmp.erase(tmp.size() - 1);
+	this->line.str(tmp);
 }
 
 void	Parser::print_words(std::string str)
 {
 	std::string	words;
 	this->print_tabulation();
-	std::cout << "[" << str << "]";
+	std::cout << "\033[33m[" << str << "]\033[0m";
 	this->line >> words;
 	while (this->line >> words)
 		std::cout << " " << words;
 	std::cout << ";";
+	this->line.clear();
+	this->line.seekg(0);
+}
+
+void	Parser::print_location(std::string str)
+{
+	std::string	words;
+	std::cout << "\033[33m[" << str << "]\033[0m";
+	while (this->line >> words)
+		std::cout << " " << words;
+	std::cout << "\033[33m" << " {" << "\033[0m";
+	this->line.clear();
+	this->line.seekg(0);
 }
 
 int	Parser::openfile()
 {
 	this->file.open(this->filename.c_str());
 	if (!this->file.is_open())
-	{
-		std::cerr << "Error: Invalid File" << std::endl; 
 		return (-1);
-	}
 	return (0);
 }
 
@@ -124,19 +144,8 @@ int	Parser::retrieve_file()
 
 void	Parser::p_location()
 {
-	std::string	words;
-	std::string	tmp;
-	this->print_tabulation();
-	if (this->line.str().at(this->line.str().size() - 1) != '{')
-		throw std::invalid_argument("Invalid Argument: Bracket missing after location");
-	tmp = this->line.str();
-	tmp.erase(tmp.size() - 1);
-	this->line.str(tmp);
-	std::cout << "[location]";
-	this->line >> words;
-	while (this->line >> words)
-		std::cout << " " << words;
-	std::cout << " {";
+	this->brackets();
+	this->print_location("location");
 	this->inbrackets++;
 }
 void	Parser::p_servername()
@@ -230,7 +239,7 @@ int	Parser::parse_server()
 		}
 	}
 	if (i == FNUM) {
-		throw std::invalid_argument("Invalid Argument: Wrong TAG");
+		throw std::invalid_argument("Invalid Argument: Wrong tag OR Bracket not closed");
 	}
 	return (0);
 }
@@ -242,7 +251,7 @@ int	Parser::parse_global()
 		if (this->inbrackets == GLOBAL) {
 			if (!word.compare("server")) {
 				this->inbrackets = SERVER;
-				std::cout << "[server] {";
+				std::cout << "\033[33m[server" << "] {\033[0m";
 			}
 		}
 		else
@@ -254,6 +263,7 @@ int	Parser::parse_global()
 
 int	Parser::parsing_base()
 {
+	std::cout << "\033[32m---------------------------------------------------------------------------------" << "\033[0m\n";
 	for (std::vector<std::string>::iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
 		this->line.str(*it);
 		if (this->inbrackets == GLOBAL) {
@@ -264,7 +274,7 @@ int	Parser::parsing_base()
 			if (!this->line.str().compare("}")) {
 				for (int i = 0; i < this->inbrackets - 1; i++)
 					std::cout << "\t";
-				std::cout << "}";
+				std::cout << "\033[33m" << " }" << "\033[0m";
 				this->inbrackets--;
 			}
 			else
@@ -273,10 +283,9 @@ int	Parser::parsing_base()
 		std::cout << std::endl;;
 		this->line.clear();
 	}
-	std::cerr << "Bracket: " << this->inbrackets << std::endl;
+	std::cout << "\033[32m---------------------------------------------------------------------------------" << "\033[0m\n";
 	if (this->inbrackets) {
-		std::cerr << "Error: Bracket not closed" << std::endl;
-		return (-1);
+		throw std::invalid_argument("Invalid Argument: Brackets not closed");
 	}
 	return (0);
 }
@@ -286,14 +295,11 @@ int	Parser::parsing(std::string arg)
 	this->filename = arg;
 	if (this->retrieve_file())
 	{
-		std::cerr << "Error: Couldn't retrieve file information" << std::endl;
+		throw std::invalid_argument("Invalid Argument: Invalid File");
 		return (-1);
 	}
 	if (this->parsing_base())
-	{
-		std::cerr << "Error: Invalid file" << std::endl;
 		return (-1);
-	}
 	//this->print_info();
 	return (0);
 }
