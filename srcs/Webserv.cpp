@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/14 20:47:43 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/15 10:34:19 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	Webserv::removeSock(int fd)
 	for (std::vector<ft::Socket>::const_iterator it = this->sockets.begin();
 	it != this->sockets.end(); it++)
 		if (fd == it->fd)
-			this->servers.erase(it);
+			this->sockets.erase(it);
 }
 
 void	Webserv::init()
@@ -99,9 +99,9 @@ void	Webserv::run()
 {
 	for (;;)
 	{
-		int	n = epoll_wait(this->ep->fd, this->ep.ev, MAXEV, -1);
+		int	n = epoll_wait(this->ep.fd, this->ep.ev, MAXEV, -1);
 		if (n == -1)
-			throw std::system_error(errno, "System error: epoll_wait failed");
+			throw std::system_error(errno, std::generic_category());
 		for (int i = 0; i < n; i++)
 		{
 			if ((this->ep.ev[i].events & EPOLLERR)
@@ -111,21 +111,21 @@ void	Webserv::run()
 				::close(this->ep.ev[i].data.fd);
 				std::cerr << "Webserv: epoll_wait bad event returned" << '\n';
 			}
-			else if (this->isSock(this->ep[i].data.fd) == true)
+			else if (this->isSock(this->ep.ev[i].data.fd) == true)
 			{
 				ft::Socket	client;
 				socklen_t	len = sizeof(sockaddr_in);
-				client.fd = accept(this->ep[i].data.fd, &client.addr, len);
+				client.fd = accept(this->ep.ev[i].data.fd, (sockaddr *)&client.addr, &len);
 				if (client.fd == -1)
 				{
 					if (errno != EAGAIN && errno != EWOULDBLOCK)
-						throw std::system_error(errno, "System error: accept failed");
+						throw std::system_error(errno, std::generic_category());
 				}
 				else
 				{
 					client.setNonBlock();
 					client.addToEpoll(this->ep.fd);
-					this->servers.push_back(client);
+					this->sockets.push_back(client);
 				}
 			}
 			else
@@ -138,6 +138,7 @@ void	Webserv::run()
 					buff[byte] = '\0';
 				else
 					this->removeSock(this->ep.ev[i].data.fd);
+				std::cout << buff << std::endl;
 			}
 		}	
 	}
