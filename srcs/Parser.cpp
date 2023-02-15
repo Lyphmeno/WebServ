@@ -6,15 +6,19 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 15:39:40 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 18:21:23 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
+#include <cstddef>
+#include <cstdlib>
 #include <exception>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace ft {
 /////////////////////////////
@@ -59,7 +63,7 @@ Parser &Parser::operator=(const Parser &rhs)
 /////////////////////////////
 void	Parser::print_info()
 {
-	for (std::vector<std::string>::iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
+	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
         std::cout << *it << std::endl;
     }
 }
@@ -178,9 +182,53 @@ void	Parser::p_servername()
 
 void	Parser::p_listen()
 {
+	int			count = 0;
+	std::string	tmp;
 	this->semi_colon();
-	this->print_words("listen", "\033[0m");
+	this->print_words("listen", "\033[34m");
 	this->dlt_first();
+	while (this->line >> tmp)
+	{
+		if (count == 1)
+			throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+		if (static_cast<int>(tmp.find_first_not_of(LISTEN)) != -1)
+			throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+		if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
+		{
+			size_t				pos;
+			std::vector<int>	hostint;
+			std::string			tmpnum;
+			std::string			hostmp(tmp.substr(0, tmp.find_first_of(":")));
+			std::string			portmp(tmp.substr(tmp.find_first_of(":") + 1, tmp.size()));
+			std::stringstream	tmpiss;
+			if (hostmp.empty() || portmp.empty() || static_cast<int>(portmp.find_first_not_of("1234567890")) != -1)
+				throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+			while ((pos = hostmp.find(".")) != std::string::npos) {
+				tmpnum = hostmp.substr(0, pos);
+				std::istringstream	tmpintiss(tmpnum);
+				int					tmpint;
+				tmpintiss >> tmpint;
+				hostint.push_back(tmpint);
+				hostmp.erase(0, pos + 1);
+			}
+			std::istringstream	tmpintiss(tmpnum);
+			int					tmpint;
+			tmpintiss >> tmpint;
+			hostint.push_back(tmpint);
+			if (hostint.size() != 4)
+				throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+			for (std::vector<int>::const_iterator it = hostint.begin(); it != hostint.end(); it++){
+				if (*it < 0 || *it > 255)
+					throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+			}
+		}
+		else
+		{
+			if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
+				throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+		}
+		count++;
+	}
 }
 
 void	Parser::p_root()
@@ -199,9 +247,15 @@ void	Parser::p_index()
 
 void	Parser::p_autoindex()
 {
+	std::string	tmp;
 	this->semi_colon();
-	this->print_words("auto_index", "\033[0m");
+	this->print_words("auto_index", "\033[34m");
 	this->dlt_first();
+	while (this->line >> tmp)
+	{
+		if (tmp.compare("on") && tmp.compare("off"))
+			throw std::invalid_argument("Invalid Argument: Invalid method");
+	}
 }
 
 void	Parser::p_maxclientbodysize()
@@ -218,10 +272,10 @@ void	Parser::p_errorpage()
 	this->dlt_first();
 }
 
-void	Parser::p_cgiext()
+void	Parser::p_cgidir()
 {
 	this->semi_colon();
-	this->print_words("cgi_ext", "\033[0m");
+	this->print_words("cgi_dir", "\033[34m");
 	this->dlt_first();
 }
 
@@ -251,7 +305,7 @@ int	Parser::parse_server()
 				&Parser::p_autoindex,
 				&Parser::p_maxclientbodysize,
 				&Parser::p_errorpage,
-				&Parser::p_cgiext,
+				&Parser::p_cgidir,
 				&Parser::p_allowmethods,
 	};
 	std::string	strArray[FNUM] = {
@@ -263,7 +317,7 @@ int	Parser::parse_server()
 					"auto_index",
 					"max_client_body_size",
 					"error_page",
-					"cgi_ext",
+					"cgi_dir",
 					"allow_methods",
 	};
 
@@ -300,7 +354,7 @@ int	Parser::parse_global()
 int	Parser::parsing_base()
 {
 	std::cout << "\033[32m---------------------------------------------------------------------------------" << "\033[0m\n";
-	for (std::vector<std::string>::iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
+	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
 		this->line.str(*it);
 		if (this->inbrackets == GLOBAL) {
 			if (this->parse_global())

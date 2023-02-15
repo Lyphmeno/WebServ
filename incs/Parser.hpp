@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 13:35:48 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/15 16:15:35 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #define FNUM 10 // Number of functions for the funciton pointer array
 #define SERALL "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ-_.1234567890"
 #define SERALPHA "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define LISTEN ":.1234567890"
 
 #define GLOBAL 0
 #define SERVER 1
@@ -72,7 +73,7 @@ private:
 	void	p_autoindex();
 	void	p_maxclientbodysize();
 	void	p_errorpage();
-	void	p_cgiext();
+	void	p_cgidir();
 	void	p_allowmethods();
 	// Exceptions //
 };
