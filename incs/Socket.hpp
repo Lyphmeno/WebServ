@@ -17,6 +17,7 @@
 #include <sys/socket.h>
 #include <sys/epoll.h>
 #include <netinet/in.h>
+#include <stdexcept>
 
 namespace ft {
 
@@ -31,7 +32,7 @@ class Socket
 		void	open();
 		void	close();
 		void	set();
-		void	add();
+		void	add(const int &epfd);
 	
 	public:
 		int			fd;
