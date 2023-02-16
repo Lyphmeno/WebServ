@@ -1,24 +1,12 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Socket.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/15 16:13:30 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/16 12:39:44 by avarnier         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../incs/Socket.hpp"
 
 namespace ft {
 
-/////////////////////////////
-// Constructor             //
-/////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//                                constructor                                 //
+////////////////////////////////////////////////////////////////////////////////
 
-Socket::Socket() : fd(-1), addr()
+Socket::Socket() : fd(-1)
 {
 }
 
@@ -38,11 +26,12 @@ Socket	&Socket::operator=(const Socket &x)
 
 Socket::~Socket()
 {
+	this->close();
 }
 
-/////////////////////////////
-// Methods                 //
-/////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//                                  methods                                   //
+////////////////////////////////////////////////////////////////////////////////
 
 void	Socket::open()
 {
@@ -60,9 +49,10 @@ void	Socket::close()
 		::close(this->fd);
 }
 
-void	Socket::set()
+void	Socket::set(const sockaddr_in &addr)
 {
-	if (bind(this->fd, (sockaddr *)&addr, sizeof(addr)) == -1)
+	this->addr = addr;
+	if (bind(this->fd, (sockaddr *)&this->addr, sizeof(this->addr)) == -1)
 		throw std::runtime_error("Runtime error: Can't bind socket");
 
 	if (listen(this->fd, 128) == -1)
@@ -74,14 +64,6 @@ void	Socket::set()
 
 	if (fcntl(this->fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
-}
-
-void	Socket::add(const int &epfd)
-{
-	epoll_event	ev;
-	ev.events = EPOLLIN | EPOLLET;
-	if (epoll_ctl(epfd, EPOLL_CTL_ADD, this->fd, &ev) == -1)
-		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
 
 }

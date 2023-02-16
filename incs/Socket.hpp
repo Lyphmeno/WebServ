@@ -1,21 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Socket.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/16 12:30:41 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/16 12:40:41 by avarnier         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
-#include <sys/epoll.h>
 #include <netinet/in.h>
 #include <stdexcept>
 
@@ -31,8 +18,7 @@ class Socket
 
 		void	open();
 		void	close();
-		void	set();
-		void	add(const int &epfd);
+		void	set(const sockaddr_in &addr);
 	
 	public:
 		int			fd;
