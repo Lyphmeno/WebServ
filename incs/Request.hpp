@@ -36,6 +36,8 @@ public:
         std::string getProtVersion(void){return _protocolVersion;};
         std::string getRequestLine(void){return _requestLine;};
 
+        const std::string & requestStarter();
+
         void fillRequest(std::string line);
         void parseRequest(ft::Response *reponse);
 
@@ -50,6 +52,8 @@ private:
        std::string _requestLine;
 
        std::vector<std::string> _requestFull;
+
+       int _indexON;
        
 };
 

@@ -42,6 +42,7 @@ public:
         const std::string & getProtVersion(void);
         const std::string & getContentType(void);
         const std::string & getURL(void);
+        const std::string & getFullResponse(void);
 
         const std::string & addContentType(void);
         void createBody(const std::string & url);
@@ -64,6 +65,10 @@ private:
         ft::StatusCode _codeStatus;
 
         int _allowedMethod;
+
+        ft::ContentType _Mime;
+        std::string _responseFull;
+
         // int _contentLenght;
 };
 

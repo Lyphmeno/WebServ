@@ -103,23 +103,24 @@ void ft::Response::setError(std::string code)
 {
     _code = code;
     _status = _codeStatus.getStatus(code);
-    _contentType = "html/text";
+    _contentType = "text/html";
     handleErrors();
 }
 
 const std::string & ft::Response::addContentType(void){
-    ft::ContentType Mime;
 
     std::string extension = "";
+    
     size_t found = _url.find(".");
     extension.insert(0, _url, found + 1);
-    return (Mime.getType(extension));
+    return (_Mime.getType(extension));
 }
 
 void ft::Response::createBody(const std::string & url){
 
     std::ifstream ifs(url.c_str());
     std::string buff;
+
 
     if (_allowedMethod == 0)
     {
@@ -157,5 +158,10 @@ void ft::Response::buildFullResponse(){
     full += "\n\n";
     full += _body;
 
-    std::cout << full;
+    _responseFull = full;
+
+}
+
+const std::string & ft::Response::getFullResponse(void){
+    return _responseFull;
 }
