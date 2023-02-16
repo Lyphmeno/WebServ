@@ -2,6 +2,10 @@
 
 namespace ft {
 
+////////////////////////////////////////////////////////////////////////////////
+//                                constructor                                 //
+////////////////////////////////////////////////////////////////////////////////
+
 epSocket::epSocket() : fd(-1)
 {
 }
@@ -10,7 +14,7 @@ epSocket::epSocket(const epSocket &x) : fd(x.fd)
 {
 }
 
-epSocket::operator=(const epSocket &x)
+epSocket	&epSocket::operator=(const epSocket &x)
 {
 	if (this != &x)
 		this->fd = x.fd;
@@ -21,6 +25,10 @@ epSocket::~epSocket()
 {
 	this->close();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//                                  methods                                   //
+////////////////////////////////////////////////////////////////////////////////
 
 void	epSocket::open()
 {
@@ -35,7 +43,7 @@ void	epSocket::close()
 		::close(this->fd);
 }
 
-void	add(const int &fd)
+void	epSocket::add(const int &fd)
 {
 	epoll_event	ev;
 	ev.events = EPOLLIN | EPOLLET;

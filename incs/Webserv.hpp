@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "Socket.hpp"
+#include "epSocket.hpp"
+#include "Server.hpp"
 
 #define MAXEV 100
 

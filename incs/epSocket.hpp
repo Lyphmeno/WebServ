@@ -17,6 +17,7 @@ class epSocket
 
 		void	open();
 		void	close();
+		void	add(const int &fd);
 
 	public:
 		int			fd;

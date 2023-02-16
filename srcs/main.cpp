@@ -1,14 +1,13 @@
 #include <iostream>
 #include "../incs/Socket.hpp"
+#include "../incs/epSocket.hpp"
+#include "../incs/Webserv.hpp"
 
 int main()
 {
 	try
 	{
-		ft::Socket	s;
-		s.open();
-		s.set();
-		s.add(100);
+		ft::Webserv	w;
 	}
 	catch (std::exception &e)
 	{

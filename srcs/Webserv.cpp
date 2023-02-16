@@ -8,7 +8,6 @@ namespace ft {
 
 Webserv::Webserv()
 {
-	//Parsing
 	ep.open();
 	for (std::vector<Server>::const_iterator it; it != this->servers.end(); it++)
 	{
@@ -20,14 +19,14 @@ Webserv::Webserv()
 	}
 }
 
-Webserv::Webserv(const Webserv &x) : epfd(x.epfd)
+Webserv::Webserv(const Webserv &x) : ep(x.ep)
 {
 }
 
 Webserv &Webserv::operator=(const Webserv &x)
 {
 	if (this != &x)
-		this->epfd = x.epfd;
+		this->ep = x.ep;
 	return (*this);
 }
 
