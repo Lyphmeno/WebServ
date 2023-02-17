@@ -8,6 +8,7 @@ namespace ft {
 
 epSocket::epSocket() : fd(-1)
 {
+	std::memset(this->ev, 0, sizeof(this->ev));
 }
 
 epSocket::epSocket(const epSocket &x) : fd(x.fd)

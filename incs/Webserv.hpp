@@ -8,6 +8,8 @@
 #include "epSocket.hpp"
 #include "Server.hpp"
 
+#define BUFFSIZE 1024
+
 namespace ft {
 
 class Webserv

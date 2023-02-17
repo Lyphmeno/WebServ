@@ -8,6 +8,8 @@ namespace ft {
 
 Webserv::Webserv()
 {
+	Server	serv;
+	serv.addr = myaddr;
 	ep.open();
 	for (std::vector<Server>::const_iterator it; it != this->servers.end(); it++)
 	{
@@ -74,6 +76,15 @@ void	Webserv::run()
 			}
 			else
 			{
+				char	*buff[BUFFSIZE + 1];
+				ssize_t	bytes = recv(this->ep.ev[i].data.fd, buff, BUFFSIZE, 0);
+				buff[bytes] = '\0';
+				if (bytes == -1)
+					std:: cout << "error?" << std::endl;
+				else if (bytes == 0)
+					close(this->ep.ev[i].data.fd);
+				else
+					std::cout << buff << '\n';
 			}
 		}
 	}
