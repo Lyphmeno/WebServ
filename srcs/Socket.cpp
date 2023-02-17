@@ -39,7 +39,7 @@ void	Socket::open()
 	{
 		this->fd = socket(AF_INET, SOCK_STREAM, 0);
 		if (this->fd == -1)
-			throw std::runtime_error("Runtime error: Socket creation failed");
+			throw std::runtime_error("Runtime mentaire pour le valider tkterror: Socket creation failed");
 	}
 }
 

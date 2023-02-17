@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 14:09:11 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 16:26:17 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,9 @@ void	Parser::dlt_first()
 	this->line.str(tmp);
 }
 
+/////////////////////////////
+// Full Parsing            //
+/////////////////////////////
 void	Parser::p_location()
 {
 	this->brackets();
@@ -188,7 +191,7 @@ void	Parser::p_servername()
 	this->dlt_first();
 	while (this->line >> tmp)
 		if (static_cast<int>(tmp.find_first_not_of(SERALL)) != -1)
-			throw std::invalid_argument("Invalid Argument: <server name> can only contain letters/digits/'-_.'");
+			throw std::invalid_argument("Invalid Argument: <server name> can only contain (letter/digit/-_.)");
 }
 
 void	Parser::p_listen_hp_addint(std::string tmpnum)
@@ -379,7 +382,7 @@ int	Parser::parse_global()
 
 int	Parser::parsing_base()
 {
-	std::cout << "\033[32m---------------------------------------------------------------------------------" << "\033[0m\n";
+	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
 	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
 		this->line.str(*it);
 		if (this->inbrackets == GLOBAL) {
@@ -388,9 +391,11 @@ int	Parser::parsing_base()
 		}
 		else if (this->inbrackets >= SERVER) {
 			if (!this->line.str().compare("}")) {
+				//---Useless---
 				for (int i = 0; i < this->inbrackets - 1; i++)
 					std::cout << "\t";
 				std::cout << "\033[33m" << " }" << "\033[0m";
+				//-------------
 				this->inbrackets--;
 			}
 			else
@@ -399,25 +404,20 @@ int	Parser::parsing_base()
 		std::cout << std::endl;;
 		this->line.clear();
 	}
-	std::cout << "\033[32m---------------------------------------------------------------------------------" << "\033[0m\n";
-	if (this->inbrackets) {
+	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+	if (this->inbrackets)
 		throw std::invalid_argument("Invalid Argument: Brackets not closed");
-	}
 	return (0);
 }
 
-int	Parser::parsing(std::string arg)
+void	Parser::parsing(std::string arg, std::vector<Server> &servers)
 {
+	(void)servers;
 	this->filename = arg;
 	if (this->retrieve_file())
-	{
 		throw std::invalid_argument("Invalid Argument: Invalid File");
-		return (-1);
-	}
 	if (this->parsing_base())
-		return (-1);
-	//this->print_info();
-	return (0);
+		throw std::invalid_argument("Invalid Argument: Invalid File");
 }
 /////////////////////////////
 // Exceptions              //

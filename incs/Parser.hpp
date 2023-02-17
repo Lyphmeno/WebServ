@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 12:42:36 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 16:24:21 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ public:
 	// Getters //
 	// Setters //
 	// Methods //
-	int		parsing(std::string);
+	void	parsing(std::string, std::vector<Server>&);
 private:
 	void	print_info();
 	void	print_tabulation();
