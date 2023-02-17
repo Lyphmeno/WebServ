@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:35:33 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 14:35:49 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 14:44:16 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <vector>
 
+#include "Parser.hpp"
 #include "Socket.hpp"
 #include "epSocket.hpp"
 #include "Server.hpp"
@@ -31,6 +32,7 @@ public:
 
 public:
 	epSocket				ep;
+	Parser					parser;
 	std::vector<ft::Socket>	sockets;
 	std::vector<ft::Server>	servers;
 };
