@@ -1,9 +1,4 @@
 #include "../incs/Response.hpp"
-#include <fstream>
-#include <stdlib.h>
-#include <ctime>
-#include "../incs/Tools.hpp"
-#include <sstream>
 
 static std::string itostring(int toConvert){
     std::ostringstream tm;

@@ -5,7 +5,11 @@
 #include <vector>
 #include "StatusCode.hpp"
 #include "ContentType.hpp"
-
+#include <fstream>
+#include <stdlib.h>
+#include <ctime>
+#include "../incs/Tools.hpp"
+#include <sstream>
 
 
 namespace ft{
@@ -39,15 +43,16 @@ public:
         void setMethod(std::string method);
         void setContentLenght(int valread);
 
+        //Methods
+        void GET_method(const std::string & url);
+        void POST_method(const std::string & url);
+
+        //Functions
         const std::string & addContentType(void);
         void createBody(const std::string & url);
         void buildFullResponse();
         void handleErrors();
         void setError(std::string code);
-
-        //Methods
-        void GET_method(const std::string & url);
-        void POST_method(const std::string & url);
 
 private:
         //request line
