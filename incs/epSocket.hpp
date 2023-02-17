@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdexcept>
 
+#define MAXEV 100
+
 namespace ft {
 
 class epSocket
@@ -21,7 +23,7 @@ class epSocket
 
 	public:
 		int			fd;
-		epoll_event	ev;
+		epoll_event	ev[MAXEV];
 };
 
 }

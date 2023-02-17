@@ -1,12 +1,12 @@
 #pragma once
 
+#include <stdexcept>
 #include <vector>
+#include <iostream>
 
 #include "Socket.hpp"
 #include "epSocket.hpp"
 #include "Server.hpp"
-
-#define MAXEV 100
 
 namespace ft {
 
@@ -19,9 +19,14 @@ public:
 	Webserv	&operator=(const Webserv &x);
 	~Webserv();
 
-public:
+private:
+	void	run();
+	bool	isSock(const int &fd);
+
+private:
 	epSocket				ep;
 	std::vector<ft::Socket>	sockets;
+	std::vector<ft::Socket>	clients;
 	std::vector<ft::Server>	servers;
 };
 
