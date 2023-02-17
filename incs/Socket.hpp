@@ -18,11 +18,11 @@ class Socket
 
 		void	open();
 		void	close();
-		void	set(const sockaddr_in &addr);
+		void	set(const Server &addr);
 	
 	public:
-		int			fd;
-		sockaddr_in	addr;
+		int					fd;
+		sockaddr_in			addr;
 };
 
 }

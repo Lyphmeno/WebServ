@@ -52,7 +52,7 @@ void	Socket::close()
 void	Socket::set(const sockaddr_in &addr)
 {
 	this->addr = addr;
-	if (bind(this->fd, (sockaddr *)&this->addr, sizeof(this->addr)) == -1)
+	if (bind(this->fd, reinterpret_cast<sockaddr *>(&this->addr), sizeof(this->addr)) == -1)
 		throw std::runtime_error("Runtime error: Can't bind socket");
 
 	if (listen(this->fd, 128) == -1)

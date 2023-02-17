@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <errno.h>
 
 #include "Socket.hpp"
 #include "epSocket.hpp"
@@ -21,8 +22,9 @@ public:
 	Webserv	&operator=(const Webserv &x);
 	~Webserv();
 
-private:
 	void	run();
+
+private:
 	bool	isSock(const int &fd);
 
 private:
