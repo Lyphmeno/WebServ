@@ -6,17 +6,13 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 14:55:36 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 14:11:42 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 14:34:08 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <iostream>
 #include <string>
-#include <vector>
-#include <fstream>
-#include <algorithm>
 
 namespace ft {
 struct	Location

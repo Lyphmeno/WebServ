@@ -1,62 +1,41 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Webserv.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/07 13:17:09 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/10 13:52:55 by hlevi            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../incs/Webserv.hpp"
 
 namespace ft {
-/////////////////////////////
-// Coplien                 //
-/////////////////////////////
 
-Webserv::Webserv() : epfd(-1), epdata(), servers()
+////////////////////////////////////////////////////////////////////////////////
+//                                constructor                                 //
+////////////////////////////////////////////////////////////////////////////////
+
+Webserv::Webserv()
+{
+	ep.open();
+	for (std::vector<Server>::const_iterator it; it != this->servers.end(); it++)
+	{
+		Socket	s;
+		s.open();
+		s.set(it->addr);
+		ep.add(s.fd);
+		this->sockets.push_back(s);
+	}
+}
+
+Webserv::Webserv(const Webserv &x) : ep(x.ep)
 {
 }
 
-Webserv::Webserv(const Webserv &cpy)
-: epfd(cpy.epfd), epdata(cpy.epdata), servers(cpy.servers)
+Webserv &Webserv::operator=(const Webserv &x)
 {
+	if (this != &x)
+		this->ep = x.ep;
+	return (*this);
 }
 
 Webserv::~Webserv()
 {
 }
 
-Webserv &Webserv::operator=(const Webserv &rhs)
-{
-	if (this != &rhs)
-	{
-		this->epfd = rhs.epfd;
-		this->epdata = rhs.epdata;
-		this->servers = rhs.servers;
-	}
-	return (*this);
-}
+////////////////////////////////////////////////////////////////////////////////
+//                                  methods                                   //
+////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////
-// Assignation contructors //
-/////////////////////////////
-/////////////////////////////
-// Getters                 //
-/////////////////////////////
-/////////////////////////////
-// Setters                 //
-/////////////////////////////
-/////////////////////////////
-// Operators               //
-/////////////////////////////
-/////////////////////////////
-// Methods                 //
-/////////////////////////////
-/////////////////////////////
-// Exceptions              //
-/////////////////////////////
 }

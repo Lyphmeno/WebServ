@@ -6,20 +6,22 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/17 14:11:47 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 14:35:49 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <netinet/ip.h> //sockaddr_in
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <string>
 #include <vector>
 #include "../incs/Location.hpp"
 
-namespace ft {
+#include "Location.hpp"
 
-struct Server
+namespace ft {
+struct  Server
 {
 	// hlevi
 	std::vector<std::string>	server_names;
@@ -32,7 +34,6 @@ struct Server
     std::string					cgi_ext;
 	std::vector<Location>		location;
 	// avarnier
-	int			sock;
 	sockaddr_in	addr;
 };
 }
