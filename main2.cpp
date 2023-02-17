@@ -57,15 +57,15 @@ int main()
         }
         
         char buffer[30000] = {0};
-        valread = read( new_socket , buffer, 30000);
+        valread = read( new_socket , buffer, 1000);
         std::cout << "REQUEST \n\n" << buffer << std::endl;
         std::ofstream ofs("request");
 
         ofs.write((char *)buffer, sizeof(buffer));
         ofs.close();
-        hello = request.requestStarter();
-        std::cout << hello << std::endl;
+        hello = request.requestStarter(valread);
         write(new_socket , const_cast<char *>(hello.c_str()), hello.size());
+        std::cout << hello << std::endl;
         close(new_socket);
     }
     return 0;

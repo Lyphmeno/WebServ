@@ -5,11 +5,11 @@
 #include <vector>
 #include "Response.hpp"
 
-#define COLOR_START "\033[1;100m"
-#define COLOR_RED "\033[31m" 
-#define COLOR_GREEN "\033[32m" 
-#define COLOR_YELLOW "\033[33m"
-#define COLOR_END "\033[0m"
+
+
+#define GET 1
+#define POST 2
+#define DELETE 3
 
 namespace ft{
 
@@ -27,8 +27,6 @@ public:
         //Destructor
         ~Request(void);
 
-        //Operators
-        Request & operator=(Request const & value);
 
         //Getters
         std::string getMethod(void){return _method;};
@@ -36,7 +34,7 @@ public:
         std::string getProtVersion(void){return _protocolVersion;};
         std::string getRequestLine(void){return _requestLine;};
 
-        const std::string & requestStarter();
+        const std::string & requestStarter(int readBytes);
 
         void fillRequest(std::string line);
         void parseRequest(ft::Response *reponse);
@@ -45,15 +43,19 @@ public:
         void checkMethodAllowed(ft::Response *response, std::string method);
 
 private:
-       std::string  _method;
-       std::string _url;
-       std::string _protocolVersion;
 
-       std::string _requestLine;
+        //Request line
+        std::string  _method;
+        std::string _url;
+        std::string _protocolVersion;
 
-       std::vector<std::string> _requestFull;
+        std::string _requestLine;
 
-       int _indexON;
+        //Raw
+        std::vector<std::string> _requestFull;
+
+        //Conf file
+        int _indexON;
        
 };
 

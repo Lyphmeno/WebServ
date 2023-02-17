@@ -6,11 +6,7 @@
 #include "StatusCode.hpp"
 #include "ContentType.hpp"
 
-#define COLOR_START "\033[1;100m"
-#define COLOR_RED "\033[31m" 
-#define COLOR_GREEN "\033[32m" 
-#define COLOR_YELLOW "\033[33m"
-#define COLOR_END "\033[0m"
+
 
 namespace ft{
 
@@ -23,26 +19,25 @@ class Response{
 public:
         //Constructors
         Response();
-        Response (const Response & src);
 
         //Destructor
         ~Response(void);
 
-        //Operators
-        Response & operator=(Response const & value);
 
         //Getters
+        const std::string & getProtVersion(void);
+        const std::string & getContentType(void);
+        const std::string & getURL(void);
+        const std::string & getFullResponse(void);
+
 
         //Setters
         void setProtVersion(std::string version);
         void setContentType(std::string contentType);
         void setAllowedMethod(int allowed);
         void setURL(std::string url);
-
-        const std::string & getProtVersion(void);
-        const std::string & getContentType(void);
-        const std::string & getURL(void);
-        const std::string & getFullResponse(void);
+        void setMethod(std::string method);
+        void setContentLenght(int valread);
 
         const std::string & addContentType(void);
         void createBody(const std::string & url);
@@ -50,26 +45,34 @@ public:
         void handleErrors();
         void setError(std::string code);
 
-      
+        //Methods
+        void GET_method(const std::string & url);
+        void POST_method(const std::string & url);
+
 private:
+        //request line
         std::string _protVersion;
-
-        std::string _code;
-        std::string _status;
-
-        std::string _contentType;
-        std::string _server;
-        std::string _body;
         std::string _url;
-
-        ft::StatusCode _codeStatus;
+        std::string _method;
 
         int _allowedMethod;
 
-        ft::ContentType _Mime;
-        std::string _responseFull;
+        //headers and body
+        std::string _contentType;
+        std::string _server;
+        std::string _body;
 
-        // int _contentLenght;
+        int _contentLenght;
+        
+        ft::ContentType _Mime;
+
+        //Errors
+        std::string _code;
+        std::string _status;
+        ft::StatusCode _codeStatus;
+
+        //RESPONSE OK
+        std::string _responseFull;
 };
 
 }

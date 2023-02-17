@@ -4,11 +4,7 @@
 #include <iostream>
 #include <map>
 
-#define COLOR_START "\033[1;100m"
-#define COLOR_RED "\033[31m" 
-#define COLOR_GREEN "\033[32m" 
-#define COLOR_YELLOW "\033[33m"
-#define COLOR_END "\033[0m"
+
 
 typedef struct s_status{
         std::string _code;

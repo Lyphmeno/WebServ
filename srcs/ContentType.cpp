@@ -82,12 +82,6 @@ ft::ContentType::ContentType(void){
     initMime("7z", "application/x-7z-compressed");
 }
 
-ft::ContentType::ContentType(const ContentType & src){
-    *this = src;
-}
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //                               DESTRUCTOR                                   //
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,18 +89,6 @@ ft::ContentType::ContentType(const ContentType & src){
 ft::ContentType::~ContentType(void){
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-//                                OPERATORS                                   //
-////////////////////////////////////////////////////////////////////////////////
-
-ft::ContentType & ft::ContentType::operator=(ContentType const & value) {
-    if (&value != this)
-    {
-    }
-    return *this;
-}
 
 const std::string & ft::ContentType::getType(std::string extension){
     return _mimeType[extension]._type;
