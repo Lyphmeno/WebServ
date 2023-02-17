@@ -65,5 +65,4 @@ void	Socket::set(const sockaddr_in &addr)
 	if (fcntl(this->fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
 }
-
 }
