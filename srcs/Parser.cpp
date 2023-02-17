@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 18:21:23 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 14:09:11 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,8 @@ Parser &Parser::operator=(const Parser &rhs)
 /////////////////////////////
 void	Parser::print_info()
 {
-	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
+	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++)
         std::cout << *it << std::endl;
-    }
 }
 
 void	Parser::print_tabulation()
@@ -93,6 +92,18 @@ void	Parser::brackets()
 	tmp = this->line.str();
 	tmp.erase(tmp.size() - 1);
 	this->line.str(tmp);
+}
+
+int		Parser::nbr_words()
+{
+	int			count = 0;
+	std::string	tmp;
+
+	while (this->line >> tmp)
+		count++;
+	this->line.clear();
+	this->line.seekg(0);
+	return (count);
 }
 
 void	Parser::print_words(std::string str, std::string color)
@@ -164,6 +175,8 @@ void	Parser::p_location()
 	this->brackets();
 	this->print_location("location");
 	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <location> can only have one argument");
 	this->inbrackets++;
 }
 
@@ -174,60 +187,62 @@ void	Parser::p_servername()
 	this->print_words("server_name", "\033[34m");
 	this->dlt_first();
 	while (this->line >> tmp)
-	{
 		if (static_cast<int>(tmp.find_first_not_of(SERALL)) != -1)
-			throw std::invalid_argument("Invalid Argument: Invalid server name");
+			throw std::invalid_argument("Invalid Argument: <server name> can only contain letters/digits/'-_.'");
+}
+
+void	Parser::p_listen_hp_addint(std::string tmpnum)
+{
+	int					tmpint;
+	std::stringstream	tmpiss;
+	std::istringstream	tmpintiss;
+
+	if (tmpnum.empty())
+		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+	tmpintiss.clear();
+	tmpintiss.str(tmpnum);
+	tmpintiss >> tmpint;
+	hostint.push_back(tmpint);
+}
+
+void	Parser::p_listen_hp(std::string tmp)
+{
+	size_t				pos;
+	std::string			hostmp(tmp.substr(0, tmp.find_first_of(":")));
+	std::string			portmp(tmp.substr(tmp.find_first_of(":") + 1, tmp.size()));
+
+	if (hostmp.empty() || portmp.empty() || static_cast<int>(portmp.find_first_not_of("1234567890")) != -1)
+		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+	while ((pos = hostmp.find(".")) != std::string::npos) {
+		p_listen_hp_addint(hostmp.substr(0, pos));
+		hostmp.erase(0, pos + 1);
 	}
+	p_listen_hp_addint(hostmp.substr(0, pos));
+	if (hostint.size() != 4)
+		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+	for (std::vector<int>::const_iterator it = hostint.begin(); it != hostint.end(); it++)
+		if (*it < 0 || *it > 255)
+			throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
 }
 
 void	Parser::p_listen()
 {
-	int			count = 0;
 	std::string	tmp;
+
 	this->semi_colon();
 	this->print_words("listen", "\033[34m");
 	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <listen> can only have one argument");
 	while (this->line >> tmp)
 	{
-		if (count == 1)
-			throw std::invalid_argument("Invalid Argument: Invalid listen entry");
 		if (static_cast<int>(tmp.find_first_not_of(LISTEN)) != -1)
 			throw std::invalid_argument("Invalid Argument: Invalid listen entry");
 		if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
-		{
-			size_t				pos;
-			std::vector<int>	hostint;
-			std::string			tmpnum;
-			std::string			hostmp(tmp.substr(0, tmp.find_first_of(":")));
-			std::string			portmp(tmp.substr(tmp.find_first_of(":") + 1, tmp.size()));
-			std::stringstream	tmpiss;
-			if (hostmp.empty() || portmp.empty() || static_cast<int>(portmp.find_first_not_of("1234567890")) != -1)
-				throw std::invalid_argument("Invalid Argument: Invalid listen entry");
-			while ((pos = hostmp.find(".")) != std::string::npos) {
-				tmpnum = hostmp.substr(0, pos);
-				std::istringstream	tmpintiss(tmpnum);
-				int					tmpint;
-				tmpintiss >> tmpint;
-				hostint.push_back(tmpint);
-				hostmp.erase(0, pos + 1);
-			}
-			std::istringstream	tmpintiss(tmpnum);
-			int					tmpint;
-			tmpintiss >> tmpint;
-			hostint.push_back(tmpint);
-			if (hostint.size() != 4)
-				throw std::invalid_argument("Invalid Argument: Invalid listen entry");
-			for (std::vector<int>::const_iterator it = hostint.begin(); it != hostint.end(); it++){
-				if (*it < 0 || *it > 255)
-					throw std::invalid_argument("Invalid Argument: Invalid listen entry");
-			}
-		}
+			this->p_listen_hp(tmp);
 		else
-		{
 			if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
-				throw std::invalid_argument("Invalid Argument: Invalid listen entry");
-		}
-		count++;
+				throw std::invalid_argument("Invalid Argument: <listen> PORT only invalid");
 	}
 }
 
@@ -251,18 +266,27 @@ void	Parser::p_autoindex()
 	this->semi_colon();
 	this->print_words("auto_index", "\033[34m");
 	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <autoindex> can only have one argument");
 	while (this->line >> tmp)
-	{
 		if (tmp.compare("on") && tmp.compare("off"))
 			throw std::invalid_argument("Invalid Argument: Invalid method");
-	}
 }
 
 void	Parser::p_maxclientbodysize()
 {
+	std::string	tmp;
+
 	this->semi_colon();
-	this->print_words("max_client_body_size", "\033[0m");
+	this->print_words("max_client_body_size", "\033[34m");
 	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <max_client_body_size> can only have one argument");
+	tmp = this->line.str();
+	if (this->line.str().at(this->line.str().size() - 1) != 'M')
+		throw std::invalid_argument("Invalid argument: <max_client_body_size> need to end with 'M'");
+	tmp.erase(tmp.size() - 1);
+	this->line.str(tmp);
 }
 
 void	Parser::p_errorpage()
@@ -270,6 +294,8 @@ void	Parser::p_errorpage()
 	this->semi_colon();
 	this->print_words("error_page", "\033[0m");
 	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <errorpage> can only have one argument");
 }
 
 void	Parser::p_cgidir()
@@ -277,6 +303,8 @@ void	Parser::p_cgidir()
 	this->semi_colon();
 	this->print_words("cgi_dir", "\033[34m");
 	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <cgidir> can only have one argument");
 }
 
 void	Parser::p_allowmethods()
@@ -286,10 +314,8 @@ void	Parser::p_allowmethods()
 	this->print_words("allow_methods", "\033[34m");
 	this->dlt_first();
 	while (this->line >> tmp)
-	{
 		if (tmp.compare("GET") && tmp.compare("POST"))
 			throw std::invalid_argument("Invalid Argument: Invalid method");
-	}
 }
 
 int	Parser::parse_server()

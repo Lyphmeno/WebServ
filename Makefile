@@ -6,7 +6,6 @@ CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -pedantic -g3
 SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
-				./srcs/Location.cpp\
 				./srcs/Parser.cpp\
 				./srcs/Webserv.cpp\
 				./srcs/main.cpp\

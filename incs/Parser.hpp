@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/15 16:15:35 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/17 12:42:36 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <locale>
 #include "../incs/Server.hpp"
 
-#define FNUM 10 // Number of functions for the funciton pointer array
+#define FNUM 10
 #define SERALL "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ-_.1234567890"
 #define SERALPHA "abcdefghijklmnopqrstuvwxysABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define LISTEN ":.1234567890"
@@ -38,6 +38,7 @@ public:
 	std::string     			filename;
     std::stringstream 			line;
 	std::vector<std::string>	buffer;
+	std::vector<int>			hostint;
 	int							inbrackets;
 public:
 	// Coplien //
@@ -56,6 +57,7 @@ private:
 	void	print_tabulation();
 	void	semi_colon();
 	void	brackets();
+	int		nbr_words();
 	void	print_words(std::string, std::string);
 	void	print_location(std::string);
 	int		openfile();
@@ -65,6 +67,8 @@ private:
 	int		parse_global();
 	int		parsing_base();
 	typedef void(Parser::*parsePtr)();
+	void	p_listen_hp_addint(std::string);
+	void	p_listen_hp(std::string);
 	void	p_location();
 	void	p_servername();
 	void	p_listen();
