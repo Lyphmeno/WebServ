@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <vector>
+<<<<<<< HEAD
 #include <iostream>
 #include <errno.h>
 
@@ -10,18 +11,21 @@
 #include "Server.hpp"
 
 #define BUFFSIZE 1024
+=======
+#include <sys/epoll.h>
+#include "Server.hpp"
+#include "SocketManager.hpp"
+>>>>>>> main
 
 namespace ft {
 
 class Webserv
 {
-
 public:
 	Webserv();
-	Webserv(const Webserv &x);
-	Webserv	&operator=(const Webserv &x);
 	~Webserv();
 
+<<<<<<< HEAD
 	void	run();
 
 private:
@@ -32,6 +36,15 @@ private:
 	std::vector<ft::Socket>	sockets;
 	std::vector<ft::Socket>	clients;
 	std::vector<ft::Server>	servers;
+=======
+private:
+	Webserv(const Webserv &x);
+	Webserv	&operator=(const Webserv &x);
+
+public:
+	SocketManager		manager;
+	std::vector<Server>	servers;
+>>>>>>> main
 };
 
 }

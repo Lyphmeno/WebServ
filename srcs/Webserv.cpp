@@ -8,26 +8,12 @@ namespace ft {
 
 Webserv::Webserv()
 {
-	ep.open();
-	for (std::vector<Server>::const_iterator it; it != this->servers.end(); it++)
+	// --> parsing
+	for (std::vector<Server>::const_iterator it = this->servers.begin();
+	it != this->servers.end(); it++)
 	{
-		Socket	s;
-		s.open();
-		s.set(it->addr);
-		ep.add(s.fd);
-		this->sockets.push_back(s);
+		this->manager.addServer(it->addr);
 	}
-}
-
-Webserv::Webserv(const Webserv &x) : ep(x.ep)
-{
-}
-
-Webserv &Webserv::operator=(const Webserv &x)
-{
-	if (this != &x)
-		this->ep = x.ep;
-	return (*this);
 }
 
 Webserv::~Webserv()
@@ -38,6 +24,7 @@ Webserv::~Webserv()
 //                                  methods                                   //
 ////////////////////////////////////////////////////////////////////////////////
 
+<<<<<<< HEAD
 void	Webserv::run()
 {
 	for (;;)
@@ -99,4 +86,6 @@ bool	Webserv::isSock(const int &fd)
 	return (false);
 }
 
+=======
+>>>>>>> main
 }

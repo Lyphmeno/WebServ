@@ -1,15 +1,13 @@
 #pragma once
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <stdexcept>
 
 namespace ft {
 
-class Socket
+struct Socket
 {
+<<<<<<< HEAD
 	public:
 		Socket();
 		Socket(const Socket &x);
@@ -23,6 +21,10 @@ class Socket
 	public:
 		int					fd;
 		sockaddr_in			addr;
+=======
+	int			fd;
+	sockaddr_in	addr;
+>>>>>>> main
 };
 
 }
