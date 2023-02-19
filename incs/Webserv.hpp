@@ -9,15 +9,17 @@ namespace ft {
 
 class Webserv
 {
-	public:
-		Webserv();
-		Webserv(const Webserv &x);
-		Webserv	&operator=(const Webserv &x);
-		~Webserv();
+public:
+	Webserv();
+	~Webserv();
 
-	public:
-		SocketManager		manager;
-		std::vector<Server>	servers;
+private:
+	Webserv(const Webserv &x);
+	Webserv	&operator=(const Webserv &x);
+
+public:
+	SocketManager		manager;
+	std::vector<Server>	servers;
 };
 
 }

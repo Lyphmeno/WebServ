@@ -15,22 +15,23 @@ namespace ft {
 
 class SocketManager
 {
-	public:
-		SocketManager();
-		SocketManager(const SocketManager &x);
-		SocketManager	&operator=(const SocketManager &x);
-		~SocketManager();
+public:
+	SocketManager();
+	~SocketManager();
 
-		void	addServer(const sockaddr_in &addr);
-		void	setNoBlock(const int &fd);
-		void	addEp(const int &fd);
-		void	close();
+	void	addServer(const sockaddr_in &addr);
+	void	setNoBlock(const int &fd);
+	void	addEp(const int &fd);
 
-	public:
-		int					epfd;
-		epoll_event			epev[MAXEVENTS];
-		std::vector<Socket>	servers;
-		std::vector<Socket>	clients;
+private:
+	SocketManager(const SocketManager &x);
+	SocketManager	&operator=(const SocketManager &x);
+
+public:
+	int					epfd;
+	epoll_event			epev[MAXEVENTS];
+	std::vector<Socket>	servers;
+	std::vector<Socket>	clients;
 };
 
 }

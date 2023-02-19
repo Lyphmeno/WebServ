@@ -16,20 +16,6 @@ Webserv::Webserv()
 	}
 }
 
-Webserv::Webserv(const Webserv &x) : manager(x.manager), servers(x.servers)
-{
-}
-
-Webserv	&Webserv::operator=(const Webserv &x)
-{
-	if (this == &x)
-	{
-		this->manager = x.manager;
-		this->servers = x.servers;
-	}
-	return (*this);
-}
-
 Webserv::~Webserv()
 {
 }

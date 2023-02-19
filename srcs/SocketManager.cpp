@@ -13,27 +13,31 @@ SocketManager::SocketManager()
 		throw std::runtime_error("Runtime error: Epoll creation failed");
 }
 
-SocketManager::SocketManager(const SocketManager &x)
-	: epfd(x.epfd),
-	  servers(x.servers),
-	  clients(x.clients)
-{
-}
-
-SocketManager	&SocketManager::operator=(const SocketManager &x)
-{
-	if (this != &x)
-	{
-		this->epfd = x.epfd;
-		this->servers = x.servers;
-		this->clients = x.clients;
-	}
-	return (*this);
-}
-
 SocketManager::~SocketManager()
 {
-	this->close();
+	if (this->epfd > -1)
+	{
+		::close(this->epfd);
+		this->epfd = -1;
+	}
+	for (std::vector<Socket>::iterator it = this->servers.begin();
+	it != this->servers.end(); it++)
+	{
+		if (it->fd > -1)
+		{
+			::close(it->fd);
+			it->fd = -1;
+		}
+	}
+	for (std::vector<Socket>::iterator it = this->clients.begin();
+	it != this->clients.end(); it++)
+	{
+		if (it->fd > -1)
+		{
+			::close(it->fd);
+			it->fd = -1;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,24 +81,6 @@ void	SocketManager::addEp(const int &fd)
 	ev.events = EPOLLIN | EPOLLET;
 	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
 		throw std::runtime_error("Runtime error: Can't add socket to epoll");
-}
-
-void	SocketManager::close()
-{
-	if (this->epfd > -1)
-		::close(this->epfd);
-	for (std::vector<Socket>::const_iterator it = this->servers.begin();
-	it != this->servers.end(); it++)
-	{
-		if (it->fd > -1)
-			::close(it->fd);
-	}
-	for (std::vector<Socket>::const_iterator it = this->clients.begin();
-	it != this->clients.end(); it++)
-	{
-		if (it->fd > -1)
-			::close(it->fd);
-	}
 }
 
 }
