@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 19:13:17 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 19:32:12 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,8 +161,11 @@ void	Parser::print_listen(std::vector<Server>& servers, int i)
 		return ;
 	this->print_tabulation();
 	std::cout << "\033[35m[listen" << "]\033[0m ";
-	std::cout << "\033[34m" << servers.at(i).listen;
-	std::cout << "\033[33m;\033[0m\n";
+	std::cout << "\033[34m";
+	for (std::vector<int>::const_iterator it = this->hostint.begin(); it != this->hostint.end(); it++) {
+		std::cout << *it << ".";
+	}
+	std::cout << this->portint << "\033[33m;\033[0m\n";
 }
 
 void	Parser::print_allowmethods(std::vector<Server>& servers, int i, int y)
@@ -390,8 +393,7 @@ void	Parser::p_servername(std::vector<Server> &servers)
 void	Parser::p_listen_hp_addint(std::string tmpnum)
 {
 	int					tmpint;
-	std::stringstream	tmpiss;
-	std::istringstream	tmpintiss;
+	std::stringstream	tmpintiss;
 
 	if (tmpnum.empty())
 		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
@@ -404,6 +406,7 @@ void	Parser::p_listen_hp_addint(std::string tmpnum)
 void	Parser::p_listen_hp(std::string tmp)
 {
 	size_t				pos;
+	std::stringstream	tmpiss;
 	std::string			hostmp(tmp.substr(0, tmp.find_first_of(":")));
 	std::string			portmp(tmp.substr(tmp.find_first_of(":") + 1, tmp.size()));
 
@@ -419,11 +422,12 @@ void	Parser::p_listen_hp(std::string tmp)
 	for (std::vector<int>::const_iterator it = hostint.begin(); it != hostint.end(); it++)
 		if (*it < 0 || *it > 255)
 			throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+	tmpiss.str(portmp);
+	tmpiss >> this->portint;
 }
 
 void	Parser::p_listen(std::vector<Server> &servers)
 {
-	(void)servers;
 	std::string	tmp;
 
 	this->semi_colon();

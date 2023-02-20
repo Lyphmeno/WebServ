@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 19:11:30 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 19:26:03 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ public:
     std::stringstream 			line;
 	std::vector<std::string>	buffer;
 	std::vector<int>			hostint;
+	int							portint;
 	int							inbrackets;
 	int							tablvl;
 public:
