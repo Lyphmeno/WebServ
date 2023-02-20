@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 14:41:05 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 12:59:03 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,26 +19,12 @@ namespace ft {
 
 Webserv::Webserv()
 {
-	ep.open();
-	for (std::vector<Server>::const_iterator it; it != this->servers.end(); it++)
+	// --> parsing
+	for (std::vector<Server>::const_iterator it = this->servers.begin();
+	it != this->servers.end(); it++)
 	{
-		Socket	s;
-		s.open();
-		s.set(it->addr);
-		ep.add(s.fd);
-		this->sockets.push_back(s);
+		this->manager.addServer(it->addr);
 	}
-}
-
-Webserv::Webserv(const Webserv &x) : ep(x.ep)
-{
-}
-
-Webserv &Webserv::operator=(const Webserv &x)
-{
-	if (this != &x)
-		this->ep = x.ep;
-	return (*this);
 }
 
 Webserv::~Webserv()
@@ -48,5 +34,4 @@ Webserv::~Webserv()
 ////////////////////////////////////////////////////////////////////////////////
 //                                  methods                                   //
 ////////////////////////////////////////////////////////////////////////////////
-
 }

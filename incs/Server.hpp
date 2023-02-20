@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/17 14:49:55 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 12:52:30 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <vector>
 #include "../incs/Location.hpp"
 
-#include "Location.hpp"
 
 namespace ft {
 struct  Server

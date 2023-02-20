@@ -1,28 +1,13 @@
 #pragma once
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <stdexcept>
 
 namespace ft {
 
-class Socket
+struct Socket
 {
-	public:
-		Socket();
-		Socket(const Socket &x);
-		Socket	&operator=(const Socket &x);
-		~Socket();
-
-		void	open();
-		void	close();
-		void	set(const sockaddr_in &addr);
-	
-	public:
-		int			fd;
-		sockaddr_in	addr;
+	int			fd;
+	sockaddr_in	addr;
 };
-
 }

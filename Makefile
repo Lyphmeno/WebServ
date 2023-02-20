@@ -6,8 +6,7 @@ CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -pedantic -g3
 SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
-				./srcs/epSocket.cpp\
-				./srcs/Socket.cpp\
+				./srcs/SocketManager.cpp\
 				./srcs/Parser.cpp\
 				./srcs/Webserv.cpp\
 				./srcs/main.cpp\
@@ -17,7 +16,7 @@ INCEXT		:=	hpp
 HEADERS		:=	\
 				./incs/Location.hpp\
 				./incs/Socket.hpp\
-				./incs/epSocket.hpp\
+				./incs/SocketManager.hpp\
 				./incs/Parser.hpp\
 				./incs/Server.hpp\
 				./incs/Webserv.hpp\

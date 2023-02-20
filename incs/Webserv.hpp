@@ -6,32 +6,33 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:35:33 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 14:44:16 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 12:54:08 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <vector>
+#include <sys/epoll.h>
 
-#include "Parser.hpp"
-#include "Socket.hpp"
-#include "epSocket.hpp"
-#include "Server.hpp"
-
-#define MAXEV 100
+#include "../incs/Parser.hpp"
+#include "../incs/Socket.hpp"
+#include "../incs/Server.hpp"
+#include "../incs/SocketManager.hpp"
 
 namespace ft {
 class Webserv
 {
 public:
 	Webserv();
-	Webserv(const Webserv &x);
-	Webserv	&operator=(const Webserv &x);
 	~Webserv();
 
+private:
+	Webserv(const Webserv &x);
+	Webserv	&operator=(const Webserv &x);
+
 public:
-	epSocket				ep;
+	SocketManager		manager;
 	Parser					parser;
 	std::vector<ft::Socket>	sockets;
 	std::vector<ft::Server>	servers;
