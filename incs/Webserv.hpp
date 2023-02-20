@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:35:33 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 12:54:08 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 14:07:37 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,11 @@ namespace ft {
 class Webserv
 {
 public:
-	Webserv();
+	Webserv(std::string);
 	~Webserv();
 
 private:
+	Webserv();
 	Webserv(const Webserv &x);
 	Webserv	&operator=(const Webserv &x);
 

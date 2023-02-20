@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/20 12:52:30 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/20 18:15:53 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ struct  Server
 	std::vector<Location>		location;
 	std::vector<std::string>	server_names;
 	std::vector<std::string>	allow_methods;
+	std::vector<std::string>	index;
+	std::vector<std::string>	err_page;
 	std::string					listen;
 	std::string					root;
-    std::string					err_page;
-    std::string					index;
     std::string					auto_index;
     std::string					max_client_body_size;
-    std::string					cgi_ext;
+    std::string					cgi_dir;
 	// avarnier
 	sockaddr_in					addr;
 };
