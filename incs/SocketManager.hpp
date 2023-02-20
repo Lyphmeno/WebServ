@@ -33,5 +33,4 @@ public:
 	std::vector<Socket>	servers;
 	std::vector<Socket>	clients;
 };
-
 }

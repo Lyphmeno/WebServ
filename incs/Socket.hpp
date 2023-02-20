@@ -10,5 +10,4 @@ struct Socket
 	int			fd;
 	sockaddr_in	addr;
 };
-
 }

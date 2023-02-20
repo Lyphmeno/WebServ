@@ -82,5 +82,4 @@ void	SocketManager::addEp(const int &fd)
 	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
 		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
-
 }
