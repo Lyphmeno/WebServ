@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 15:05:17 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 11:27:11 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ Webserv::Webserv(std::string filename)
 	} catch (std::exception &e) {
 		std::cout << "\033[31m" << e.what() << "\033[0m" << "\n";
 	}
-	for (std::vector<Server>::const_iterator it = this->servers.begin();
+	/*for (std::vector<Server>::const_iterator it = this->servers.begin();
 	it != this->servers.end(); it++)
 	{
 		this->manager.addServer(it->addr);
-	}
+	}*/
 }
 
 Webserv::~Webserv()

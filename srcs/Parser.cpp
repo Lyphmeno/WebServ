@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 19:32:12 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 11:58:30 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <exception>
 #include <iostream>
+#include <netinet/in.h>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -157,15 +158,14 @@ void	Parser::print_servernames(std::vector<Server>& servers, int i)
 
 void	Parser::print_listen(std::vector<Server>& servers, int i)
 {
-	if (servers.at(i).server_names.empty())
+	if (servers.at(i).listen.empty())
 		return ;
 	this->print_tabulation();
 	std::cout << "\033[35m[listen" << "]\033[0m ";
 	std::cout << "\033[34m";
-	for (std::vector<int>::const_iterator it = this->hostint.begin(); it != this->hostint.end(); it++) {
-		std::cout << *it << ".";
-	}
-	std::cout << this->portint << "\033[33m;\033[0m\n";
+	std::cout << servers.at(i).listen << " (";
+	std::cout << servers.at(i).addr.sin_addr.s_addr << ":";
+	std::cout << servers.at(i).addr.sin_port << ")\033[33m;\033[0m\n";
 }
 
 void	Parser::print_allowmethods(std::vector<Server>& servers, int i, int y)
@@ -342,6 +342,7 @@ void	Parser::print_all(std::vector<Server>& servers)
 {
 	int	i = 0;
 
+	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
 	for (std::vector<ft::Server>::const_iterator it = servers.begin(); it != servers.end(); it++) {
 		std::cout << "\033[32m[server] " << "\033[33m{\033[0m\n";
 		this->tablvl = 1;
@@ -358,6 +359,7 @@ void	Parser::print_all(std::vector<Server>& servers)
 		std::cout << "\033[33m}\033[0m\n";
 		i++;
 	}
+	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
 }
 /////////////////////////////
 // Full Parsing            //
@@ -396,11 +398,12 @@ void	Parser::p_listen_hp_addint(std::string tmpnum)
 	std::stringstream	tmpintiss;
 
 	if (tmpnum.empty())
-		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+		throw std::invalid_argument("Invalid Argument: 1 <listen'HOST:PORT'> invalid");
 	tmpintiss.clear();
+	tmpintiss.seekg(0);
 	tmpintiss.str(tmpnum);
 	tmpintiss >> tmpint;
-	hostint.push_back(tmpint);
+	this->hostint.push_back(tmpint);
 }
 
 void	Parser::p_listen_hp(std::string tmp)
@@ -411,17 +414,17 @@ void	Parser::p_listen_hp(std::string tmp)
 	std::string			portmp(tmp.substr(tmp.find_first_of(":") + 1, tmp.size()));
 
 	if (hostmp.empty() || portmp.empty() || static_cast<int>(portmp.find_first_not_of("1234567890")) != -1)
-		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+		throw std::invalid_argument("Invalid Argument: 2 <listen'HOST:PORT'> invalid");
 	while ((pos = hostmp.find(".")) != std::string::npos) {
 		p_listen_hp_addint(hostmp.substr(0, pos));
 		hostmp.erase(0, pos + 1);
 	}
 	p_listen_hp_addint(hostmp.substr(0, pos));
 	if (hostint.size() != 4)
-		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+		throw std::invalid_argument("Invalid Argument: 3 <listen'HOST:PORT'> invalid");
 	for (std::vector<int>::const_iterator it = hostint.begin(); it != hostint.end(); it++)
 		if (*it < 0 || *it > 255)
-			throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+			throw std::invalid_argument("Invalid Argument: 4 <listen'HOST:PORT'> invalid");
 	tmpiss.str(portmp);
 	tmpiss >> this->portint;
 }
@@ -430,23 +433,28 @@ void	Parser::p_listen(std::vector<Server> &servers)
 {
 	std::string	tmp;
 
+	this->hostint.clear();
+	this->portint = 0;
 	this->semi_colon();
 	this->dlt_first();
 	if (nbr_words() != 1)
-		throw std::invalid_argument("Invalid argument: <listen> can only have one argument");
+		throw std::invalid_argument("Invalid argument: 5 <listen> can only have one argument");
 	while (this->line >> tmp)
 	{
 		if (static_cast<int>(tmp.find_first_not_of(LISTEN)) != -1)
-			throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+			throw std::invalid_argument("Invalid Argument: <listen> Invalid entry");
 		if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
 			this->p_listen_hp(tmp);
-		else
+		else {
 			if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
-				throw std::invalid_argument("Invalid Argument: <listen> PORT only invalid");
+				throw std::invalid_argument("Invalid Argument: <listen'PORT'> invalid");
+			tmp = "0.0.0.0:" + tmp;
+			this->p_listen_hp(tmp);
+		}
 	}
-	this->line.clear();
-	this->line.seekg(0);
 	servers.back().listen = tmp;
+	servers.back().addr.sin_addr.s_addr = htonl(hostint.at(0)*2^24+hostint.at(1)*2^16+hostint.at(2)*2^8+hostint.at(3));
+	servers.back().addr.sin_port = htons(this->portint);
 }
 
 void	Parser::p_root(std::vector<Server> &servers)
@@ -643,9 +651,8 @@ int	Parser::parsing_base(std::vector<Server> &servers)
 		}
 		this->line.clear();
 	}
-	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
-	this->print_all(servers);
-	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+	if (PRINT_INFO == 1)
+		this->print_all(servers);
 	if (this->inbrackets)
 		throw std::invalid_argument("Invalid Argument: Brackets not closed");
 	return (0);

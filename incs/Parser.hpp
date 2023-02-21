@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 19:26:03 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 11:58:55 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@
 #define GLOBAL 0
 #define SERVER 1
 #define SLOC 2
+
+#define PRINT_INFO 1
 
 namespace ft {
 class Parser
