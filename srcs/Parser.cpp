@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 11:58:30 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 13:26:55 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,9 +163,10 @@ void	Parser::print_listen(std::vector<Server>& servers, int i)
 	this->print_tabulation();
 	std::cout << "\033[35m[listen" << "]\033[0m ";
 	std::cout << "\033[34m";
-	std::cout << servers.at(i).listen << " (";
-	std::cout << servers.at(i).addr.sin_addr.s_addr << ":";
-	std::cout << servers.at(i).addr.sin_port << ")\033[33m;\033[0m\n";
+	std::cout << servers.at(i).listen;
+	std::cout  << " (" << servers.at(i).addr.sin_addr.s_addr << ":";
+	std::cout << servers.at(i).addr.sin_port << ")\033[33m;\033[0m";
+	std::cout << "\n";
 }
 
 void	Parser::print_allowmethods(std::vector<Server>& servers, int i, int y)

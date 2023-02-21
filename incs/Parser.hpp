@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 11:58:55 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 13:19:20 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
-#include <locale>
 #include "../incs/Server.hpp"
 
 #define FNUM 10

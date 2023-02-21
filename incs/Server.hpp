@@ -3,26 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/06 13:08:45 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/20 19:36:54 by hlevi            ###   ########.fr       */
+/*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/21 13:09:59 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <string>
-#include <vector>
 #include "../incs/Location.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <cstring>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+#include <iostream>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 namespace ft {
-struct  Server
+class Server
 {
-	// hlevi
+public:
 	std::vector<Location>		location;
 	std::vector<std::string>	server_names;
 	std::vector<std::string>	allow_methods;
@@ -35,5 +43,18 @@ struct  Server
     std::string					cgi_dir;
 	// avarnier
 	sockaddr_in					addr;
+public:
+	// Coplien //
+	Server();
+	Server(const Server &cpy);
+	~Server();
+	Server &operator=(const Server &rhs);
+	// Assignation contructors //
+	// Operators //
+	// Getters //
+	int		getId(std::string);
+	// Setters //
+	// Methods //
+	// Exceptions //
 };
 }
