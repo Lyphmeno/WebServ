@@ -1,30 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Location.hpp                                       :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/08 14:55:36 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 18:15:47 by hlevi            ###   ########.fr       */
+/*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/20 16:44:13 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "../incs/Webserv.hpp"
+#include <exception>
 
-#include <vector>
-#include <string>
 
-namespace ft {
-struct	Location
+int main(int ac, char **av)
 {
-	std::vector<std::string>	allow_methods;
-	std::vector<std::string>	index;
-	std::vector<std::string>	err_page;
-	std::string					path;
-	std::string					root;
-    std::string					auto_index;
-    std::string					max_client_body_size;
-    std::string					cgi_dir;
-};
+	if (ac != 2)
+		return (-1);
+	ft::Webserv		base(av[1]);
+    return (0);
 }

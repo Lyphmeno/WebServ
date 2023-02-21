@@ -9,6 +9,7 @@ SRC			:=	\
 				./srcs/SocketManager.cpp\
 				./srcs/Parser.cpp\
 				./srcs/Webserv.cpp\
+				./srcs/Server.cpp\
 				./srcs/main.cpp\
 
 INCDIR		:=	incs
