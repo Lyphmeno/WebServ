@@ -1,12 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SocketManager.hpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
+/*   Updated: 2023/02/21 17:28:45 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 
+#include <map>
 #include <vector>
 #include <stdexcept>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
-#include "Socket.hpp"
+#include "../incs/Socket.hpp"
 
 #define MAXEVENTS 10
 #define MAXQUEU 10
@@ -20,17 +33,20 @@ public:
 	~SocketManager();
 
 	void	addServer(const sockaddr_in &addr);
-	void	setNoBlock(const int &fd);
+	void	addClient(const int &sfd, const Socket &sock);
 	void	addEp(const int &fd);
+	void	setNoBlock(const int &fd);
+	bool	isServer(const int &fd);
 
 private:
 	SocketManager(const SocketManager &x);
 	SocketManager	&operator=(const SocketManager &x);
 
 public:
-	int					epfd;
-	epoll_event			epev[MAXEVENTS];
-	std::vector<Socket>	servers;
-	std::vector<Socket>	clients;
+	int									epfd;
+	epoll_event							epev[MAXEVENTS];
+	std::vector<Socket>					servers;
+	std::map<int, std::vector<Socket> >	clients;
 };
+
 }

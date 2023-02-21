@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SocketManager.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
+/*   Updated: 2023/02/21 17:22:23 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incs/SocketManager.hpp"
 
 namespace ft {
@@ -29,13 +41,17 @@ SocketManager::~SocketManager()
 			it->fd = -1;
 		}
 	}
-	for (std::vector<Socket>::iterator it = this->clients.begin();
-	it != this->clients.end(); it++)
+	for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
+	mit != this->clients.end(); mit++)
 	{
-		if (it->fd > -1)
+		for (std::vector<Socket>::iterator vit = this->servers.begin();
+		vit != this->servers.end(); vit++)
 		{
-			::close(it->fd);
-			it->fd = -1;
+			if (vit->fd > -1)
+			{
+				::close(vit->fd);
+				vit->fd = -1;
+			}
 		}
 	}
 }
@@ -62,6 +78,23 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 	
 	this->addEp(sock.fd);
 	this->servers.push_back(sock);
+	this->clients.insert
+	(std::map<int, std::vector<Socket> >::value_type(sock.fd, std::vector<Socket>()));
+}
+
+void	SocketManager::addClient(const int &sfd, const Socket &sock)
+{
+	this->setNoBlock(sock.fd);
+	this->addEp(sock.fd);
+	this->clients[sfd].push_back(sock);
+}
+
+void	SocketManager::addEp(const int &fd)
+{
+	epoll_event	ev;
+	ev.events = EPOLLIN | EPOLLET;
+	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
+		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
 
 void	SocketManager::setNoBlock(const int &fd)
@@ -75,11 +108,4 @@ void	SocketManager::setNoBlock(const int &fd)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
 }
 
-void	SocketManager::addEp(const int &fd)
-{
-	epoll_event	ev;
-	ev.events = EPOLLIN | EPOLLET;
-	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
-		throw std::runtime_error("Runtime error: Can't add socket to epoll");
-}
 }
