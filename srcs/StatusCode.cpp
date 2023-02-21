@@ -15,6 +15,7 @@ ft::StatusCode::StatusCode(void){
     initStruct("200", "OK");
     initStruct("201", "Created");
     initStruct("202", "Accepted");
+    initStruct("204", "No Content");
     initStruct("400", "Bad Request");
     initStruct("401", "Unauthorized");
     initStruct("403", "Forbidden");

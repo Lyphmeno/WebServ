@@ -5,7 +5,7 @@
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(void) : _indexON(0){
+ft::Request::Request(void) : _indexON(0), _root("/"){
 }
 
 ft::Request::Request(const Request & src){
@@ -58,7 +58,6 @@ void ft::Request::parseRequest(ft::Response *response){
     checkMethodAllowed(response, _method);
     response->setProtVersion(_protocolVersion);
     response->setURL(_url);
-
 }
 
 
@@ -73,15 +72,21 @@ void ft::Request::getRequestLine(std::string line)
     found = line.find(" ");
     this->_url.insert(0, line, 0, found);
     line.erase(0, _url.size() + 1);
-    found = line.find(" ");
+    found = line.find("\n");
     this->_protocolVersion.insert(0, line, 0, found);
+    _protocolVersion.erase(_protocolVersion.size(), 1);
     if (_url == "/")
     {
         _indexON = 1;
         _url = "page/index.html"; //rajouter le root
     }
     else
-        _url.erase(0, 1);
+    {
+        if (_root != "/")
+            _url = _root + _url;
+        else
+            _url.erase(0, 1);
+    }
 }
 
 /*

@@ -1,5 +1,6 @@
 #include "../incs/Response.hpp"
 
+
 static std::string itostring(int toConvert){
     std::ostringstream tm;
     tm << toConvert;
@@ -86,26 +87,16 @@ void ft::Response::setContentLenght(int valread){
     Body for errors
 */
 void ft::Response::handleErrors(){
-    if (_code == "404"){
-        _body = "<html>\n"
-        "<head><title>404 Not Found</title></head>\n"
-        "<center><h1>404 Not Found</h1></center>\n"
-        "</body>\n"
-        "</html>\n";
-    }
-    if (_code == "405"){
-        _body = "<html>\n"
-        "<head><title>405 Method Not Allowed</title></head>\n"
-        "<center><h1>405 Method Not Allowed</h1></center>\n"
-        "</body>\n"
-        "</html>\n";
-    }
-    if (_code == "500"){
-        _body = "<html>\n"
-        "<head><title>500 Internal Server Error</title></head>\n"
-        "<center><h1>500 Internal Server Error</h1></center>\n"
-        "</body>\n"
-        "</html>\n";
+    std::string pageName;
+
+    pageName = "page/" + _code.append(".html");
+    std::ifstream ifs(pageName.c_str());
+    std::string buff;
+
+    while (std::getline(ifs, buff) != 0)
+    {
+        _body += buff;
+        _body += "\n";
     }
 }
 
@@ -172,6 +163,26 @@ void ft::Response::POST_method(const std::string & url){
     _status = _codeStatus.getStatus("200");
 }
 
+void ft::Response::DELETE_method(const std::string & url){
+    
+    std::ifstream ifs(url.c_str());
+    std::string buff;
+    int status;
+
+    if (!ifs.is_open())
+    {
+        setError("404");
+        return ;
+    }
+    _code = "200";
+    _status = _codeStatus.getStatus("200");
+
+    status = std::remove(url.c_str());
+    if (status == 0)
+        std::cout << "OKOKOK\n";
+
+}
+
 /*
     Create the body according to the good method
 */
@@ -183,6 +194,8 @@ void ft::Response::createBody(const std::string & url){
             GET_method(url);
         else if (_method == "POST")
             POST_method(url);
+        else if (_method == "DELETE")
+            DELETE_method(url);
         return ;
     }
     setError("405");

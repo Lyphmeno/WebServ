@@ -64,8 +64,9 @@ int main()
         ofs.write((char *)buffer, sizeof(buffer));
         ofs.close();
         hello = request.requestStarter(valread);
+        std::ofstream ofs2("response");
+        ofs2 << hello;
         write(new_socket , const_cast<char *>(hello.c_str()), hello.size());
-        std::cout << hello << std::endl;
         close(new_socket);
     }
     return 0;
