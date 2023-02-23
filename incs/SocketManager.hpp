@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/21 17:28:45 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/23 12:19:52 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ public:
 	void	addEp(const int &fd);
 	void	setNoBlock(const int &fd);
 	bool	isServer(const int &fd);
+	void	close(const int &fd);
 
 private:
 	SocketManager(const SocketManager &x);

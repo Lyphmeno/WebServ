@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/21 17:22:23 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/23 13:53:41 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,8 @@ void	SocketManager::addClient(const int &sfd, const Socket &sock)
 void	SocketManager::addEp(const int &fd)
 {
 	epoll_event	ev;
-	ev.events = EPOLLIN | EPOLLET;
+	ev.events = EPOLLIN;
+	ev.data.fd = fd;
 	if (epoll_ctl(this->epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
 		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
@@ -106,6 +107,64 @@ void	SocketManager::setNoBlock(const int &fd)
 
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
+}
+
+bool	SocketManager::isServer(const int &fd)
+{
+	for (std::vector<Socket>::const_iterator it = this->servers.begin();
+	it != this->servers.end(); it++)
+	{
+		if (it->fd == fd)
+			return (true);
+	}
+	return (false);
+}
+
+void	SocketManager::close(const int &fd)
+{
+	if (this->isServer(fd) == true)
+	{
+		for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
+		mit != this->clients.end(); mit++)
+		{
+			if (mit->first == fd)
+			{
+				for (std::vector<Socket>::iterator vit = mit->second.begin();
+				vit != mit->second.end(); vit++)
+					::close(vit->fd);
+				mit->second.clear();
+				this->clients.erase(mit);
+				break;
+			}
+		}
+		for (std::vector<Socket>::iterator it = this->servers.begin();
+		it != this->servers.end(); it++)
+		{
+			if (it->fd == fd)
+			{
+				::close(fd);
+				this->servers.erase(it);
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
+		mit != this->clients.end(); mit++)
+		{
+			for (std::vector<Socket>::iterator vit = mit->second.begin();
+			vit != mit->second.end(); vit++)
+			{
+				if (vit->fd == fd)
+				{
+					::close(fd);
+					mit->second.erase(vit);
+					return ;
+				}
+			}
+		}
+	}
 }
 
 }

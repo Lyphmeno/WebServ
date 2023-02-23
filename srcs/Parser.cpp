@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 13:26:55 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/23 09:11:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -454,7 +454,9 @@ void	Parser::p_listen(std::vector<Server> &servers)
 		}
 	}
 	servers.back().listen = tmp;
-	servers.back().addr.sin_addr.s_addr = htonl(hostint.at(0)*2^24+hostint.at(1)*2^16+hostint.at(2)*2^8+hostint.at(3));
+	servers.back().addr.sin_family = AF_INET;
+	servers.back().addr.sin_addr.s_addr =
+	htonl((hostint.at(0)<<24) + (hostint.at(1) << 16) + (hostint.at(2) << 8) + hostint.at(3));
 	servers.back().addr.sin_port = htons(this->portint);
 }
 

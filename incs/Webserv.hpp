@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:35:33 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/23 08:04:01 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/23 11:35:40 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include "../incs/Server.hpp"
 #include "../incs/SocketManager.hpp"
 
-#define MAXBUFF 1024
+#define MAXBUFF 1
 
 namespace ft {
 
