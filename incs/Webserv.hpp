@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:35:33 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 17:32:12 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/23 08:04:01 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 #include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include "../incs/Parser.hpp"
 #include "../incs/Socket.hpp"
 #include "../incs/Server.hpp"
@@ -28,12 +31,13 @@ namespace ft {
 class Webserv
 {
 public:
-	Webserv();
+	Webserv(std::string);
 	~Webserv();
 
 	void	run();
 
 private:
+	Webserv();
 	Webserv(const Webserv &x);
 	Webserv	&operator=(const Webserv &x);
 

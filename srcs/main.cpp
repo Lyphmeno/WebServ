@@ -1,16 +1,23 @@
-#include "../incs/Webserv.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/23 08:01:31 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int main()
+#include "../incs/Webserv.hpp"
+#include <exception>
+
+
+int main(int ac, char **av)
 {
-	try
-	{
-		ft::Webserv	w;
-		w.run();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
-	
-	return (0);
+	if (ac != 2)
+		return (-1);
+	ft::Webserv		base(av[1]);
+    return (0);
 }

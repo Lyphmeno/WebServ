@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 16:24:21 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 13:19:20 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
-#include <locale>
 #include "../incs/Server.hpp"
 
 #define FNUM 10
@@ -30,6 +29,8 @@
 #define SERVER 1
 #define SLOC 2
 
+#define PRINT_INFO 1
+
 namespace ft {
 class Parser
 {
@@ -39,7 +40,9 @@ public:
     std::stringstream 			line;
 	std::vector<std::string>	buffer;
 	std::vector<int>			hostint;
+	int							portint;
 	int							inbrackets;
+	int							tablvl;
 public:
 	// Coplien //
 	Parser();
@@ -53,32 +56,42 @@ public:
 	// Methods //
 	void	parsing(std::string, std::vector<Server>&);
 private:
-	void	print_info();
+	// ---------Print-------------
 	void	print_tabulation();
+	void	print_servernames(std::vector<Server>&, int);
+	void	print_listen(std::vector<Server>&, int);
+	void	print_allowmethods(std::vector<Server>&, int, int);
+	void	print_index(std::vector<Server>&, int, int);
+	void	print_errpage(std::vector<Server>&, int, int);
+	void	print_root(std::vector<Server>&, int, int);
+	void	print_autoindex(std::vector<Server>&, int, int);
+	void	print_mcbs(std::vector<Server>&, int, int);
+	void	print_cgidir(std::vector<Server>&, int, int);
+	void	print_location(std::vector<Server>&, int);
+	void	print_all(std::vector<Server>&);
+	// ---------------------------
 	void	semi_colon();
 	void	brackets();
 	int		nbr_words();
-	void	print_words(std::string, std::string);
-	void	print_location(std::string);
 	int		openfile();
 	int		retrieve_file();
 	void	dlt_first();
-	int		parse_server();
 	int		parse_global();
-	int		parsing_base();
-	typedef void(Parser::*parsePtr)();
+	int		parse_server(std::vector<Server>&);
+	int		parsing_base(std::vector<Server>&);
+	typedef void(Parser::*parsePtr)(std::vector<Server>&);
 	void	p_listen_hp_addint(std::string);
 	void	p_listen_hp(std::string);
-	void	p_location();
-	void	p_servername();
-	void	p_listen();
-	void	p_root();
-	void	p_index();
-	void	p_autoindex();
-	void	p_maxclientbodysize();
-	void	p_errorpage();
-	void	p_cgidir();
-	void	p_allowmethods();
+	void	p_location(std::vector<Server>&);
+	void	p_servername(std::vector<Server>&);
+	void	p_listen(std::vector<Server>&);
+	void	p_root(std::vector<Server>&);
+	void	p_index(std::vector<Server>&);
+	void	p_autoindex(std::vector<Server>&);
+	void	p_maxclientbodysize(std::vector<Server>&);
+	void	p_errorpage(std::vector<Server>&);
+	void	p_cgidir(std::vector<Server>&);
+	void	p_allowmethods(std::vector<Server>&);
 	// Exceptions //
 };
 }

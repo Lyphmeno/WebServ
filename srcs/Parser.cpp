@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/17 16:26:17 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/21 13:26:55 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <exception>
 #include <iostream>
+#include <netinet/in.h>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -24,7 +25,7 @@ namespace ft {
 /////////////////////////////
 // Coplien                 //
 /////////////////////////////
-Parser::Parser():inbrackets(0)
+Parser::Parser():inbrackets(0),tablvl(0)
 {
 }
 
@@ -42,6 +43,7 @@ Parser &Parser::operator=(const Parser &rhs)
 	if (this != &rhs)
 	{
 		this->inbrackets = rhs.inbrackets;
+		this->tablvl = rhs.tablvl;
 	}
 	return (*this);
 }
@@ -61,17 +63,6 @@ Parser &Parser::operator=(const Parser &rhs)
 /////////////////////////////
 // Methods                 //
 /////////////////////////////
-void	Parser::print_info()
-{
-	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++)
-        std::cout << *it << std::endl;
-}
-
-void	Parser::print_tabulation()
-{
-	for (int i = 0; i < this->inbrackets; i++)
-		std::cout << "\t";
-}
 
 void	Parser::semi_colon()
 {
@@ -104,31 +95,6 @@ int		Parser::nbr_words()
 	this->line.clear();
 	this->line.seekg(0);
 	return (count);
-}
-
-void	Parser::print_words(std::string str, std::string color)
-{
-	std::string	words;
-	this->print_tabulation();
-	std::cout << "\033[35m[" << str << "]\033[0m";
-	this->line >> words;
-	while (this->line >> words)
-		std::cout << color << " " << words;
-	std::cout << "\033[33m" << ";" << "\033[0m";
-	this->line.clear();
-	this->line.seekg(0);
-}
-
-void	Parser::print_location(std::string str)
-{
-	std::string	words;
-	std::cout << "\033[36m[" << str << "]\033[0m";
-	this->line >> words;
-	while (this->line >> words)
-		std::cout << " \033[34m" << words;
-	std::cout << "\033[33m" << " {" << "\033[0m";
-	this->line.clear();
-	this->line.seekg(0);
 }
 
 int	Parser::openfile()
@@ -171,117 +137,383 @@ void	Parser::dlt_first()
 }
 
 /////////////////////////////
+// Print                   //
+/////////////////////////////
+void	Parser::print_tabulation()
+{
+	for (int i = 0; i < this->tablvl; i++)
+		std::cout << "\t";
+}
+
+void	Parser::print_servernames(std::vector<Server>& servers, int i)
+{
+	if (servers.at(i).server_names.empty())
+		return ;
+	this->print_tabulation();
+	std::cout << "\033[35m[server_name" << "]\033[0m";
+	for (std::vector<std::string>::const_iterator it = servers.at(i).server_names.begin(); it != servers.at(i).server_names.end(); it++)
+		std::cout << " " << "\033[34m" << *it;
+	std::cout << "\033[33m;\033[0m\n";
+}
+
+void	Parser::print_listen(std::vector<Server>& servers, int i)
+{
+	if (servers.at(i).listen.empty())
+		return ;
+	this->print_tabulation();
+	std::cout << "\033[35m[listen" << "]\033[0m ";
+	std::cout << "\033[34m";
+	std::cout << servers.at(i).listen;
+	std::cout  << " (" << servers.at(i).addr.sin_addr.s_addr << ":";
+	std::cout << servers.at(i).addr.sin_port << ")\033[33m;\033[0m";
+	std::cout << "\n";
+}
+
+void	Parser::print_allowmethods(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).allow_methods.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[allow_methods" << "]\033[0m";
+		for (std::vector<std::string>::const_iterator it = servers.at(i).location.at(y).allow_methods.begin(); it != servers.at(i).location.at(y).allow_methods.end(); it++)
+			std::cout << " " << "\033[34m" << *it;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).allow_methods.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[allow_methods" << "]\033[0m";
+		for (std::vector<std::string>::const_iterator it = servers.at(i).allow_methods.begin(); it != servers.at(i).allow_methods.end(); it++)
+			std::cout << " " << "\033[34m" << *it;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_index(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).index.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[index" << "]\033[0m";
+		for (std::vector<std::string>::const_iterator it = servers.at(i).location.at(y).index.begin(); it != servers.at(i).location.at(y).index.end(); it++)
+			std::cout << " " << "\033[34m" << *it;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).index.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[index" << "]\033[0m";
+		for (std::vector<std::string>::const_iterator it = servers.at(i).index.begin(); it != servers.at(i).index.end(); it++)
+			std::cout << " " << "\033[34m" << *it;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_errpage(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).err_page.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[err_page" << "]\033[0m";
+		for (std::vector<std::string>::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
+			std::cout << " " << "\033[34m" << *it;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).err_page.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[err_page" << "]\033[0m";
+		for (std::vector<std::string>::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
+			std::cout << " " << "\033[34m" << *it;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_root(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).root.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[root" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).location.at(y).root;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).root.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[root" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).root;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_autoindex(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).auto_index.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[auto_index" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).location.at(y).auto_index;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).auto_index.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[auto_index" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).auto_index;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_mcbs(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).max_client_body_size.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[location" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).location.at(y).max_client_body_size;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).max_client_body_size.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[max_client_body_size" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).max_client_body_size;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_cgidir(std::vector<Server>& servers, int i, int y)
+{
+	if (y >= 0){
+		if (servers.at(i).location.at(y).cgi_dir.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[cgi_dir" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).location.at(y).cgi_dir;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+	else {
+		if (servers.at(i).cgi_dir.empty())
+			return ;
+		this->print_tabulation();
+		std::cout << "\033[35m[cgi_dir" << "]\033[0m ";
+		std::cout << "\033[34m" << servers.at(i).cgi_dir;
+		std::cout << "\033[33m;\033[0m\n";
+	}
+}
+
+void	Parser::print_location(std::vector<Server>& servers, int i)
+{
+	int	y = 0;
+
+	if (servers.at(i).location.empty())
+		return ;
+	for (std::vector<ft::Location>::const_iterator it = servers.at(i).location.begin(); it != servers.at(i).location.end(); it++) {
+		this->tablvl = 1;
+		this->print_tabulation();
+		this->tablvl = 2;
+		std::cout << "\033[32m[location] ";
+		std::cout << "\033[34m" << servers.at(i).location.at(y).path << " \033[33m{\033[0m\n";
+		print_allowmethods(servers, i, y);
+		print_index(servers, i, y);
+		print_autoindex(servers, i, y);
+		print_errpage(servers, i, y);
+		print_root(servers, i, y);
+		print_mcbs(servers, i, y);
+		print_cgidir(servers, i, y);
+		std::cout << "\033[33m\t}\033[0m\n";
+		y++;
+	}
+}
+
+void	Parser::print_all(std::vector<Server>& servers)
+{
+	int	i = 0;
+
+	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+	for (std::vector<ft::Server>::const_iterator it = servers.begin(); it != servers.end(); it++) {
+		std::cout << "\033[32m[server] " << "\033[33m{\033[0m\n";
+		this->tablvl = 1;
+		print_servernames(servers, i);
+		print_listen(servers, i);
+		print_allowmethods(servers, i, -1);
+		print_index(servers, i, -1);
+		print_autoindex(servers, i, -1);
+		print_errpage(servers, i, -1);
+		print_root(servers, i, -1);
+		print_mcbs(servers, i, -1);
+		print_cgidir(servers, i, -1);
+		print_location(servers, i);
+		std::cout << "\033[33m}\033[0m\n";
+		i++;
+	}
+	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+}
+/////////////////////////////
 // Full Parsing            //
 /////////////////////////////
-void	Parser::p_location()
+void	Parser::p_location(std::vector<Server> &servers)
 {
 	this->brackets();
-	this->print_location("location");
 	this->dlt_first();
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <location> can only have one argument");
 	this->inbrackets++;
+	if (this->inbrackets >= 3)
+		throw std::invalid_argument("Invalid argument: <location> only one lvl of inception is possible");
+	servers.back().location.push_back(ft::Location());
+	this->line >> servers.back().location.back().path;
 }
 
-void	Parser::p_servername()
+void	Parser::p_servername(std::vector<Server> &servers)
 {
 	std::string	tmp;
+
 	this->semi_colon();
-	this->print_words("server_name", "\033[34m");
 	this->dlt_first();
 	while (this->line >> tmp)
 		if (static_cast<int>(tmp.find_first_not_of(SERALL)) != -1)
 			throw std::invalid_argument("Invalid Argument: <server name> can only contain (letter/digit/-_.)");
+	this->line.clear();
+	this->line.seekg(0);
+	while (this->line >> tmp)
+		servers.back().server_names.push_back(tmp);
 }
 
 void	Parser::p_listen_hp_addint(std::string tmpnum)
 {
 	int					tmpint;
-	std::stringstream	tmpiss;
-	std::istringstream	tmpintiss;
+	std::stringstream	tmpintiss;
 
 	if (tmpnum.empty())
-		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+		throw std::invalid_argument("Invalid Argument: 1 <listen'HOST:PORT'> invalid");
 	tmpintiss.clear();
+	tmpintiss.seekg(0);
 	tmpintiss.str(tmpnum);
 	tmpintiss >> tmpint;
-	hostint.push_back(tmpint);
+	this->hostint.push_back(tmpint);
 }
 
 void	Parser::p_listen_hp(std::string tmp)
 {
 	size_t				pos;
+	std::stringstream	tmpiss;
 	std::string			hostmp(tmp.substr(0, tmp.find_first_of(":")));
 	std::string			portmp(tmp.substr(tmp.find_first_of(":") + 1, tmp.size()));
 
 	if (hostmp.empty() || portmp.empty() || static_cast<int>(portmp.find_first_not_of("1234567890")) != -1)
-		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+		throw std::invalid_argument("Invalid Argument: 2 <listen'HOST:PORT'> invalid");
 	while ((pos = hostmp.find(".")) != std::string::npos) {
 		p_listen_hp_addint(hostmp.substr(0, pos));
 		hostmp.erase(0, pos + 1);
 	}
 	p_listen_hp_addint(hostmp.substr(0, pos));
 	if (hostint.size() != 4)
-		throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+		throw std::invalid_argument("Invalid Argument: 3 <listen'HOST:PORT'> invalid");
 	for (std::vector<int>::const_iterator it = hostint.begin(); it != hostint.end(); it++)
 		if (*it < 0 || *it > 255)
-			throw std::invalid_argument("Invalid Argument: <listen'HOST:PORT'>invalid");
+			throw std::invalid_argument("Invalid Argument: 4 <listen'HOST:PORT'> invalid");
+	tmpiss.str(portmp);
+	tmpiss >> this->portint;
 }
 
-void	Parser::p_listen()
+void	Parser::p_listen(std::vector<Server> &servers)
 {
 	std::string	tmp;
 
+	this->hostint.clear();
+	this->portint = 0;
 	this->semi_colon();
-	this->print_words("listen", "\033[34m");
 	this->dlt_first();
 	if (nbr_words() != 1)
-		throw std::invalid_argument("Invalid argument: <listen> can only have one argument");
+		throw std::invalid_argument("Invalid argument: 5 <listen> can only have one argument");
 	while (this->line >> tmp)
 	{
 		if (static_cast<int>(tmp.find_first_not_of(LISTEN)) != -1)
-			throw std::invalid_argument("Invalid Argument: Invalid listen entry");
+			throw std::invalid_argument("Invalid Argument: <listen> Invalid entry");
 		if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
 			this->p_listen_hp(tmp);
-		else
+		else {
 			if (static_cast<int>(tmp.find_first_not_of("1234567890")) != -1)
-				throw std::invalid_argument("Invalid Argument: <listen> PORT only invalid");
+				throw std::invalid_argument("Invalid Argument: <listen'PORT'> invalid");
+			tmp = "0.0.0.0:" + tmp;
+			this->p_listen_hp(tmp);
+		}
 	}
+	servers.back().listen = tmp;
+	servers.back().addr.sin_addr.s_addr = htonl(hostint.at(0)*2^24+hostint.at(1)*2^16+hostint.at(2)*2^8+hostint.at(3));
+	servers.back().addr.sin_port = htons(this->portint);
 }
 
-void	Parser::p_root()
-{
-	this->semi_colon();
-	this->print_words("root", "\033[34m");
-	this->dlt_first();
-}
-
-void	Parser::p_index()
-{
-	this->semi_colon();
-	this->print_words("index", "\033[34m");
-	this->dlt_first();
-}
-
-void	Parser::p_autoindex()
+void	Parser::p_root(std::vector<Server> &servers)
 {
 	std::string	tmp;
+
 	this->semi_colon();
-	this->print_words("auto_index", "\033[34m");
+	this->dlt_first();
+	if (nbr_words() != 1)
+		throw std::invalid_argument("Invalid argument: <root> can only have one argument");
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().root = tmp;
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().root = tmp;
+}
+
+void	Parser::p_index(std::vector<Server> &servers)
+{
+	std::string	tmp;
+
+	this->semi_colon();
+	this->dlt_first();
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().index.push_back(tmp);
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().index.push_back(tmp);
+}
+
+void	Parser::p_autoindex(std::vector<Server> &servers)
+{
+	std::string	tmp;
+
+	this->semi_colon();
 	this->dlt_first();
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <autoindex> can only have one argument");
 	while (this->line >> tmp)
 		if (tmp.compare("on") && tmp.compare("off"))
 			throw std::invalid_argument("Invalid Argument: Invalid method");
+	this->line.clear();
+	this->line.seekg(0);
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().auto_index = tmp;
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().auto_index = tmp;
 }
 
-void	Parser::p_maxclientbodysize()
+void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 {
 	std::string	tmp;
 
 	this->semi_colon();
-	this->print_words("max_client_body_size", "\033[34m");
 	this->dlt_first();
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <max_client_body_size> can only have one argument");
@@ -290,38 +522,64 @@ void	Parser::p_maxclientbodysize()
 		throw std::invalid_argument("Invalid argument: <max_client_body_size> need to end with 'M'");
 	tmp.erase(tmp.size() - 1);
 	this->line.str(tmp);
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().max_client_body_size = tmp;
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().max_client_body_size = tmp;
 }
 
-void	Parser::p_errorpage()
+void	Parser::p_errorpage(std::vector<Server> &servers)
 {
+	std::string	tmp;
+
 	this->semi_colon();
-	this->print_words("error_page", "\033[0m");
 	this->dlt_first();
-	if (nbr_words() != 1)
-		throw std::invalid_argument("Invalid argument: <errorpage> can only have one argument");
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().err_page.push_back(tmp);
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().err_page.push_back(tmp);
 }
 
-void	Parser::p_cgidir()
+void	Parser::p_cgidir(std::vector<Server> &servers)
 {
+	std::string	tmp;
+
 	this->semi_colon();
-	this->print_words("cgi_dir", "\033[34m");
 	this->dlt_first();
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <cgidir> can only have one argument");
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().cgi_dir = tmp;
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().cgi_dir = tmp;
 }
 
-void	Parser::p_allowmethods()
+void	Parser::p_allowmethods(std::vector<Server> &servers)
 {
 	std::string	tmp;
+
 	this->semi_colon();
-	this->print_words("allow_methods", "\033[34m");
 	this->dlt_first();
 	while (this->line >> tmp)
 		if (tmp.compare("GET") && tmp.compare("POST"))
 			throw std::invalid_argument("Invalid Argument: Invalid method");
+	this->line.clear();
+	this->line.seekg(0);
+	if (this->inbrackets == 1)
+		while (this->line >> tmp)
+			servers.back().allow_methods.push_back(tmp);
+	else
+		while (this->line >> tmp)
+			servers.back().location.back().allow_methods.push_back(tmp);
 }
 
-int	Parser::parse_server()
+int	Parser::parse_server(std::vector<Server> &servers)
 {
 	int			i;
 	std::string	keyword;
@@ -353,13 +611,12 @@ int	Parser::parse_server()
 	this->line >> keyword;
 	for (i = 0; i < FNUM; i++) {
 		if (keyword == strArray[i]) {
-			(this->*parserArray[i])();
+			(this->*parserArray[i])(servers);
 			break ;
 		}
 	}
-	if (i == FNUM) {
+	if (i >= FNUM) 
 		throw std::invalid_argument("Invalid Argument: Wrong tag OR Bracket not closed");
-	}
 	return (0);
 }
 
@@ -368,10 +625,8 @@ int	Parser::parse_global()
 	std::string	word;
 	while (this->line >> word) {
 		if (this->inbrackets == GLOBAL) {
-			if (!word.compare("server")) {
+			if (!word.compare("server"))
 				this->inbrackets = SERVER;
-				std::cout << "\033[32m[server" << "] \033[33m{\033[0m";
-			}
 		}
 		else
 			if (word.compare("{"))
@@ -380,31 +635,25 @@ int	Parser::parse_global()
 	return (0);
 }
 
-int	Parser::parsing_base()
+int	Parser::parsing_base(std::vector<Server> &servers)
 {
-	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
 	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
 		this->line.str(*it);
 		if (this->inbrackets == GLOBAL) {
 			if (this->parse_global())
 				return (-1);
+			servers.push_back(ft::Server());
 		}
 		else if (this->inbrackets >= SERVER) {
-			if (!this->line.str().compare("}")) {
-				//---Useless---
-				for (int i = 0; i < this->inbrackets - 1; i++)
-					std::cout << "\t";
-				std::cout << "\033[33m" << " }" << "\033[0m";
-				//-------------
+			if (!this->line.str().compare("}"))
 				this->inbrackets--;
-			}
 			else
-				this->parse_server();
+				this->parse_server(servers);
 		}
-		std::cout << std::endl;;
 		this->line.clear();
 	}
-	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+	if (PRINT_INFO == 1)
+		this->print_all(servers);
 	if (this->inbrackets)
 		throw std::invalid_argument("Invalid Argument: Brackets not closed");
 	return (0);
@@ -412,11 +661,10 @@ int	Parser::parsing_base()
 
 void	Parser::parsing(std::string arg, std::vector<Server> &servers)
 {
-	(void)servers;
 	this->filename = arg;
 	if (this->retrieve_file())
 		throw std::invalid_argument("Invalid Argument: Invalid File");
-	if (this->parsing_base())
+	if (this->parsing_base(servers))
 		throw std::invalid_argument("Invalid Argument: Invalid File");
 }
 /////////////////////////////
