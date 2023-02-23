@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 13:26:55 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/23 11:48:34 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,11 @@ void	Parser::dlt_first()
 /////////////////////////////
 // Print                   //
 /////////////////////////////
+void	Parser::print(std::string color, std::string str)
+{
+	std::cout << color << str << NC;
+}
+
 void	Parser::print_tabulation()
 {
 	for (int i = 0; i < this->tablvl; i++)
@@ -150,148 +155,154 @@ void	Parser::print_servernames(std::vector<Server>& servers, int i)
 	if (servers.at(i).server_names.empty())
 		return ;
 	this->print_tabulation();
-	std::cout << "\033[35m[server_name" << "]\033[0m";
+	print(MAGENTA, "[server_name]");
 	for (std::vector<std::string>::const_iterator it = servers.at(i).server_names.begin(); it != servers.at(i).server_names.end(); it++)
-		std::cout << " " << "\033[34m" << *it;
-	std::cout << "\033[33m;\033[0m\n";
+		print(BLUE, " " + *it);
+	print(YELLOW, ";\n");
 }
 
 void	Parser::print_listen(std::vector<Server>& servers, int i)
 {
+	std::stringstream	iss;
+	std::string			addr;
+	std::string			port;
+
 	if (servers.at(i).listen.empty())
 		return ;
 	this->print_tabulation();
-	std::cout << "\033[35m[listen" << "]\033[0m ";
-	std::cout << "\033[34m";
-	std::cout << servers.at(i).listen;
-	std::cout  << " (" << servers.at(i).addr.sin_addr.s_addr << ":";
-	std::cout << servers.at(i).addr.sin_port << ")\033[33m;\033[0m";
-	std::cout << "\n";
+	iss << servers.at(i).addr.sin_addr.s_addr;
+	iss >> addr;
+	iss.clear();
+	iss << servers.at(i).addr.sin_port;
+	iss >> port;
+	print(MAGENTA, "[listen]");
+	print(BLUE, " " + servers.at(i).listen + " (" + addr + ":" + port + ")");
+	print(YELLOW, ";\n");
 }
 
 void	Parser::print_allowmethods(std::vector<Server>& servers, int i, int y)
 {
-	if (y >= 0){
+	if (y >= 0) {
 		if (servers.at(i).location.at(y).allow_methods.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[allow_methods" << "]\033[0m";
+		print(MAGENTA, "[allow_methods]");
 		for (std::vector<std::string>::const_iterator it = servers.at(i).location.at(y).allow_methods.begin(); it != servers.at(i).location.at(y).allow_methods.end(); it++)
-			std::cout << " " << "\033[34m" << *it;
-		std::cout << "\033[33m;\033[0m\n";
+			print(BLUE, " " + *it);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).allow_methods.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[allow_methods" << "]\033[0m";
+		print(MAGENTA, "[allow_methods]");
 		for (std::vector<std::string>::const_iterator it = servers.at(i).allow_methods.begin(); it != servers.at(i).allow_methods.end(); it++)
-			std::cout << " " << "\033[34m" << *it;
-		std::cout << "\033[33m;\033[0m\n";
+			print(BLUE, " " + *it);
+		print(YELLOW, ";\n");
 	}
 }
 
 void	Parser::print_index(std::vector<Server>& servers, int i, int y)
 {
-	if (y >= 0){
+	if (y >= 0) {
 		if (servers.at(i).location.at(y).index.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[index" << "]\033[0m";
+		print(MAGENTA, "[index]");
 		for (std::vector<std::string>::const_iterator it = servers.at(i).location.at(y).index.begin(); it != servers.at(i).location.at(y).index.end(); it++)
-			std::cout << " " << "\033[34m" << *it;
-		std::cout << "\033[33m;\033[0m\n";
+			print(BLUE, " " + *it);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).index.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[index" << "]\033[0m";
+		print(MAGENTA, "[index]");
 		for (std::vector<std::string>::const_iterator it = servers.at(i).index.begin(); it != servers.at(i).index.end(); it++)
-			std::cout << " " << "\033[34m" << *it;
-		std::cout << "\033[33m;\033[0m\n";
+			print(BLUE, " " + *it);
+		print(YELLOW, ";\n");
 	}
 }
 
 void	Parser::print_errpage(std::vector<Server>& servers, int i, int y)
 {
-	if (y >= 0){
+	if (y >= 0) {
 		if (servers.at(i).location.at(y).err_page.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[err_page" << "]\033[0m";
+		print(MAGENTA, "[error_page]");
 		for (std::vector<std::string>::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
-			std::cout << " " << "\033[34m" << *it;
-		std::cout << "\033[33m;\033[0m\n";
+			print(BLUE, " " + *it);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).err_page.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[err_page" << "]\033[0m";
+		print(MAGENTA, "[error_page]");
 		for (std::vector<std::string>::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
-			std::cout << " " << "\033[34m" << *it;
-		std::cout << "\033[33m;\033[0m\n";
+			print(BLUE, " " + *it);
+		print(YELLOW, ";\n");
 	}
 }
 
 void	Parser::print_root(std::vector<Server>& servers, int i, int y)
 {
-	if (y >= 0){
+	if (y >= 0) {
 		if (servers.at(i).location.at(y).root.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[root" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).location.at(y).root;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[root]");
+		print(BLUE, " " + servers.at(i).location.at(y).root);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).root.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[root" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).root;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[root]");
+		print(BLUE, " " + servers.at(i).root);
+		print(YELLOW, ";\n");
 	}
 }
 
 void	Parser::print_autoindex(std::vector<Server>& servers, int i, int y)
 {
-	if (y >= 0){
+	if (y >= 0) {
 		if (servers.at(i).location.at(y).auto_index.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[auto_index" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).location.at(y).auto_index;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[auto_index]");
+		print(BLUE, " " + servers.at(i).location.at(y).auto_index);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).auto_index.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[auto_index" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).auto_index;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[auto_index]");
+		print(BLUE, " " + servers.at(i).auto_index);
+		print(YELLOW, ";\n");
 	}
 }
 
 void	Parser::print_mcbs(std::vector<Server>& servers, int i, int y)
 {
-	if (y >= 0){
+	if (y >= 0) {
 		if (servers.at(i).location.at(y).max_client_body_size.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[location" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).location.at(y).max_client_body_size;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[max_client_body_size]");
+		print(BLUE, " " + servers.at(i).location.at(y).max_client_body_size);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).max_client_body_size.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[max_client_body_size" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).max_client_body_size;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[max_client_body_size]");
+		print(BLUE, " " + servers.at(i).max_client_body_size);
+		print(YELLOW, ";\n");
 	}
 }
 
@@ -301,17 +312,17 @@ void	Parser::print_cgidir(std::vector<Server>& servers, int i, int y)
 		if (servers.at(i).location.at(y).cgi_dir.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[cgi_dir" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).location.at(y).cgi_dir;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[cgi_dir]");
+		print(BLUE, " " + servers.at(i).location.at(y).cgi_dir);
+		print(YELLOW, ";\n");
 	}
 	else {
 		if (servers.at(i).cgi_dir.empty())
 			return ;
 		this->print_tabulation();
-		std::cout << "\033[35m[cgi_dir" << "]\033[0m ";
-		std::cout << "\033[34m" << servers.at(i).cgi_dir;
-		std::cout << "\033[33m;\033[0m\n";
+		print(MAGENTA, "[cgi_dir]");
+		print(BLUE, " " + servers.at(i).cgi_dir);
+		print(YELLOW, ";\n");
 	}
 }
 
@@ -325,8 +336,9 @@ void	Parser::print_location(std::vector<Server>& servers, int i)
 		this->tablvl = 1;
 		this->print_tabulation();
 		this->tablvl = 2;
-		std::cout << "\033[32m[location] ";
-		std::cout << "\033[34m" << servers.at(i).location.at(y).path << " \033[33m{\033[0m\n";
+		print(GREEN, "[location]");
+		print(BLUE, " " + servers.at(i).location.at(y).path);
+		print(YELLOW, " {\n");
 		print_allowmethods(servers, i, y);
 		print_index(servers, i, y);
 		print_autoindex(servers, i, y);
@@ -334,7 +346,7 @@ void	Parser::print_location(std::vector<Server>& servers, int i)
 		print_root(servers, i, y);
 		print_mcbs(servers, i, y);
 		print_cgidir(servers, i, y);
-		std::cout << "\033[33m\t}\033[0m\n";
+		print(YELLOW, "\t}\n");
 		y++;
 	}
 }
@@ -343,9 +355,10 @@ void	Parser::print_all(std::vector<Server>& servers)
 {
 	int	i = 0;
 
-	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+	print(GREEN, "-----------------------------------------------------------\n");
 	for (std::vector<ft::Server>::const_iterator it = servers.begin(); it != servers.end(); it++) {
-		std::cout << "\033[32m[server] " << "\033[33m{\033[0m\n";
+		print(GREEN, "[server] ");
+		print(YELLOW, " {\n");
 		this->tablvl = 1;
 		print_servernames(servers, i);
 		print_listen(servers, i);
@@ -357,10 +370,10 @@ void	Parser::print_all(std::vector<Server>& servers)
 		print_mcbs(servers, i, -1);
 		print_cgidir(servers, i, -1);
 		print_location(servers, i);
-		std::cout << "\033[33m}\033[0m\n";
+		print(YELLOW, "}\n");
 		i++;
 	}
-	std::cout << "\033[32m-----------------------------------------------------------" << "\033[0m\n";
+	print(GREEN, "-----------------------------------------------------------\n");
 }
 /////////////////////////////
 // Full Parsing            //
@@ -454,7 +467,7 @@ void	Parser::p_listen(std::vector<Server> &servers)
 		}
 	}
 	servers.back().listen = tmp;
-	servers.back().addr.sin_addr.s_addr = htonl(hostint.at(0)*2^24+hostint.at(1)*2^16+hostint.at(2)*2^8+hostint.at(3));
+	servers.back().addr.sin_addr.s_addr = htonl((hostint.at(0)<<24) + (hostint.at(1)<<16) + (hostint.at(2)<<8) + (hostint.at(3)));
 	servers.back().addr.sin_port = htons(this->portint);
 }
 
