@@ -56,15 +56,15 @@ int main()
             exit(EXIT_FAILURE);
         }
         
-        char buffer[1000] = {0};
-        bzero(buffer, 1000);
-        valread = read( new_socket , buffer, 1000);
+        char buffer[30000] = {0};
+        bzero(buffer, 30000);
+        valread = read( new_socket , buffer, 30000);
         std::cout << "REQUEST \n\n" << buffer << std::endl;
         std::ofstream ofs("request");
 
         ofs.write((char *)buffer, sizeof(buffer));
         ofs.close();
-        hello = request.requestStarter(valread);
+        hello = request.requestStarter(valread, buffer);
         // std::cout << hello << std::endl;
         std::ofstream ofs2("response");
         ofs2 << hello;

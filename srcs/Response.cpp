@@ -94,7 +94,7 @@ void ft::Response::setRawRequest(std::vector<std::string> rawRequest){
 void ft::Response::handleErrors(){
     std::string pageName;
 
-    pageName = "html/" + _code;
+    pageName = "html/errors_pages/" + _code;
     pageName.append(".html");
     std::ifstream ifs(pageName.c_str());
     std::string buff;
@@ -243,8 +243,8 @@ void ft::Response::POST_method(const std::string & url){
     };
 
     const std::string type[3] = {"application/x-www-form-urlencoded", "multipart/form-data", "text/plain"};
-
-    for (int i = 0; i < 3; i++)
+    int i = 0;
+    for (; i < 3; i++)
         if (type[i] == enctype)
             (this->*enc[i])(body);
     if (i > 3)

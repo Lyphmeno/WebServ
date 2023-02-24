@@ -84,7 +84,7 @@ void ft::Request::getRequestLine(std::string line)
     if (_url == "/")
     {
         _indexON = 1;
-        _url = "html/index.html"; //rajouter le root
+        _url = "html/pages/index.html"; //rajouter le root
     }
     else
     {
@@ -99,7 +99,7 @@ void ft::Request::getRequestLine(std::string line)
     Function that checks if request exists, then parse the request
     and send it to create the response
 */
-std::string ft::Request::requestStarter(int readBytes){
+std::string ft::Request::requestStarter(int readBytes, char *buffer){
     std::string line;
     std::ifstream ifs("request");
     ft::Request requestHTTP;
