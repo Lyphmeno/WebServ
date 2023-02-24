@@ -34,10 +34,10 @@ public:
         std::string getProtVersion(void){return _protocolVersion;};
         std::string getRequestLine(void){return _requestLine;};
 
-        const std::string & requestStarter(int readBytes);
+        std::string requestStarter(int readBytes);
 
         void fillRequest(std::string line);
-        void parseRequest(ft::Response *reponse);
+        void parseRequest(ft::Response *reponse, int readBytes);
 
         void getRequestLine(std::string line);
         void checkMethodAllowed(ft::Response *response, std::string method);

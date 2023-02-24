@@ -42,6 +42,7 @@ public:
         void setURL(std::string url);
         void setMethod(std::string method);
         void setContentLenght(int valread);
+        void setRawRequest(std::vector<std::string> rawRequest);
 
         //Methods
         void GET_method(const std::string & url);
@@ -79,6 +80,13 @@ private:
 
         //RESPONSE OK
         std::string _responseFull;
+
+        std::vector<std::string> _raw;
+        std::map<std::string, std::string> _formValues;
+
+        void urlencoded(std::string body);
+        void multi(std::string body);
+        void plain(std::string body);
 };
 
 }

@@ -1,5 +1,5 @@
 #include "../incs/Response.hpp"
-
+#include <algorithm>
 
 static std::string itostring(int toConvert){
     std::ostringstream tm;
@@ -79,6 +79,11 @@ void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
 }
 
+void ft::Response::setRawRequest(std::vector<std::string> rawRequest){
+    this->_raw = rawRequest;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                 FUNCTIONS                                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +94,8 @@ void ft::Response::setContentLenght(int valread){
 void ft::Response::handleErrors(){
     std::string pageName;
 
-    pageName = "page/" + _code.append(".html");
+    pageName = "html/" + _code;
+    pageName.append(".html");
     std::ifstream ifs(pageName.c_str());
     std::string buff;
 
@@ -127,6 +133,8 @@ const std::string & ft::Response::addContentType(void){
 ..                                 METHODS                                    ..
 ..............................................................................*/
 
+/* get */
+
 void ft::Response::GET_method(const std::string & url){
     
     std::ifstream ifs(url.c_str());
@@ -139,7 +147,6 @@ void ft::Response::GET_method(const std::string & url){
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
-    setContentType(addContentType());
     while (std::getline(ifs, buff) != 0)
     {
         _body += buff;
@@ -148,11 +155,62 @@ void ft::Response::GET_method(const std::string & url){
     _body.erase(_body.size() - 1,1);
 }
 
+/* post */
+
+typedef void(ft::Response::*fPtr)(std::string body);
+
+void ft::Response::urlencoded(std::string body){
+    size_t pos = 0;
+    std::string token;
+    std::string value;
+
+    while ((pos = body.find("=")) != std::string::npos) {
+        token = body.substr(0, pos);
+        body.erase(0, pos + 1);
+        if ((pos = body.find("&")) != std::string::npos)
+        {
+            value = body.substr(0, pos);
+            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+        }
+        body.erase(0, pos + 1);
+        std::cout << "[token = " << token << "] [value = " << value << "]" << std::endl; 
+        _formValues[token] = value;
+    }
+}
+
+void ft::Response::multi(std::string body){
+    std::cout << "multi" << std::endl;
+    (void)body;
+
+}
+
+
+void ft::Response::plain(std::string body){
+    size_t pos = 0;
+    std::string token;
+    std::string value;
+
+    while ((pos = body.find("=")) != std::string::npos) {
+        token = body.substr(0, pos);
+        body.erase(0, pos + 1);
+        if ((pos = body.find("\n")) != std::string::npos)
+        {
+            value = body.substr(0, pos);
+            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+        }
+        body.erase(0, pos + 1);
+        _formValues[token] = value;
+    }
+
+}
 
 void ft::Response::POST_method(const std::string & url){
     
     std::ifstream ifs(url.c_str());
-    std::string buff;
+    std::string raw;
+    std::string body;
+    std::string enctype;
+
 
     if (!ifs.is_open())
     {
@@ -161,26 +219,60 @@ void ft::Response::POST_method(const std::string & url){
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
+    for (std::vector<std::string>::iterator it = _raw.begin(); it != _raw.end(); ++it){
+        raw += (*it);
+        raw += "\n";
+        if ((raw.find("Content-Type: ") != std::string::npos) && enctype.empty())
+        {
+            enctype = raw.substr(raw.find("Content-Type: "));
+            enctype.erase(0, 14);
+        }
+    }
+    if (raw.find("\r\n\r\n") != std::string::npos)
+    {
+       body = raw.substr(raw.find("\r\n\r\n"));
+       body.erase(0, 4);
+    }
+    enctype.erase(std::remove(enctype.begin(), enctype.end(), 13), enctype.end());
+    enctype.erase(std::remove(enctype.begin(), enctype.end(), '\n'), enctype.end());
+
+    fPtr enc[3] = {
+        &ft::Response::urlencoded,
+        &ft::Response::multi,
+        &ft::Response::plain,
+    };
+
+    const std::string type[3] = {"application/x-www-form-urlencoded", "multipart/form-data", "text/plain"};
+
+    for (int i = 0; i < 3; i++)
+        if (type[i] == enctype)
+            (this->*enc[i])(body);
+    if (i > 3)
+        (this->*enc[1])(body);
+    return ;
 }
+
+/* delete */
 
 void ft::Response::DELETE_method(const std::string & url){
     
-    std::ifstream ifs(url.c_str());
-    std::string buff;
     int status;
 
-    if (!ifs.is_open())
+    if (url.find("..") != std::string::npos)
     {
-        setError("404");
-        return ;
+        _code = "400";
+        _status = _codeStatus.getStatus("400");
+        return;
+    }
+    status = std::remove(url.c_str());
+    if (status != 0)
+    {
+         _code = "404";
+        _status = _codeStatus.getStatus("404");
+        return;
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
-
-    status = std::remove(url.c_str());
-    if (status == 0)
-        std::cout << "OKOKOK\n";
-
 }
 
 /*

@@ -1,5 +1,7 @@
 #include "../incs/Request.hpp"
 #include <fstream>
+#include <algorithm>
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
@@ -49,7 +51,7 @@ void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
 /*
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
-void ft::Request::parseRequest(ft::Response *response){
+void ft::Request::parseRequest(ft::Response *response, int readBytes){
     
     std::vector<std::string>::iterator it = this->_requestFull.begin();
 
@@ -58,6 +60,10 @@ void ft::Request::parseRequest(ft::Response *response){
     checkMethodAllowed(response, _method);
     response->setProtVersion(_protocolVersion);
     response->setURL(_url);
+    response->setContentType(response->addContentType());
+    response->setContentLenght(readBytes);
+    response->setRawRequest(_requestFull);
+    response->createBody(_url);
 }
 
 
@@ -78,7 +84,7 @@ void ft::Request::getRequestLine(std::string line)
     if (_url == "/")
     {
         _indexON = 1;
-        _url = "page/index.html"; //rajouter le root
+        _url = "html/index.html"; //rajouter le root
     }
     else
     {
@@ -93,7 +99,7 @@ void ft::Request::getRequestLine(std::string line)
     Function that checks if request exists, then parse the request
     and send it to create the response
 */
-const std::string & ft::Request::requestStarter(int readBytes){
+std::string ft::Request::requestStarter(int readBytes){
     std::string line;
     std::ifstream ifs("request");
     ft::Request requestHTTP;
@@ -110,10 +116,10 @@ const std::string & ft::Request::requestStarter(int readBytes){
         {
             requestHTTP.fillRequest(line);
         }
-        requestHTTP.parseRequest(responseHTTP);
-        responseHTTP->setContentLenght(readBytes);
-        responseHTTP->createBody(requestHTTP.getUrl());
+        requestHTTP.parseRequest(responseHTTP, readBytes);
     }
     responseHTTP->buildFullResponse();
-    return responseHTTP->getFullResponse();
+    std::string responseR = responseHTTP->getFullResponse(); 
+    //responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
+    return responseR;
 }

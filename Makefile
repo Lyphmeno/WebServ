@@ -1,5 +1,5 @@
 
-CC			= c++ -Wall -Wextra -Werror -g -fsanitize=address -std=c++98
+CC			= c++ -Wall -Wextra -Werror -g -std=c++98
 RM			= rm -rf
 NAME		= ./webservhttp
 NAME_SHORT	= webservhttp
