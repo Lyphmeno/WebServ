@@ -34,19 +34,33 @@ ft::Request::~Request(void){
 */
 void ft::Request::fillRequest(char *buffer)
 {
-    int i = 0;
     std::string line;
-    while (buffer[i])
-    {
-        while (buffer[i] != 13)
-        {
-            line += buffer[i];
-            i++;
-        }
-        line += '\n';
-        this->_requestFull.push_back(line);
-        i++;
+    std::string newbuffer;
+    std::string value;
+    newbuffer = buffer;
+
+
+    size_t pos = 0;
+    std::string token;
+    while ((pos = newbuffer.find(":")) != std::string::npos) {
+    //     token = newbuffer.substr(0, pos);
+    //     newbuffer.erase(0, pos + 1);
+    //     this->_requestFull.push_back(token);
+
+    //     while ((pos = body.find(13)) != std::string::npos) {
+    //     token = body.substr(0, pos);
+    //     body.erase(0, pos + 1);
+    //     if ((pos = body.find("\n")) != std::string::npos)
+    //     {
+    //         value = body.substr(0, pos);
+    //         value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+    //     }
+    //     body.erase(0, pos + 1);
+    //     _rawRequest[token] = value;
+    // }
     }
+        this->_requestFull.push_back(newbuffer);
+
 }
 
 /*

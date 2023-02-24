@@ -173,7 +173,7 @@ void ft::Response::urlencoded(std::string body){
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
         }
         body.erase(0, pos + 1);
-        std::cout << "[token = " << token << "] [value = " << value << "]" << std::endl; 
+        // std::cout << "[token = " << token << "] [value = " << value << "]" << std::endl; 
         _formValues[token] = value;
     }
 }
@@ -200,7 +200,6 @@ void ft::Response::plain(std::string body){
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
         }
         body.erase(0, pos + 1);
-        std::cout << "[token = " << token << "] [value = " << value << "]" << std::endl; 
         _formValues[token] = value;
     }
 
@@ -228,11 +227,15 @@ void ft::Response::POST_method(const std::string & url){
         {
             enctype = raw.substr(raw.find("Content-Type: "));
             enctype.erase(0, 14);
+            if (enctype.find("multipart/form-data;") != std::string::npos)
+                enctype = "multipart/form-data";
         }
+
     }
+    std::cout << enctype << std::endl;
     if (raw.find("\r\n\r\n") != std::string::npos)
     {
-        std::cout << "icicicicicicic\n";
+    
        body = raw.substr(raw.find("\r\n\r\n"));
        body.erase(0, 4);
     }
@@ -248,8 +251,10 @@ void ft::Response::POST_method(const std::string & url){
     const std::string type[3] = {"application/x-www-form-urlencoded", "multipart/form-data", "text/plain"};
     int i = 0;
     for (; i < 3; i++)
+    {
         if (type[i] == enctype)
             (this->*enc[i])(body);
+    }
     if (i > 3)
         (this->*enc[1])(body);
     return ;
