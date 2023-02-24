@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 13:09:59 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 10:17:59 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ public:
 	std::string					listen;
 	std::string					root;
     std::string					auto_index;
-    std::string					max_client_body_size;
     std::string					cgi_dir;
+	int							max_client_body_size;
 	// avarnier
 	sockaddr_in					addr;
 public:

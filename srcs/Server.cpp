@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
+/*   Updated: 2023/02/24 10:24:58 by hlevi            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incs/Server.hpp"
 #include <sys/socket.h>
 
@@ -8,6 +20,7 @@ namespace ft {
 Server::Server()
 {
 	this->addr.sin_family = AF_INET;
+	this->max_client_body_size = -1;
 }
 
 Server::Server(const Server &cpy)

@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/23 11:20:54 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 10:27:14 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ private:
 	void	dlt_first();
 	int		parse_global();
 	int		parse_server(std::vector<Server>&);
+	void	parse_mandatory(std::vector<Server>&);
 	int		parsing_base(std::vector<Server>&);
 	typedef void(Parser::*parsePtr)(std::vector<Server>&);
 	void	p_listen_hp_addint(std::string);

@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/23 11:48:34 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 11:13:04 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,20 +288,23 @@ void	Parser::print_autoindex(std::vector<Server>& servers, int i, int y)
 
 void	Parser::print_mcbs(std::vector<Server>& servers, int i, int y)
 {
+	std::stringstream	iss;
+	std::string			tmp;	
+
 	if (y >= 0) {
-		if (servers.at(i).location.at(y).max_client_body_size.empty())
-			return ;
+		iss << servers.at(i).location.at(y).max_client_body_size;
+		iss >> tmp;
 		this->print_tabulation();
 		print(MAGENTA, "[max_client_body_size]");
-		print(BLUE, " " + servers.at(i).location.at(y).max_client_body_size);
+		print(BLUE, " " + tmp + "M");
 		print(YELLOW, ";\n");
 	}
 	else {
-		if (servers.at(i).max_client_body_size.empty())
-			return ;
+		iss << servers.at(i).max_client_body_size;
+		iss >> tmp;
 		this->print_tabulation();
 		print(MAGENTA, "[max_client_body_size]");
-		print(BLUE, " " + servers.at(i).max_client_body_size);
+		print(BLUE, " " + tmp + "M");
 		print(YELLOW, ";\n");
 	}
 }
@@ -467,7 +470,7 @@ void	Parser::p_listen(std::vector<Server> &servers)
 		}
 	}
 	servers.back().listen = tmp;
-	servers.back().addr.sin_addr.s_addr = htonl((hostint.at(0)<<24) + (hostint.at(1)<<16) + (hostint.at(2)<<8) + (hostint.at(3)));
+	servers.back().addr.sin_addr.s_addr = htonl((hostint.at(0) << 24) + (hostint.at(1) << 16) + (hostint.at(2) << 8) + (hostint.at(3)));
 	servers.back().addr.sin_port = htons(this->portint);
 }
 
@@ -524,7 +527,9 @@ void	Parser::p_autoindex(std::vector<Server> &servers)
 
 void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 {
-	std::string	tmp;
+	std::stringstream	iss;
+	std::string			tmp;
+	int					tmpint;
 
 	this->semi_colon();
 	this->dlt_first();
@@ -535,12 +540,11 @@ void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 		throw std::invalid_argument("Invalid argument: <max_client_body_size> need to end with 'M'");
 	tmp.erase(tmp.size() - 1);
 	this->line.str(tmp);
+	this->line >> tmpint;
 	if (this->inbrackets == 1)
-		while (this->line >> tmp)
-			servers.back().max_client_body_size = tmp;
+		servers.back().max_client_body_size = tmpint;
 	else
-		while (this->line >> tmp)
-			servers.back().location.back().max_client_body_size = tmp;
+		servers.back().location.back().max_client_body_size = tmpint;
 }
 
 void	Parser::p_errorpage(std::vector<Server> &servers)
@@ -648,6 +652,28 @@ int	Parser::parse_global()
 	return (0);
 }
 
+void	Parser::parse_mandatory(std::vector<Server> &servers)
+{
+	if (servers.empty())
+		throw std::invalid_argument("Invalid argument: no servers");
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
+		if (it->listen.empty())
+			throw std::invalid_argument("Invalid argument: <listen> is mandatory");
+		if (it->root.empty())
+			throw std::invalid_argument("Invalid argument: <root> is mandatory");
+		if (it->max_client_body_size == -1)
+			it->max_client_body_size = 1;
+		if (!it->location.empty()) {
+			for (std::vector<Location>::iterator itl = it->location.begin(); itl != it->location.end(); itl++) {
+				if (!itl->max_client_body_size)
+					itl->max_client_body_size = it->max_client_body_size;
+				if (itl->root.empty())
+					itl->root= it->root;
+			}
+		}
+	}
+}
+
 int	Parser::parsing_base(std::vector<Server> &servers)
 {
 	for (std::vector<std::string>::const_iterator it = this->buffer.begin(); it != this->buffer.end(); it++) {
@@ -665,6 +691,7 @@ int	Parser::parsing_base(std::vector<Server> &servers)
 		}
 		this->line.clear();
 	}
+	this->parse_mandatory(servers);
 	if (PRINT_INFO == 1)
 		this->print_all(servers);
 	if (this->inbrackets)

@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 14:55:36 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/20 18:15:47 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 10:18:20 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ struct	Location
 	std::string					path;
 	std::string					root;
     std::string					auto_index;
-    std::string					max_client_body_size;
     std::string					cgi_dir;
+	int							max_client_body_size;
 };
 }
