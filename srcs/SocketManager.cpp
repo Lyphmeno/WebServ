@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/23 13:53:41 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/24 09:14:29 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,28 +32,8 @@ SocketManager::~SocketManager()
 		::close(this->epfd);
 		this->epfd = -1;
 	}
-	for (std::vector<Socket>::iterator it = this->servers.begin();
-	it != this->servers.end(); it++)
-	{
-		if (it->fd > -1)
-		{
-			::close(it->fd);
-			it->fd = -1;
-		}
-	}
-	for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
-	mit != this->clients.end(); mit++)
-	{
-		for (std::vector<Socket>::iterator vit = this->servers.begin();
-		vit != this->servers.end(); vit++)
-		{
-			if (vit->fd > -1)
-			{
-				::close(vit->fd);
-				vit->fd = -1;
-			}
-		}
-	}
+	while (this->servers.size() > 0)
+		this->closeServer(this->servers[0].fd);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,34 +100,41 @@ bool	SocketManager::isServer(const int &fd)
 	return (false);
 }
 
-void	SocketManager::close(const int &fd)
+void	SocketManager::closeServer(const int &fd)
 {
-	if (this->isServer(fd) == true)
+	if (fd == -1)
+		return ;
+	for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
+	mit != this->clients.end(); mit++)
 	{
-		for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
-		mit != this->clients.end(); mit++)
+		if (mit->first == fd)
 		{
-			if (mit->first == fd)
-			{
-				for (std::vector<Socket>::iterator vit = mit->second.begin();
-				vit != mit->second.end(); vit++)
-					::close(vit->fd);
-				mit->second.clear();
-				this->clients.erase(mit);
-				break;
-			}
-		}
-		for (std::vector<Socket>::iterator it = this->servers.begin();
-		it != this->servers.end(); it++)
-		{
-			if (it->fd == fd)
-			{
-				::close(fd);
-				this->servers.erase(it);
-				break;
-			}
+			for (std::vector<Socket>::iterator vit = mit->second.begin();
+			vit != mit->second.end(); vit++)
+				::close(vit->fd);
+			mit->second.clear();
+			this->clients.erase(mit);
+			break;
 		}
 	}
+	for (std::vector<Socket>::iterator it = this->servers.begin();
+	it != this->servers.end(); it++)
+	{
+		if (it->fd == fd)
+		{
+			::close(fd);
+			this->servers.erase(it);
+			break;
+		}
+	}
+}
+
+void	SocketManager::close(const int &fd)
+{
+	if (fd == -1)
+		return ;
+	if (this->isServer(fd) == true)
+		this->closeServer(fd);
 	else
 	{
 		for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();

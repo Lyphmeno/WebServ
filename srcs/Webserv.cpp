@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/23 12:39:12 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/24 09:14:07 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	Webserv::run()
 			{
 				this->manager.close(this->manager.epev[i].data.fd);
 			}
-
+			
 			if (this->manager.isServer(this->manager.epev[i].data.fd) == true)
 			{
 				Socket		sock;

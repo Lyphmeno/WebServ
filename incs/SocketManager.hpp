@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/23 12:19:52 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/24 09:23:58 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ public:
 private:
 	SocketManager(const SocketManager &x);
 	SocketManager	&operator=(const SocketManager &x);
+	void	closeServer(const int &fd);
+	void	closeClient(const int &fd);
 
 public:
 	int									epfd;
