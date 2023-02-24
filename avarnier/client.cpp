@@ -13,7 +13,8 @@ int main(int argc, char const *argv[])
 {
     struct sockaddr_in addr;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
-   {
+	if (sock == -1)
+	{
         std::cout << "Client: socket error\n";
         return -1;
     }
@@ -25,7 +26,7 @@ int main(int argc, char const *argv[])
  
     if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        std::cout << "Client: socket error\n";
+        std::cout << "Client: connect error\n";
         return -1;
     }
 

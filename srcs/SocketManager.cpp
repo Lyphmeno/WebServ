@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/24 09:14:29 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/24 13:57:32 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	SocketManager::addClient(const int &sfd, const Socket &sock)
 	this->clients[sfd].push_back(sock);
 }
 
-void	SocketManager::addEp(const int &fd)
+void	SocketManager::addEp(const int &fd) const
 {
 	epoll_event	ev;
 	ev.events = EPOLLIN;
@@ -78,7 +78,7 @@ void	SocketManager::addEp(const int &fd)
 		throw std::runtime_error("Runtime error: Can't add socket to epoll");
 }
 
-void	SocketManager::setNoBlock(const int &fd)
+void	SocketManager::setNoBlock(const int &fd) const
 {
 	int flags = fcntl(fd, F_GETFL);
 
@@ -89,7 +89,7 @@ void	SocketManager::setNoBlock(const int &fd)
 		throw std::runtime_error("Runtime error: Can't set socket flags");
 }
 
-bool	SocketManager::isServer(const int &fd)
+bool	SocketManager::isServer(const int &fd) const
 {
 	for (std::vector<Socket>::const_iterator it = this->servers.begin();
 	it != this->servers.end(); it++)
@@ -98,6 +98,34 @@ bool	SocketManager::isServer(const int &fd)
 			return (true);
 	}
 	return (false);
+}
+
+void	SocketManager::getData(const int &fd, const std::string data)
+{
+	for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
+	mit != this->clients.end(); mit++)
+	{
+		for (std::vector<Socket>::iterator vit = mit->second.begin();
+		vit != mit->second.end(); vit++)
+		{
+			if (vit->fd == fd)
+			{
+				if (vit->header == true)
+					vit->blen += data.size();
+				else if (data.find("\r\n") != data.npos)
+				{
+					vit->hlen += data.find("\r\n") + 1;
+					vit->blen += data.size() - (data.find("\r\n") + 1);
+				}
+				else
+					vit->hlen += data.size();
+				if (vit->hlen > MAXHEADER)
+				{
+					sendError();
+				}
+			}
+		}
+	}
 }
 
 void	SocketManager::closeServer(const int &fd)

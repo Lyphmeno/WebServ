@@ -11,8 +11,9 @@ struct Socket
 	int			fd;
 	sockaddr_in	addr;
 
-	int			hlen;
-	int			blen;
+	bool		header;
+	size_t		hlen;
+	size_t		blen;
 	std::string	request;
 	std::string	response;
 };

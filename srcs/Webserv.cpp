@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/24 09:14:07 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/24 12:19:40 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,11 @@ void	Webserv::run()
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					std::cout << "cli: " << buff << '\n';
+					this->manager.getData(this->manager.epev[i].data.fd, buff);
 				}
 				else
 				{
-					::close(this->manager.epev[i].data.fd);
+					this->manager.close(this->manager.epev[i].data.fd);
 					std::cout << "close connection" << '\n';
 				}
 			}
