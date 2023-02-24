@@ -53,6 +53,7 @@ private:
 
         //Raw
         std::vector<std::string> _requestFull;
+        std::map<std::string, std::string> _rawRequest;
 
         //Conf file
         int _indexON;

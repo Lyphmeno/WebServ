@@ -79,11 +79,6 @@ void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
 }
 
-void ft::Response::setRawRequest(std::vector<std::string> rawRequest){
-    this->_raw = rawRequest;
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                 FUNCTIONS                                  //
 ////////////////////////////////////////////////////////////////////////////////

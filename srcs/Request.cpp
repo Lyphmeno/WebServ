@@ -34,7 +34,6 @@ ft::Request::~Request(void){
 */
 void ft::Request::fillRequest(char *buffer)
 {
-    std::string line;
     std::string newbuffer;
     std::string value;
     newbuffer = buffer;
@@ -42,24 +41,26 @@ void ft::Request::fillRequest(char *buffer)
 
     size_t pos = 0;
     std::string token;
-    while ((pos = newbuffer.find(":")) != std::string::npos) {
-    //     token = newbuffer.substr(0, pos);
-    //     newbuffer.erase(0, pos + 1);
-    //     this->_requestFull.push_back(token);
-
-    //     while ((pos = body.find(13)) != std::string::npos) {
-    //     token = body.substr(0, pos);
-    //     body.erase(0, pos + 1);
-    //     if ((pos = body.find("\n")) != std::string::npos)
-    //     {
-    //         value = body.substr(0, pos);
-    //         value.erase(std::remove(value.begin(), value.end(), 13), value.end());
-    //     }
-    //     body.erase(0, pos + 1);
-    //     _rawRequest[token] = value;
-    // }
+   
+    if ((pos = newbuffer.find(13)) != std::string::npos)
+    {
+        _requestLine = newbuffer.substr(0, pos);
+        newbuffer.erase(0, pos + 1);
+        std::cout << _requestLine << std::endl;
     }
-        this->_requestFull.push_back(newbuffer);
+    while ((pos = newbuffer.find(":")) != std::string::npos) {
+        token = newbuffer.substr(0, pos);
+        newbuffer.erase(0, pos + 1);
+        if ((pos = newbuffer.find(13)) != std::string::npos)
+        {
+            value = newbuffer.substr(0, pos);
+            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+        }
+        newbuffer.erase(0, pos + 1);
+        std::cout << "tok = " << token << std::endl;
+        std::cout << "valu = " << value << std::endl;
+        _rawRequest[token] = value;
+    }
 
 }
 
@@ -79,16 +80,12 @@ void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
 */
 void ft::Request::parseRequest(ft::Response *response, int readBytes){
     
-    std::vector<std::string>::iterator it = this->_requestFull.begin();
-
-    _requestLine = (*it);
     getRequestLine(_requestLine);
     checkMethodAllowed(response, _method);
     response->setProtVersion(_protocolVersion);
     response->setURL(_url);
     response->setContentType(response->addContentType());
     response->setContentLenght(readBytes);
-    response->setRawRequest(_requestFull);
     response->createBody(_url);
 }
 
@@ -132,6 +129,7 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer){
     requestHTTP.parseRequest(responseHTTP, readBytes);
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
-    //responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
+    responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
+   
     return responseR;
 }

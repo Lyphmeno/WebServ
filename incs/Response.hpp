@@ -42,7 +42,6 @@ public:
         void setURL(std::string url);
         void setMethod(std::string method);
         void setContentLenght(int valread);
-        void setRawRequest(std::vector<std::string> rawRequest);
 
         //Methods
         void GET_method(const std::string & url);
