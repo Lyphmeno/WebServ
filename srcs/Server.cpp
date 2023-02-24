@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/24 10:24:58 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 12:36:10 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ Server::Server()
 {
 	this->addr.sin_family = AF_INET;
 	this->max_client_body_size = -1;
+	for (int i = 0; i <= 8; i++)
+		this->id.push_back(false);
 }
 
 Server::Server(const Server &cpy)
@@ -44,6 +46,7 @@ Server &Server::operator=(const Server &rhs)
 		this->err_page = rhs.err_page;
 		this->listen = rhs.listen;
 		this->root = rhs.root;
+		this->id = rhs.id;
 		this->auto_index = rhs.auto_index;
 		this->max_client_body_size = rhs.max_client_body_size;
 		this->cgi_dir = rhs.cgi_dir;

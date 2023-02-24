@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/24 11:13:04 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 13:13:10 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,13 +342,13 @@ void	Parser::print_location(std::vector<Server>& servers, int i)
 		print(GREEN, "[location]");
 		print(BLUE, " " + servers.at(i).location.at(y).path);
 		print(YELLOW, " {\n");
-		print_allowmethods(servers, i, y);
+		print_root(servers, i, y);
 		print_index(servers, i, y);
+		print_cgidir(servers, i, y);
 		print_autoindex(servers, i, y);
 		print_errpage(servers, i, y);
-		print_root(servers, i, y);
+		print_allowmethods(servers, i, y);
 		print_mcbs(servers, i, y);
-		print_cgidir(servers, i, y);
 		print(YELLOW, "\t}\n");
 		y++;
 	}
@@ -365,13 +365,13 @@ void	Parser::print_all(std::vector<Server>& servers)
 		this->tablvl = 1;
 		print_servernames(servers, i);
 		print_listen(servers, i);
-		print_allowmethods(servers, i, -1);
+		print_root(servers, i, -1);
 		print_index(servers, i, -1);
+		print_cgidir(servers, i, -1);
 		print_autoindex(servers, i, -1);
 		print_errpage(servers, i, -1);
-		print_root(servers, i, -1);
+		print_allowmethods(servers, i, -1);
 		print_mcbs(servers, i, -1);
-		print_cgidir(servers, i, -1);
 		print_location(servers, i);
 		print(YELLOW, "}\n");
 		i++;
@@ -389,8 +389,10 @@ void	Parser::p_location(std::vector<Server> &servers)
 		throw std::invalid_argument("Invalid argument: <location> can only have one argument");
 	this->inbrackets++;
 	if (this->inbrackets >= 3)
-		throw std::invalid_argument("Invalid argument: <location> only one lvl of inception is possible");
+		throw std::invalid_argument("Invalid argument: <location> cannot have <location>");
 	servers.back().location.push_back(ft::Location());
+	for (int i = 0; i <= 6; i++)
+		servers.back().location.back().id.push_back(false);
 	this->line >> servers.back().location.back().path;
 }
 
@@ -398,6 +400,9 @@ void	Parser::p_servername(std::vector<Server> &servers)
 {
 	std::string	tmp;
 
+	if (servers.back().id.at(BS_NAME) == true)
+		throw std::invalid_argument("Invalid argument: multiple <server_name> tag not allowed");
+	servers.back().id.at(BS_NAME) = true;
 	this->semi_colon();
 	this->dlt_first();
 	while (this->line >> tmp)
@@ -450,6 +455,9 @@ void	Parser::p_listen(std::vector<Server> &servers)
 {
 	std::string	tmp;
 
+	if (servers.back().id.at(BS_LISTEN) == true)
+		throw std::invalid_argument("Invalid argument: multiple <listen> tag not allowed");
+	servers.back().id.at(BS_LISTEN) = true;
 	this->hostint.clear();
 	this->portint = 0;
 	this->semi_colon();
@@ -482,12 +490,20 @@ void	Parser::p_root(std::vector<Server> &servers)
 	this->dlt_first();
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <root> can only have one argument");
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_ROOT) == true)
+			throw std::invalid_argument("Invalid argument: multiple <root> tag not allowed");
+		servers.back().id.at(BS_ROOT) = true;
 		while (this->line >> tmp)
 			servers.back().root = tmp;
-	else
+	}
+	else {
+		if (servers.back().location.back().id.at(BL_ROOT) == true)
+			throw std::invalid_argument("Invalid argument: multiple <root> tag not allowed");
+		servers.back().location.back().id.at(BL_ROOT) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().root = tmp;
+	}
 }
 
 void	Parser::p_index(std::vector<Server> &servers)
@@ -496,12 +512,20 @@ void	Parser::p_index(std::vector<Server> &servers)
 
 	this->semi_colon();
 	this->dlt_first();
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_INDEX) == true)
+			throw std::invalid_argument("Invalid argument: multiple <index> tag not allowed");
+		servers.back().id.at(BS_INDEX) = true;
 		while (this->line >> tmp)
 			servers.back().index.push_back(tmp);
-	else
+	}
+	else {
+		if (servers.back().location.back().id.at(BL_INDEX) == true)
+			throw std::invalid_argument("Invalid argument: multiple <index> tag not allowed");
+		servers.back().location.back().id.at(BL_INDEX) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().index.push_back(tmp);
+	}
 }
 
 void	Parser::p_autoindex(std::vector<Server> &servers)
@@ -517,12 +541,20 @@ void	Parser::p_autoindex(std::vector<Server> &servers)
 			throw std::invalid_argument("Invalid Argument: Invalid method");
 	this->line.clear();
 	this->line.seekg(0);
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_AUTOINDEX) == true)
+			throw std::invalid_argument("Invalid argument: multiple <auto_index> tag not allowed");
+		servers.back().id.at(BS_AUTOINDEX) = true;
 		while (this->line >> tmp)
 			servers.back().auto_index = tmp;
-	else
+	}
+	else {
+		if (servers.back().location.back().id.at(BL_AUTOINDEX) == true)
+			throw std::invalid_argument("Invalid argument: multiple <auto_index> tag not allowed");
+		servers.back().location.back().id.at(BL_AUTOINDEX) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().auto_index = tmp;
+	}
 }
 
 void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
@@ -541,10 +573,18 @@ void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 	tmp.erase(tmp.size() - 1);
 	this->line.str(tmp);
 	this->line >> tmpint;
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_MCBS) == true)
+			throw std::invalid_argument("Invalid argument: multiple <max_client_body_size> tag not allowed");
+		servers.back().id.at(BS_MCBS) = true;
 		servers.back().max_client_body_size = tmpint;
-	else
+	}
+	else {
+		if (servers.back().location.back().id.at(BL_MCBS) == true)
+			throw std::invalid_argument("Invalid argument: multiple <max_client_body_size> tag not allowed");
+		servers.back().location.back().id.at(BL_MCBS) = true;
 		servers.back().location.back().max_client_body_size = tmpint;
+	}
 }
 
 void	Parser::p_errorpage(std::vector<Server> &servers)
@@ -553,12 +593,20 @@ void	Parser::p_errorpage(std::vector<Server> &servers)
 
 	this->semi_colon();
 	this->dlt_first();
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_ERR) == true)
+			throw std::invalid_argument("Invalid argument: multiple <error_page> tag not allowed");
+		servers.back().id.at(BS_ERR) = true;
 		while (this->line >> tmp)
 			servers.back().err_page.push_back(tmp);
-	else
+	}
+	else {
+		if (servers.back().location.back().id.at(BL_ERR) == true)
+			throw std::invalid_argument("Invalid argument: multiple <error_page> tag not allowed");
+		servers.back().location.back().id.at(BL_ERR) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().err_page.push_back(tmp);
+	}
 }
 
 void	Parser::p_cgidir(std::vector<Server> &servers)
@@ -569,12 +617,20 @@ void	Parser::p_cgidir(std::vector<Server> &servers)
 	this->dlt_first();
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <cgidir> can only have one argument");
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_CGI) == true)
+			throw std::invalid_argument("Invalid argument: multiple <cgi_dir> tag not allowed");
+		servers.back().id.at(BS_CGI) = true;
 		while (this->line >> tmp)
 			servers.back().cgi_dir = tmp;
-	else
+		}
+	else {
+		if (servers.back().location.back().id.at(BL_CGI) == true)
+			throw std::invalid_argument("Invalid argument: multiple <cgi_dir> tag not allowed");
+		servers.back().location.back().id.at(BL_CGI) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().cgi_dir = tmp;
+	}
 }
 
 void	Parser::p_allowmethods(std::vector<Server> &servers)
@@ -588,12 +644,20 @@ void	Parser::p_allowmethods(std::vector<Server> &servers)
 			throw std::invalid_argument("Invalid Argument: Invalid method");
 	this->line.clear();
 	this->line.seekg(0);
-	if (this->inbrackets == 1)
+	if (this->inbrackets == 1) {
+		if (servers.back().id.at(BS_METHODS) == true)
+			throw std::invalid_argument("Invalid argument: multiple <allow_methods> tag not allowed");
+		servers.back().id.at(BS_METHODS) = true;
 		while (this->line >> tmp)
 			servers.back().allow_methods.push_back(tmp);
-	else
+	}
+	else {
+		if (servers.back().location.back().id.at(BL_METHODS) == true)
+			throw std::invalid_argument("Invalid argument: multiple <allow_methods> tag not allowed");
+		servers.back().location.back().id.at(BL_METHODS) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().allow_methods.push_back(tmp);
+	}
 }
 
 int	Parser::parse_server(std::vector<Server> &servers)
@@ -601,7 +665,6 @@ int	Parser::parse_server(std::vector<Server> &servers)
 	int			i;
 	std::string	keyword;
 	parsePtr	parserArray[FNUM] = {
-				&Parser::p_location,
 				&Parser::p_servername,
 				&Parser::p_listen,
 				&Parser::p_root,
@@ -611,9 +674,9 @@ int	Parser::parse_server(std::vector<Server> &servers)
 				&Parser::p_errorpage,
 				&Parser::p_cgidir,
 				&Parser::p_allowmethods,
+				&Parser::p_location,
 	};
 	std::string	strArray[FNUM] = {
-					"location",
 					"server_name",
 					"listen",
 					"root",
@@ -623,6 +686,7 @@ int	Parser::parse_server(std::vector<Server> &servers)
 					"error_page",
 					"cgi_dir",
 					"allow_methods",
+					"location",
 	};
 
 	this->line >> keyword;
@@ -657,18 +721,18 @@ void	Parser::parse_mandatory(std::vector<Server> &servers)
 	if (servers.empty())
 		throw std::invalid_argument("Invalid argument: no servers");
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++) {
-		if (it->listen.empty())
+		if (!it->id.at(BS_LISTEN))
 			throw std::invalid_argument("Invalid argument: <listen> is mandatory");
-		if (it->root.empty())
+		if (!it->id.at(BS_ROOT))
 			throw std::invalid_argument("Invalid argument: <root> is mandatory");
-		if (it->max_client_body_size == -1)
+		if (!it->id.at(BS_MCBS))
 			it->max_client_body_size = 1;
 		if (!it->location.empty()) {
 			for (std::vector<Location>::iterator itl = it->location.begin(); itl != it->location.end(); itl++) {
-				if (!itl->max_client_body_size)
+				if (!itl->id.at(BL_MCBS))
 					itl->max_client_body_size = it->max_client_body_size;
-				if (itl->root.empty())
-					itl->root= it->root;
+				if (!itl->id.at(BL_ROOT))
+					itl->root = it->root;
 			}
 		}
 	}
