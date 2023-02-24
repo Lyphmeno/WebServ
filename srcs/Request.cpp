@@ -32,9 +32,21 @@ ft::Request::~Request(void){
 /*
     Add the raw request to a vector
 */
-void ft::Request::fillRequest(std::string line)
+void ft::Request::fillRequest(char *buffer)
 {
-    this->_requestFull.push_back(line);
+    int i = 0;
+    std::string line;
+    while (buffer[i])
+    {
+        while (buffer[i] != 13)
+        {
+            line += buffer[i];
+            i++;
+        }
+        line += '\n';
+        this->_requestFull.push_back(line);
+        i++;
+    }
 }
 
 /*
@@ -100,24 +112,10 @@ void ft::Request::getRequestLine(std::string line)
     and send it to create the response
 */
 std::string ft::Request::requestStarter(int readBytes, char *buffer){
-    std::string line;
-    std::ifstream ifs("request");
     ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
-
-    if (!ifs.is_open())
-    {
-        responseHTTP->setContentType("HTTP/1.1");
-        responseHTTP->setError("500");
-    }
-    else
-    { 
-        while (std::getline(ifs, line) != 0)
-        {
-            requestHTTP.fillRequest(line);
-        }
-        requestHTTP.parseRequest(responseHTTP, readBytes);
-    }
+    requestHTTP.fillRequest(buffer);
+    requestHTTP.parseRequest(responseHTTP, readBytes);
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
     //responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());

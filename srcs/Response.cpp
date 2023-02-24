@@ -190,6 +190,7 @@ void ft::Response::plain(std::string body){
     std::string token;
     std::string value;
 
+    std::cout << "plain" << std::endl;
     while ((pos = body.find("=")) != std::string::npos) {
         token = body.substr(0, pos);
         body.erase(0, pos + 1);
@@ -199,6 +200,7 @@ void ft::Response::plain(std::string body){
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
         }
         body.erase(0, pos + 1);
+        std::cout << "[token = " << token << "] [value = " << value << "]" << std::endl; 
         _formValues[token] = value;
     }
 
@@ -230,6 +232,7 @@ void ft::Response::POST_method(const std::string & url){
     }
     if (raw.find("\r\n\r\n") != std::string::npos)
     {
+        std::cout << "icicicicicicic\n";
        body = raw.substr(raw.find("\r\n\r\n"));
        body.erase(0, 4);
     }
