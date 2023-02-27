@@ -7,7 +7,7 @@
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(void) : _indexON(0), _root("/"){
+ft::Request::Request(void) : _indexON(0), _root("/"), _code(0){
 }
 
 ft::Request::Request(const Request & src){
@@ -61,7 +61,6 @@ void ft::Request::fillRequest(char *buffer)
     }
     _rawBody = newbuffer;
     _rawBody.erase(0, 3);
-    std::cout << "[" << _rawBody << "]\n";
 }
 
 /*
@@ -127,9 +126,12 @@ void ft::Request::getRequestLine(std::string line)
 std::string ft::Request::requestStarter(int readBytes, char *buffer){
     ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
-    requestHTTP.fillRequest(buffer);
-    requestHTTP.parseRequest(responseHTTP, readBytes);
 
+    if (_code == 0)
+    {
+        requestHTTP.fillRequest(buffer);
+        requestHTTP.parseRequest(responseHTTP, readBytes);
+    }
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
     // responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());

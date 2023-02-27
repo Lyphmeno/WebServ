@@ -59,7 +59,7 @@ private:
         //Conf file
         int _indexON;
         std::string _root;
-       
+       int _code;
 };
 
 }

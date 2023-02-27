@@ -143,7 +143,6 @@ void ft::Response::GET_method(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    std::cout << url<< std::endl;
     if (!ifs.is_open())
     {
         setError("404");
@@ -184,7 +183,6 @@ void ft::Response::urlencoded(void){
 
 void ft::Response::multi(void){
     std::cout << "multi" << std::endl;
-    (void)_rawBody;
 
 }
 
@@ -221,7 +219,10 @@ void ft::Response::POST_method(const std::string & url){
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
-    enctype = _rawResponse["Content-Type"];
+    if (_rawResponse["Content-Type"].find("multipart/form-data;") != std::string::npos)
+        enctype = "multipart/form-data";
+    else
+        enctype = _rawResponse["Content-Type"];
 
     fPtr enc[3] = {
         &ft::Response::urlencoded,
