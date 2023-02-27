@@ -30,8 +30,8 @@ OBJS		:=	$(subst $(SRCDIR),$(OBJDIR),$(SRC:.$(SRCEXT)=.$(OBJEXT)))
 all: $(NAME)
 
 $(NAME):	$(OBJDIR) $(OBJS) $(HEADERS) Makefile
-			@echo -ne '    \033c$(E_BAR)\n'
 			$(CXX) $(CXFLAGS) -o $(NAME) $(OBJS) 
+			@echo -ne '    \033c$(E_BAR)\n'
 
 $(OBJDIR):
 			@mkdir -p $(OBJDIR)
