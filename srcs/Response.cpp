@@ -148,6 +148,7 @@ void ft::Response::GET_method(const std::string & url){
         _body += "\n";
     }
     _body.erase(_body.size() - 1,1);
+    std::cout << _body << std::endl;
 }
 
 /* post */
