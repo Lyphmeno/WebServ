@@ -1,3 +1,6 @@
 request
 response
 .vscode
+objs
+*.o
+webserv

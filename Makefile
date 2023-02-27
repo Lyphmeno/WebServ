@@ -1,44 +1,83 @@
+NAME		:=	webserv
 
-CC			= c++ -Wall -Wextra -Werror -g -fsanitize=address -std=c++98
-RM			= rm -rf
-NAME		= ./webservhttp
-NAME_SHORT	= webservhttp
+CXX			:=	c++
+CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -pedantic -g3
 
-MAIN_INC	= -I includes
-INCS		=	incs/ContentType.hpp \
-				incs/Request.hpp \
-				incs/Response.hpp \
-				incs/Tools.hpp \
-				incs/StatusCode.hpp
+SRCDIR		:=	srcs
+SRCEXT		:=	cpp
+SRC			:=	\
+				./srcs/SocketManager.cpp\
+				./srcs/Parser.cpp\
+				./srcs/Webserv.cpp\
+				./srcs/Server.cpp\
+				./srcs/ContentType.cpp\
+				./srcs/Request.cpp\
+				./srcs/Response.cpp\
+				./srcs/StatusCode.cpp\
+				./srcs/main.cpp\
 
+INCDIR		:=	incs
+INCEXT		:=	hpp
+HEADERS		:=	\
+				./incs/Location.hpp\
+				./incs/Socket.hpp\
+				./incs/SocketManager.hpp\
+				./incs/Parser.hpp\
+				./incs/Server.hpp\
+				./incs/Webserv.hpp\
+				./incs/ContentType.hpp\
+				./incs/Request.hpp\
+				./incs/Response.hpp\
+				./incs/StatusCode.hpp\
 
-SRCS		=	main2.cpp \
-				srcs/ContentType.cpp \
-				srcs/Request.cpp \
-				srcs/Response.cpp \
-				srcs/Tools.cpp \
-				srcs/StatusCode.cpp
+OBJDIR		:=	objs
+OBJEXT		:=	o
+OBJS		:=	$(subst $(SRCDIR),$(OBJDIR),$(SRC:.$(SRCEXT)=.$(OBJEXT)))
 
-OBJS		= $(SRCS:.cpp=.o)
+.PHONY: all
+all: $(NAME)
 
-_OK			= \033[32mOK\033[0m
-_BOLD		= \033[1m
+$(NAME):	$(OBJDIR) $(OBJS) $(HEADERS) Makefile
+			$(CXX) $(CXFLAGS) -o $(NAME) $(OBJS) 
+			@echo -ne '    \033c$(E_BAR)\n'
 
-%.o			: %.cpp
-			$(CC) $(MAIN_INC) -c $< -o $@
+$(OBJDIR):
+			@mkdir -p $(OBJDIR)
+			@$(eval $(call update_bar))
 
-all			: $(NAME)
+$(OBJDIR)/%.$(OBJEXT) : 	$(SRCDIR)/%.$(SRCEXT)
+							@echo -ne '\033c$(E_BAR)\n'
+							$(CXX) $(CXFLAGS) -c -o $@ $<  -I $(INCDIR)
+							@$(eval $(call update_bar))
 
-$(NAME)		: $(OBJS) $(INCS)
-			@$(CC) $(OBJS) $(MAIN_INC) -o $(NAME)
-			@echo "$(_OK) $(NAME_SHORT) $(_BOLD)compiled"
+.PHONY: re
+re: fclean all
 
-clean		:
-			@$(RM) $(OBJS)
+.PHONY: clean
+clean:
+		@$(RM) -rf $(OBJDIR)
 
-fclean		: clean
-			@$(RM) $(NAME)
+.PHONY: fclean
+fclean: clean
+		@$(RM) -rf $(NAME)
 
-re			: fclean all
+#  ---------- PROGRESS BAR ----------  #
+_STOP		:=	\e[0m
+_PINK		:=	\033[38;5;223m\e[1m
+_ORANGE		:=	\033[38;5;209m\e[1m
+VAL			:=	66
+_CREAM		:=	\033[38;5;${VAL}m\e[1m
+INDEX		:=	1
+BUILD_SIZE	:=	$(shell find $(SRCDIR) -type f -name "*.cpp" | wc -l)
+PRC			:=	$(shell echo "$(INDEX) / $(BUILD_SIZE) * 100" | bc -l)
+progress	:=	$(shell echo "$(INDEX) / ($(BUILD_SIZE) / 20)" | bc -l)
 
-.PHONY		: all clean fclean re
+define update_bar =
+    E_BAR		:=	$(_PINK)-->$(_ORANGE)[$(_STOP)$(_CREAM)$(shell python3 -c 'print("█" * int($(progress)))')$(shell python3 -c 'print(" " * (20 - int($(progress))))')$(_ORANGE)]$(_PINK)<--$(_ORANGE)[$(_CREAM)$(shell echo $(PRC) / 1 | bc)%$(_ORANGE)]$(_STOP)
+	INDEX		:=	$(shell echo $(INDEX) + 1 | bc -l)
+    progress	:=	$(shell echo "$(INDEX) / ($(BUILD_SIZE) / 20)" | bc -l)
+	PRC			:=	$(shell echo "$(INDEX) / $(BUILD_SIZE) * 100" | bc -l)
+	VAL			:=	$(shell echo $(VAL) + 1 | bc -l)
+	_CREAM		:=	\033[38;5;${VAL}m\e[1m
+endef
+#  ---------- PROGRESS BAR ----------  #

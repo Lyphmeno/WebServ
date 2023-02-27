@@ -89,7 +89,6 @@ ft::ContentType::ContentType(void){
 ft::ContentType::~ContentType(void){
 }
 
-
 const std::string & ft::ContentType::getType(std::string extension){
     return _mimeType[extension]._type;
 }
