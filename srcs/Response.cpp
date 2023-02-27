@@ -75,8 +75,16 @@ void ft::Response::setMethod(std::string method){
     this->_method = method;
 }
 
+void ft::Response::setRawBody(std::string body){
+    this->_rawBody = body;
+}
+
 void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
+}
+
+void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
+    this->_rawResponse = rr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,6 +143,7 @@ void ft::Response::GET_method(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
+    std::cout << url<< std::endl;
     if (!ifs.is_open())
     {
         setError("404");
@@ -148,54 +157,52 @@ void ft::Response::GET_method(const std::string & url){
         _body += "\n";
     }
     _body.erase(_body.size() - 1,1);
-    std::cout << _body << std::endl;
 }
 
 /* post */
 
-typedef void(ft::Response::*fPtr)(std::string body);
+typedef void(ft::Response::*fPtr)(void);
 
-void ft::Response::urlencoded(std::string body){
+void ft::Response::urlencoded(void){
     size_t pos = 0;
     std::string token;
     std::string value;
 
-    while ((pos = body.find("=")) != std::string::npos) {
-        token = body.substr(0, pos);
-        body.erase(0, pos + 1);
-        if ((pos = body.find("&")) != std::string::npos)
+    while ((pos = _rawBody.find("=")) != std::string::npos) {
+        token = _rawBody.substr(0, pos);
+        _rawBody.erase(0, pos + 1);
+        if ((pos = _rawBody.find("&")) != std::string::npos)
         {
-            value = body.substr(0, pos);
+            value = _rawBody.substr(0, pos);
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
         }
-        body.erase(0, pos + 1);
-        // std::cout << "[token = " << token << "] [value = " << value << "]" << std::endl; 
+        _rawBody.erase(0, pos + 1);
         _formValues[token] = value;
     }
+    _formValues[token] = _rawBody;
 }
 
-void ft::Response::multi(std::string body){
+void ft::Response::multi(void){
     std::cout << "multi" << std::endl;
-    (void)body;
+    (void)_rawBody;
 
 }
 
 
-void ft::Response::plain(std::string body){
+void ft::Response::plain(void){
     size_t pos = 0;
     std::string token;
     std::string value;
 
-    std::cout << "plain" << std::endl;
-    while ((pos = body.find("=")) != std::string::npos) {
-        token = body.substr(0, pos);
-        body.erase(0, pos + 1);
-        if ((pos = body.find("\n")) != std::string::npos)
+    while ((pos = _rawBody.find("=")) != std::string::npos) {
+        token = _rawBody.substr(0, pos);
+        _rawBody.erase(0, pos + 1);
+        if ((pos = _rawBody.find("\n")) != std::string::npos)
         {
-            value = body.substr(0, pos);
+            value = _rawBody.substr(0, pos);
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
         }
-        body.erase(0, pos + 1);
+        _rawBody.erase(0, pos + 1);
         _formValues[token] = value;
     }
 
@@ -204,8 +211,6 @@ void ft::Response::plain(std::string body){
 void ft::Response::POST_method(const std::string & url){
     
     std::ifstream ifs(url.c_str());
-    std::string raw;
-    std::string body;
     std::string enctype;
 
 
@@ -216,27 +221,7 @@ void ft::Response::POST_method(const std::string & url){
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
-    for (std::vector<std::string>::iterator it = _raw.begin(); it != _raw.end(); ++it){
-        raw += (*it);
-        raw += "\n";
-        if ((raw.find("Content-Type: ") != std::string::npos) && enctype.empty())
-        {
-            enctype = raw.substr(raw.find("Content-Type: "));
-            enctype.erase(0, 14);
-            if (enctype.find("multipart/form-data;") != std::string::npos)
-                enctype = "multipart/form-data";
-        }
-
-    }
-    std::cout << enctype << std::endl;
-    if (raw.find("\r\n\r\n") != std::string::npos)
-    {
-    
-       body = raw.substr(raw.find("\r\n\r\n"));
-       body.erase(0, 4);
-    }
-    enctype.erase(std::remove(enctype.begin(), enctype.end(), 13), enctype.end());
-    enctype.erase(std::remove(enctype.begin(), enctype.end(), '\n'), enctype.end());
+    enctype = _rawResponse["Content-Type"];
 
     fPtr enc[3] = {
         &ft::Response::urlencoded,
@@ -249,10 +234,10 @@ void ft::Response::POST_method(const std::string & url){
     for (; i < 3; i++)
     {
         if (type[i] == enctype)
-            (this->*enc[i])(body);
+            (this->*enc[i])();
     }
     if (i > 3)
-        (this->*enc[1])(body);
+        (this->*enc[1])();
     return ;
 }
 

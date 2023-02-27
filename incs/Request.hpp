@@ -41,6 +41,7 @@ public:
 
         void getRequestLine(std::string line);
         void checkMethodAllowed(ft::Response *response, std::string method);
+        std::map<std::string, std::string> _rawRequest;
 
 private:
 
@@ -53,8 +54,8 @@ private:
 
         //Raw
         std::vector<std::string> _requestFull;
-        std::map<std::string, std::string> _rawRequest;
-
+        std::string _rawBody;
+        
         //Conf file
         int _indexON;
         std::string _root;

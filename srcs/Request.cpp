@@ -46,22 +46,22 @@ void ft::Request::fillRequest(char *buffer)
     {
         _requestLine = newbuffer.substr(0, pos);
         newbuffer.erase(0, pos + 1);
-        std::cout << _requestLine << std::endl;
     }
     while ((pos = newbuffer.find(":")) != std::string::npos) {
         token = newbuffer.substr(0, pos);
-        newbuffer.erase(0, pos + 1);
+        newbuffer.erase(0, pos + 2);
         if ((pos = newbuffer.find(13)) != std::string::npos)
         {
             value = newbuffer.substr(0, pos);
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
         }
         newbuffer.erase(0, pos + 1);
-        std::cout << "tok = " << token << std::endl;
-        std::cout << "valu = " << value << std::endl;
+        token.erase(0, 1);
         _rawRequest[token] = value;
     }
-
+    _rawBody = newbuffer;
+    _rawBody.erase(0, 3);
+    std::cout << "[" << _rawBody << "]\n";
 }
 
 /*
@@ -79,7 +79,8 @@ void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
 void ft::Request::parseRequest(ft::Response *response, int readBytes){
-    
+    response->setRawResponse(_rawRequest);
+    response->setRawBody(_rawBody);
     getRequestLine(_requestLine);
     checkMethodAllowed(response, _method);
     response->setProtVersion(_protocolVersion);
@@ -87,6 +88,7 @@ void ft::Request::parseRequest(ft::Response *response, int readBytes){
     response->setContentType(response->addContentType());
     response->setContentLenght(readBytes);
     response->createBody(_url);
+
 }
 
 
@@ -127,9 +129,10 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer){
     ft::Response *responseHTTP = new ft::Response();
     requestHTTP.fillRequest(buffer);
     requestHTTP.parseRequest(responseHTTP, readBytes);
+
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
-    responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
+    // responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
    
     return responseR;
 }
