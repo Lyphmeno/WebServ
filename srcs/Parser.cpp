@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/24 13:13:10 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/27 10:56:58 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -383,17 +383,22 @@ void	Parser::print_all(std::vector<Server>& servers)
 /////////////////////////////
 void	Parser::p_location(std::vector<Server> &servers)
 {
+	std::string	tmp;
+
 	this->brackets();
 	this->dlt_first();
 	if (nbr_words() != 1)
-		throw std::invalid_argument("Invalid argument: <location> can only have one argument");
+		throw std::invalid_argument("Invalid argument: <location> must/can only have one argument");
 	this->inbrackets++;
 	if (this->inbrackets >= 3)
 		throw std::invalid_argument("Invalid argument: <location> cannot have <location>");
+	this->line >> tmp;
+	if (servers.back().getId(tmp) >= 0)
+		throw std::invalid_argument("Invalid argument: <location> must not be the same");
 	servers.back().location.push_back(ft::Location());
 	for (int i = 0; i <= 6; i++)
 		servers.back().location.back().id.push_back(false);
-	this->line >> servers.back().location.back().path;
+	servers.back().location.back().path = tmp;
 }
 
 void	Parser::p_servername(std::vector<Server> &servers)

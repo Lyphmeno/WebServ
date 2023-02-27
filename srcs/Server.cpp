@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/24 12:36:10 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/27 10:51:35 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	Server::getId(std::string path)
 {
 	int	i = 0;
 	if (this->location.empty())
-		return (-1);
+		return (-2);
 	for (std::vector<Location>::const_iterator it = this->location.begin(); it != this->location.end(); it++) {
 		if (it->path == path)
 			return (i);
