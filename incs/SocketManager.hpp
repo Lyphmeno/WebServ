@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/24 13:16:53 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/28 23:45:14 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,17 @@ namespace ft {
 
 class SocketManager
 {
+private:
+	typedef	std::map<int, Socket>::iterator							srv_it;
+	typedef	std::map<int, Socket>::const_iterator					srv_cit;
+	typedef	std::map<int, Socket>::value_type						srv_val;
+	typedef std::map<int, std::map<int, Socket> >::iterator			scli_it;
+	typedef std::map<int, std::map<int, Socket> >::const_iterator	scli_cit;
+	typedef std::map<int, std::map<int, Socket> >::value_type		scli_val;
+	typedef std::map<int, Socket>::iterator							cli_it;
+	typedef std::map<int, Socket>::const_iterator					cli_cit;
+	typedef std::map<int, Socket>::value_type						cli_val;
+
 public:
 	SocketManager();
 	~SocketManager();
@@ -39,7 +50,7 @@ public:
 	void	setNoBlock(const int &fd) const;
 	bool	isServer(const int &fd) const;
 	void	close(const int &fd);
-	void	getData(const int &fd, const char *s);
+	void	getData(const int &fd, const char *data);
 
 private:
 	SocketManager(const SocketManager &x);
@@ -48,10 +59,10 @@ private:
 	void	closeClient(const int &fd);
 
 public:
-	int									epfd;
-	epoll_event							epev[MAXEVENTS];
-	std::vector<Socket>					servers;
-	std::map<int, std::vector<Socket> >	clients;
+	int										epfd;
+	epoll_event								epev[MAXEVENTS];
+	std::map<int, Socket>					servers;
+	std::map<int, std::map<int, Socket> >	clients;
 };
 
 }

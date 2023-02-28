@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/24 13:57:32 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/02/28 23:45:12 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ SocketManager::~SocketManager()
 		::close(this->epfd);
 		this->epfd = -1;
 	}
-	while (this->servers.size() > 0)
-		this->closeServer(this->servers[0].fd);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,16 +55,15 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 		throw std::runtime_error("Runtime error: Can't listen socket");
 	
 	this->addEp(sock.fd);
-	this->servers.push_back(sock);
-	this->clients.insert
-	(std::map<int, std::vector<Socket> >::value_type(sock.fd, std::vector<Socket>()));
+	this->servers.insert(srv_val(sock.fd, sock));
+	this->clients.insert(scli_val(sock.fd, std::map<int, Socket>()));
 }
 
 void	SocketManager::addClient(const int &sfd, const Socket &sock)
 {
 	this->setNoBlock(sock.fd);
 	this->addEp(sock.fd);
-	this->clients[sfd].push_back(sock);
+	this->clients.find(sfd)->second.insert(cli_val(sock.fd, sock));
 }
 
 void	SocketManager::addEp(const int &fd) const
@@ -91,95 +88,21 @@ void	SocketManager::setNoBlock(const int &fd) const
 
 bool	SocketManager::isServer(const int &fd) const
 {
-	for (std::vector<Socket>::const_iterator it = this->servers.begin();
-	it != this->servers.end(); it++)
-	{
-		if (it->fd == fd)
-			return (true);
-	}
+	if (this->servers.find(fd) != this->servers.end())
+		return (true);
 	return (false);
 }
 
-void	SocketManager::getData(const int &fd, const std::string data)
+void	SocketManager::getData(const int &fd, const char *data)
 {
-	for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
-	mit != this->clients.end(); mit++)
-	{
-		for (std::vector<Socket>::iterator vit = mit->second.begin();
-		vit != mit->second.end(); vit++)
-		{
-			if (vit->fd == fd)
-			{
-				if (vit->header == true)
-					vit->blen += data.size();
-				else if (data.find("\r\n") != data.npos)
-				{
-					vit->hlen += data.find("\r\n") + 1;
-					vit->blen += data.size() - (data.find("\r\n") + 1);
-				}
-				else
-					vit->hlen += data.size();
-				if (vit->hlen > MAXHEADER)
-				{
-					sendError();
-				}
-			}
-		}
-	}
 }
 
 void	SocketManager::closeServer(const int &fd)
 {
-	if (fd == -1)
-		return ;
-	for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
-	mit != this->clients.end(); mit++)
-	{
-		if (mit->first == fd)
-		{
-			for (std::vector<Socket>::iterator vit = mit->second.begin();
-			vit != mit->second.end(); vit++)
-				::close(vit->fd);
-			mit->second.clear();
-			this->clients.erase(mit);
-			break;
-		}
-	}
-	for (std::vector<Socket>::iterator it = this->servers.begin();
-	it != this->servers.end(); it++)
-	{
-		if (it->fd == fd)
-		{
-			::close(fd);
-			this->servers.erase(it);
-			break;
-		}
-	}
 }
 
 void	SocketManager::close(const int &fd)
 {
-	if (fd == -1)
-		return ;
-	if (this->isServer(fd) == true)
-		this->closeServer(fd);
-	else
-	{
-		for (std::map<int, std::vector<Socket> >::iterator mit = this->clients.begin();
-		mit != this->clients.end(); mit++)
-		{
-			for (std::vector<Socket>::iterator vit = mit->second.begin();
-			vit != mit->second.end(); vit++)
-			{
-				if (vit->fd == fd)
-				{
-					::close(fd);
-					mit->second.erase(vit);
-					return ;
-				}
-			}
-		}
-	}
 }
 
 }
