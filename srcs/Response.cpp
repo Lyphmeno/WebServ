@@ -1,4 +1,5 @@
 #include "../incs/Response.hpp"
+#include <dirent.h> 
 #include <algorithm>
 
 static std::string itostring(int toConvert){
@@ -131,6 +132,43 @@ const std::string & ft::Response::addContentType(void){
     extension.insert(0, _url, found + 1);
     return (_Mime.getType(extension));
 }
+
+void ft::Response::createAutoIndexHtmlPage(const std::string& directoryPath) {
+    // Get the list of HTML files in the directory
+    std::vector<std::string> htmlFiles;
+
+    DIR* dir = opendir(directoryPath.c_str());
+    struct dirent* entry;
+    while ((entry = readdir(dir))) {
+        std::string filename = entry->d_name;
+        if (filename.find(".html") != std::string::npos) {
+            htmlFiles.push_back(filename);
+        }
+    }
+    closedir(dir);
+
+    // Sort the list of HTML files
+    sort(htmlFiles.begin(), htmlFiles.end());
+
+    // Create the autoindex HTML page
+    std::ofstream outputFile((directoryPath + "/index.html").c_str());
+    outputFile << "<!DOCTYPE html>\n";
+    outputFile << "<html>\n";
+    outputFile << "  <head>\n";
+    outputFile << "    <title>Autoindex</title>\n";
+    outputFile << "  </head>\n";
+    outputFile << "  <body>\n";
+    outputFile << "    <h1>Index of " << directoryPath << "</h1>\n";
+    outputFile << "    <ul>\n";
+    for (std::vector<std::string>::const_iterator it = htmlFiles.begin(); it != htmlFiles.end(); ++it) {
+        outputFile << "      <li><a href=\"" << *it << "\">" << *it << "</a></li>\n";
+    }
+    outputFile << "    </ul>\n";
+    outputFile << "  </body>\n";
+    outputFile << "</html>\n";
+}
+
+
 
 /*..............................................................................
 ..                                 METHODS                                    ..

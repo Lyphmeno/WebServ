@@ -56,6 +56,8 @@ public:
         void handleErrors();
         void setError(std::string code);
 
+        void createAutoIndexHtmlPage(const std::string& directoryPath);
+        
 private:
         //request line
         std::string _protVersion;

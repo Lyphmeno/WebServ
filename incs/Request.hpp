@@ -2,7 +2,11 @@
 #define REQUEST_HPP
 
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
+#include <algorithm>
+
 #include "Response.hpp"
 
 
@@ -43,6 +47,9 @@ public:
         void checkMethodAllowed(ft::Response *response, std::string method);
         std::map<std::string, std::string> _rawRequest;
 
+
+        bool Directory(std::string url);
+        void getCorrectUrl(void);
 private:
 
         //Request line
@@ -59,7 +66,8 @@ private:
         //Conf file
         int _indexON;
         std::string _root;
-       int _code;
+        std::string _index;
+//        int _code;
 };
 
 }

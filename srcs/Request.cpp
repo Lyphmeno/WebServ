@@ -1,13 +1,12 @@
 #include "../incs/Request.hpp"
-#include <fstream>
-#include <algorithm>
-#include <string>
+#include <dirent.h> 
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(void) : _indexON(0), _root("/"), _code(0){
+ft::Request::Request(void) : _indexON(0), _root("html"), _index("index.html"){
 }
 
 ft::Request::Request(const Request & src){
@@ -28,6 +27,9 @@ ft::Request::~Request(void){
 ////////////////////////////////////////////////////////////////////////////////
 //                                OPERATORS                                   //
 ////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 /*
     Add the raw request to a vector
@@ -87,13 +89,40 @@ void ft::Request::parseRequest(ft::Response *response, int readBytes){
     response->setContentType(response->addContentType());
     response->setContentLenght(readBytes);
     response->createBody(_url);
-
 }
 
 
 /*
     Get the URL, method and protocol
 */
+
+
+bool ft::Request::Directory(std::string url){
+
+    DIR* dir = opendir(url.c_str());
+    if (dir != NULL)
+    {
+        closedir(dir);
+        return (true);
+    }
+    return (false);
+}
+
+void ft::Request::getCorrectUrl(void){
+
+    std::string oldUrl;
+
+    oldUrl = _url;
+    _url = _root + _url;
+    if (oldUrl == "/" )
+    {
+        _indexON = 1;
+        _url = _url + _index;
+    }
+
+}
+
+
 void ft::Request::getRequestLine(std::string line)
 {
     size_t found = line.find(" ");
@@ -105,18 +134,8 @@ void ft::Request::getRequestLine(std::string line)
     found = line.find("\n");
     this->_protocolVersion.insert(0, line, 0, found);
     _protocolVersion.erase(_protocolVersion.size(), 1);
-    if (_url == "/")
-    {
-        _indexON = 1;
-        _url = "html/pages/index.html"; //rajouter le root
-    }
-    else
-    {
-        if (_root != "/")
-            _url = _root + _url;
-        else
-            _url.erase(0, 1);
-    }
+    getCorrectUrl();
+    std::cout << _url << std::endl;
 }
 
 /*
@@ -127,11 +146,12 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer){
     ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
 
-    if (_code == 0)
-    {
+    // if (_code == 0)
+    // {
+
         requestHTTP.fillRequest(buffer);
         requestHTTP.parseRequest(responseHTTP, readBytes);
-    }
+    // }
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
     // responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
