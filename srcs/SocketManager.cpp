@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/28 23:45:12 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/01 23:04:24 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ SocketManager::~SocketManager()
 		::close(this->epfd);
 		this->epfd = -1;
 	}
+	while (this->servers.size() > 0)
+		this->close(this->servers[0].fd);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,15 +57,16 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 		throw std::runtime_error("Runtime error: Can't listen socket");
 	
 	this->addEp(sock.fd);
-	this->servers.insert(srv_val(sock.fd, sock));
-	this->clients.insert(scli_val(sock.fd, std::map<int, Socket>()));
+	this->servers.insert(sock_val(sock.fd, sock));
+	this->clients.insert(srv_val(sock.fd, std::map<int, Socket>()));
 }
 
 void	SocketManager::addClient(const int &sfd, const Socket &sock)
 {
 	this->setNoBlock(sock.fd);
 	this->addEp(sock.fd);
-	this->clients.find(sfd)->second.insert(cli_val(sock.fd, sock));
+	this->clients.find(sfd)->second.insert(sock_val(sock.fd, sock));
+	this->linker.insert(link_val(sock.fd, sfd));
 }
 
 void	SocketManager::addEp(const int &fd) const
@@ -93,16 +96,47 @@ bool	SocketManager::isServer(const int &fd) const
 	return (false);
 }
 
-void	SocketManager::getData(const int &fd, const char *data)
+void	SocketManager::getData(const int &fd, const char *s)
 {
-}
+	sock_it sock = this->clients.find((this->linker.find(fd)->second))->second.find(fd);
+	std::string	data(s);
+	
+	if (data.find("\r\n") != data.npos)
+	{
+		sock->second.hlen += data.find("\r\n") + 1;
+		sock->second.blen += data.size() - (data.find("\r\n") + 1);
+	}
+	else if (sock->second.request.find("\r\n") != sock->second.request.find("\r\n"))
+		sock->second.blen += data.size();
+	else
+		sock->second.hlen += data.size();
 
-void	SocketManager::closeServer(const int &fd)
-{
+	if (sock->second.hlen > MAXHEADER)
+		sock->second.response = 431;
+	if (sock->second.blen > this->getMaxBody())
+		sock->second.response = 413;
 }
 
 void	SocketManager::close(const int &fd)
 {
+	if (this->isServer(fd) == true)
+	{
+		srv_it sit = this->clients.find(fd);
+		for (sock_it it = sit->second.begin(); it != sit->second.end(); it++)
+		{
+			this->linker.erase(it->second.fd);
+			::close(it->second.fd);
+		}
+		this->clients.erase(fd);
+		this->servers.erase(fd);
+		::close(fd);
+	}
+	else
+	{
+		::close(fd);
+		this->clients.find((this->linker.find(fd)->second))->second.erase(fd);
+		this->linker.erase(fd);
+	}
 }
 
 }

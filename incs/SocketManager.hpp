@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/02/28 23:45:14 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/01 19:52:09 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,28 @@
 #define MAXEVENTS 10
 #define MAXQUEU 10
 #define MAXHEADER 8192
-
+#define NOTFD 0
+#define CLI 1
+#define SRV 2
 namespace ft {
 
 class SocketManager
 {
 private:
-	typedef	std::map<int, Socket>::iterator							srv_it;
-	typedef	std::map<int, Socket>::const_iterator					srv_cit;
-	typedef	std::map<int, Socket>::value_type						srv_val;
-	typedef std::map<int, std::map<int, Socket> >::iterator			scli_it;
-	typedef std::map<int, std::map<int, Socket> >::const_iterator	scli_cit;
-	typedef std::map<int, std::map<int, Socket> >::value_type		scli_val;
-	typedef std::map<int, Socket>::iterator							cli_it;
-	typedef std::map<int, Socket>::const_iterator					cli_cit;
-	typedef std::map<int, Socket>::value_type						cli_val;
+	typedef std::map<int, Socket>									sock_type;
+	typedef	std::map<int, Socket>::iterator							sock_it;
+	typedef	std::map<int, Socket>::const_iterator					sock_cit;
+	typedef	std::map<int, Socket>::value_type						sock_val;
+
+	typedef std::map<int, std::map<int, Socket>>					srv_type;
+	typedef std::map<int, std::map<int, Socket> >::iterator			srv_it;
+	typedef std::map<int, std::map<int, Socket> >::const_iterator	srv_cit;
+	typedef std::map<int, std::map<int, Socket> >::value_type		srv_val;
+
+	typedef std::map<int, int>										linker_type;
+	typedef	std::map<int, int>::iterator							link_it;
+	typedef	std::map<int, int>::const_iterator						link_cit;
+	typedef	std::map<int, int>::value_type							link_val;
 
 public:
 	SocketManager();
@@ -55,12 +62,11 @@ public:
 private:
 	SocketManager(const SocketManager &x);
 	SocketManager	&operator=(const SocketManager &x);
-	void	closeServer(const int &fd);
-	void	closeClient(const int &fd);
 
 public:
 	int										epfd;
 	epoll_event								epev[MAXEVENTS];
+	std::map<int, int>						linker;
 	std::map<int, Socket>					servers;
 	std::map<int, std::map<int, Socket> >	clients;
 };
