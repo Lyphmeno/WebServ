@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/27 10:51:35 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/02 12:13:34 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,28 @@ Server &Server::operator=(const Server &rhs)
 /////////////////////////////
 // Getters                 //
 /////////////////////////////
-int	Server::getId(std::string path)
+int	Server::getLoc(std::string path)
 {
-	int	i = 0;
 	if (this->location.empty())
 		return (-2);
 	for (std::vector<Location>::const_iterator it = this->location.begin(); it != this->location.end(); it++) {
 		if (it->path == path)
-			return (i);
-		i++;
+			return (it - this->location.begin());
 	}
 	return (-1);
+}
+
+bool	Server::getAutoIndex(std::string path)
+{
+	if (this->getLoc(path) == -1) {
+		if (!this->auto_index.compare("on"))
+			return (true);
+		else
+			return (false);
+	}
+	if (!this->location.at(this->getLoc(path)).auto_index.compare("on"))
+		return (true);
+	return (false);
 }
 /////////////////////////////
 // Setters                 //
