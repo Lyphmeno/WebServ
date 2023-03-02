@@ -20,7 +20,7 @@ namespace ft {
 Webserv::Webserv(std::string filename)
 {
 	this->parser.parsing(filename, this->servers);
-	this->request.server_start(parser);
+	this->request.server_start(this->servers);
 	// for (std::vector<Server>::const_iterator it = this->servers.begin();
 	// it != this->servers.end(); it++)
 	// {

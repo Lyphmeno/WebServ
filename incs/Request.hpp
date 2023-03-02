@@ -52,7 +52,7 @@ public:
         void createAutoIndexHtmlPage(const std::string& directoryPath);
 
 
-        int server_start(Parser parser);
+        int server_start(std::vector<ft::Server>	server);
 
 private:
 
@@ -75,7 +75,7 @@ private:
 
 
         //Parser
-	Parser	parser;
+	std::vector<ft::Server>	servers;
 
 };
 

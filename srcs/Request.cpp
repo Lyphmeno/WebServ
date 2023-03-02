@@ -225,7 +225,7 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer){
 //  
 
 
-int ft::Request::server_start(Parser parser)
+int ft::Request::server_start(std::vector<ft::Server>	server)
 {
     int server_fd, new_socket; long valread;
     struct sockaddr_in address;
@@ -234,7 +234,7 @@ int ft::Request::server_start(Parser parser)
 
     std::string hello;
 
-    request.parser = parser;
+    request.servers = server;
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
