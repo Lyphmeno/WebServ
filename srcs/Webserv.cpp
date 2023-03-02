@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 16:21:56 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/02 20:00:38 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,7 @@ Webserv::Webserv(std::string filename)
 	this->parser.parsing(filename, this->servers);
 	for (std::vector<Server>::const_iterator it = this->servers.begin();
 	it != this->servers.end(); it++)
-	{
 		this->manager.addServer(it->addr);
-	}
 }
 
 Webserv::~Webserv()
@@ -65,7 +63,6 @@ void	Webserv::run()
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					std::cerr << bytes << '\n';
 					this->manager.getData(this->manager.epev[i].data.fd, buff);
 				}
 				else

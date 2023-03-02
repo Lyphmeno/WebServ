@@ -17,7 +17,6 @@ public:
 public:
 	int					fd;
 	sockaddr_in			addr;
-	bool				header;
 	unsigned long int	hlen;
 	unsigned long int	blen;
 	std::string			request;
