@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/27 10:56:58 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/02 12:09:18 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,7 +393,7 @@ void	Parser::p_location(std::vector<Server> &servers)
 	if (this->inbrackets >= 3)
 		throw std::invalid_argument("Invalid argument: <location> cannot have <location>");
 	this->line >> tmp;
-	if (servers.back().getId(tmp) >= 0)
+	if (servers.back().getLoc(tmp) >= 0)
 		throw std::invalid_argument("Invalid argument: <location> must not be the same");
 	servers.back().location.push_back(ft::Location());
 	for (int i = 0; i <= 6; i++)
@@ -738,6 +738,8 @@ void	Parser::parse_mandatory(std::vector<Server> &servers)
 					itl->max_client_body_size = it->max_client_body_size;
 				if (!itl->id.at(BL_ROOT))
 					itl->root = it->root;
+				if (!itl->id.at(BL_AUTOINDEX))
+					itl->auto_index = it->auto_index;
 			}
 		}
 	}
