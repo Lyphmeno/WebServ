@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/21 13:19:20 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/02/24 10:27:14 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,17 @@
 #define SLOC 2
 
 #define PRINT_INFO 1
+
+	// Colors //
+#define NC   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN    "\033[36m"
+#define WHITE   "\033[37m"
+
 
 namespace ft {
 class Parser
@@ -57,6 +68,7 @@ public:
 	void	parsing(std::string, std::vector<Server>&);
 private:
 	// ---------Print-------------
+	void	print(std::string, std::string);
 	void	print_tabulation();
 	void	print_servernames(std::vector<Server>&, int);
 	void	print_listen(std::vector<Server>&, int);
@@ -78,6 +90,7 @@ private:
 	void	dlt_first();
 	int		parse_global();
 	int		parse_server(std::vector<Server>&);
+	void	parse_mandatory(std::vector<Server>&);
 	int		parsing_base(std::vector<Server>&);
 	typedef void(Parser::*parsePtr)(std::vector<Server>&);
 	void	p_listen_hp_addint(std::string);

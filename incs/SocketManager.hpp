@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/01 19:52:09 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/02 12:30:40 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ private:
 	typedef	std::map<int, Socket>::const_iterator					sock_cit;
 	typedef	std::map<int, Socket>::value_type						sock_val;
 
-	typedef std::map<int, std::map<int, Socket>>					srv_type;
+	typedef std::map<int, std::map<int, Socket> >					srv_type;
 	typedef std::map<int, std::map<int, Socket> >::iterator			srv_it;
 	typedef std::map<int, std::map<int, Socket> >::const_iterator	srv_cit;
 	typedef std::map<int, std::map<int, Socket> >::value_type		srv_val;

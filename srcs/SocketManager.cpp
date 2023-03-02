@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/01 23:04:24 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/02 12:30:55 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,10 +111,10 @@ void	SocketManager::getData(const int &fd, const char *s)
 	else
 		sock->second.hlen += data.size();
 
-	if (sock->second.hlen > MAXHEADER)
-		sock->second.response = 431;
-	if (sock->second.blen > this->getMaxBody())
-		sock->second.response = 413;
+	// if (sock->second.hlen > MAXHEADER)
+	// 	sock->second.response = 431;
+	// if (sock->second.blen > this->getMaxBody())
+	// 	sock->second.response = 413;
 }
 
 void	SocketManager::close(const int &fd)

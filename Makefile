@@ -10,6 +10,10 @@ SRC			:=	\
 				./srcs/Parser.cpp\
 				./srcs/Webserv.cpp\
 				./srcs/Server.cpp\
+				./srcs/ContentType.cpp\
+				./srcs/Request.cpp\
+				./srcs/Response.cpp\
+				./srcs/StatusCode.cpp\
 				./srcs/main.cpp\
 
 INCDIR		:=	incs
@@ -21,6 +25,10 @@ HEADERS		:=	\
 				./incs/Parser.hpp\
 				./incs/Server.hpp\
 				./incs/Webserv.hpp\
+				./incs/ContentType.hpp\
+				./incs/Request.hpp\
+				./incs/Response.hpp\
+				./incs/StatusCode.hpp\
 
 OBJDIR		:=	objs
 OBJEXT		:=	o
@@ -30,8 +38,8 @@ OBJS		:=	$(subst $(SRCDIR),$(OBJDIR),$(SRC:.$(SRCEXT)=.$(OBJEXT)))
 all: $(NAME)
 
 $(NAME):	$(OBJDIR) $(OBJS) $(HEADERS) Makefile
-			@echo -ne '    \033c$(E_BAR)\n'
 			$(CXX) $(CXFLAGS) -o $(NAME) $(OBJS) 
+			@echo -ne '    \033c$(E_BAR)\n'
 
 $(OBJDIR):
 			@mkdir -p $(OBJDIR)
