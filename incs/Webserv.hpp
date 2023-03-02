@@ -21,6 +21,7 @@
 #include "../incs/Socket.hpp"
 #include "../incs/Server.hpp"
 #include "../incs/SocketManager.hpp"
+#include "../incs/Request.hpp"
 
 
 namespace ft {
@@ -40,5 +41,6 @@ public:
 	Parser					parser;
 	std::vector<ft::Socket>	sockets;
 	std::vector<ft::Server>	servers;
+	ft::Request request;
 };
 }

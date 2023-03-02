@@ -20,11 +20,13 @@ namespace ft {
 Webserv::Webserv(std::string filename)
 {
 	this->parser.parsing(filename, this->servers);
-	for (std::vector<Server>::const_iterator it = this->servers.begin();
-	it != this->servers.end(); it++)
-	{
-		this->manager.addServer(it->addr);
-	}
+	this->request.server_start(parser);
+	// for (std::vector<Server>::const_iterator it = this->servers.begin();
+	// it != this->servers.end(); it++)
+	// {
+	// 	this->manager.addServer(it->addr);
+	// }
+
 }
 
 Webserv::~Webserv()

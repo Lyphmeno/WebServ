@@ -14,7 +14,7 @@ SRC			:=	\
 				./srcs/Request.cpp\
 				./srcs/Response.cpp\
 				./srcs/StatusCode.cpp\
-				./main2.cpp\
+				./srcs/main.cpp\
 
 INCDIR		:=	incs
 INCEXT		:=	hpp

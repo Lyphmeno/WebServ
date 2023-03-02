@@ -55,8 +55,9 @@ public:
         void buildFullResponse();
         void handleErrors();
         void setError(std::string code);
-
+        
         void createAutoIndexHtmlPage(const std::string& directoryPath);
+
         
 private:
         //request line
@@ -86,6 +87,8 @@ private:
         std::map<std::string, std::string> _rawResponse;
         std::map<std::string, std::string> _formValues;
         std::string _rawBody;
+
+        // std::map<std::string, bool> _autoIndex;
 
         void urlencoded(void);
         void multi(void);

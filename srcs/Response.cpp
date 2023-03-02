@@ -14,6 +14,7 @@ static std::string itostring(int toConvert){
 
 ft::Response::Response(void) : _allowedMethod(0){
 
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////

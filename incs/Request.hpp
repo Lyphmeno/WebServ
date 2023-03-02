@@ -7,9 +7,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "Parser.hpp"
 #include "Response.hpp"
-
-
 
 #define GET 1
 #define POST 2
@@ -50,6 +49,11 @@ public:
 
         bool Directory(std::string url);
         void getCorrectUrl(void);
+        void createAutoIndexHtmlPage(const std::string& directoryPath);
+
+
+        int server_start(Parser parser);
+
 private:
 
         //Request line
@@ -68,6 +72,11 @@ private:
         std::string _root;
         std::string _index;
 //        int _code;
+
+
+        //Parser
+	Parser	parser;
+
 };
 
 }
