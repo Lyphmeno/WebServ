@@ -8,13 +8,20 @@ namespace ft {
 
 struct Socket
 {
-	int			fd;
-	sockaddr_in	addr;
+public:
+	Socket();
+	Socket(const Socket &x);
+	Socket	&operator=(const Socket &x);
+	~Socket();
 
-	bool		header;
-	size_t		hlen;
-	size_t		blen;
-	std::string	request;
-	std::string	response;
+public:
+	int					fd;
+	sockaddr_in			addr;
+	bool				header;
+	unsigned long int	hlen;
+	unsigned long int	blen;
+	std::string			request;
+	std::string			response;
 };
+
 }

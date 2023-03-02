@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 12:31:30 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/02 16:21:56 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ void	Webserv::run()
 			throw std::runtime_error("Runtime error: epoll_wait failed");
 		for (int i = 0; i < n; i++)
 		{
-			if (this->manager.epev[i].events & EPOLLERR)
-				//send error 500
 			if ((this->manager.epev[i].events & EPOLLERR)
 			|| (this->manager.epev[i].events & EPOLLHUP)
 			|| (!(this->manager.epev[i].events & EPOLLIN)))
@@ -67,6 +65,7 @@ void	Webserv::run()
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
+					std::cerr << bytes << '\n';
 					this->manager.getData(this->manager.epev[i].data.fd, buff);
 				}
 				else

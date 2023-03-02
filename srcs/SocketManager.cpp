@@ -6,11 +6,12 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/02 12:30:55 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/02 16:23:20 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/SocketManager.hpp"
+#include <iostream>
 
 namespace ft {
 
@@ -27,13 +28,13 @@ SocketManager::SocketManager()
 
 SocketManager::~SocketManager()
 {
+	while (this->servers.size() > 0)
+		this->close(this->servers.begin()->first);
 	if (this->epfd > -1)
 	{
 		::close(this->epfd);
 		this->epfd = -1;
 	}
-	while (this->servers.size() > 0)
-		this->close(this->servers[0].fd);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +59,7 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 	
 	this->addEp(sock.fd);
 	this->servers.insert(sock_val(sock.fd, sock));
-	this->clients.insert(srv_val(sock.fd, std::map<int, Socket>()));
+	this->clients.insert(srv_val(sock.fd, sock_type()));
 }
 
 void	SocketManager::addClient(const int &sfd, const Socket &sock)
@@ -100,7 +101,7 @@ void	SocketManager::getData(const int &fd, const char *s)
 {
 	sock_it sock = this->clients.find((this->linker.find(fd)->second))->second.find(fd);
 	std::string	data(s);
-	
+
 	if (data.find("\r\n") != data.npos)
 	{
 		sock->second.hlen += data.find("\r\n") + 1;
@@ -111,9 +112,9 @@ void	SocketManager::getData(const int &fd, const char *s)
 	else
 		sock->second.hlen += data.size();
 
-	// if (sock->second.hlen > MAXHEADER)
-	// 	sock->second.response = 431;
-	// if (sock->second.blen > this->getMaxBody())
+	//if (sock->second.hlen > MAXHEADER)
+	//	sock->second.response = 431;
+	//if (sock->second.blen > this->getMaxBody())
 	// 	sock->second.response = 413;
 }
 
@@ -127,9 +128,9 @@ void	SocketManager::close(const int &fd)
 			this->linker.erase(it->second.fd);
 			::close(it->second.fd);
 		}
+		::close(fd);
 		this->clients.erase(fd);
 		this->servers.erase(fd);
-		::close(fd);
 	}
 	else
 	{

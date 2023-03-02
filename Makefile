@@ -6,6 +6,7 @@ CXFLAGS		:=	-Wall -Wextra -Werror -std=c++98 -pedantic -g3
 SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
+				./srcs/Socket.cpp \
 				./srcs/SocketManager.cpp\
 				./srcs/Parser.cpp\
 				./srcs/Webserv.cpp\

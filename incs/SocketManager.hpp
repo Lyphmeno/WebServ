@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/02 12:30:40 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/02 16:19:42 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include "../incs/Socket.hpp"
+#include "../incs/Request.hpp"
 
 #define MAXEVENTS 10
 #define MAXQUEU 10
