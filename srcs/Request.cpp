@@ -6,7 +6,7 @@
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(void) : _indexON(0), _root("html"), _index("index.html"){
+ft::Request::Request(void) : _indexON(0), _root(), _index("index.html"){
 }
 
 ft::Request::Request(const Request & src){
@@ -110,14 +110,21 @@ bool ft::Request::Directory(std::string url){
 
 void ft::Request::getCorrectUrl(void){
 
-    std::string oldUrl;
-
-    oldUrl = _url;
-    _url = _root + _url;
-    if (oldUrl == "/" )
+    if (_url == "/")
     {
         _indexON = 1;
-        _url = _url + _index;
+        _url = _root + _url + _index;
+        return ;
+    }
+
+    _url.erase(0, 1);
+    if (Directory(_url)){
+        _url += "/";
+        _url = _root + _url + _index;
+
+    }
+    else{
+        _url = _root + _url;
     }
 
 }
@@ -135,7 +142,6 @@ void ft::Request::getRequestLine(std::string line)
     this->_protocolVersion.insert(0, line, 0, found);
     _protocolVersion.erase(_protocolVersion.size(), 1);
     getCorrectUrl();
-    std::cout << _url << std::endl;
 }
 
 /*

@@ -181,6 +181,8 @@ void ft::Response::GET_method(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
+    std::cout << "URL = " << url << std::endl;
+
     if (!ifs.is_open())
     {
         setError("404");
