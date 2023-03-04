@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 14:55:25 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/04 10:16:23 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ namespace ft {
 Webserv::Webserv(std::string filename)
 {
 	this->parser.parsing(filename, this->servers);
-	std::cout << this->servers.at(0).getMethods("/directory", "GET") << "\n";
 	for (std::vector<Server>::const_iterator it = this->servers.begin();
 	it != this->servers.end(); it++)
 	{

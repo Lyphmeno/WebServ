@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 16:29:42 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/04 10:13:47 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ std::string	Server::getRoot(std::string path)
 {
 	if (this->getLoc(path) == -1)
 		return (this->root);
-	return NULL;
+	return (this->location.at(this->getLoc(path)).root);
 }
 
 std::vector<std::string>	Server::getIndex(std::string path)
@@ -114,10 +114,11 @@ std::vector<std::string>	Server::getIndex(std::string path)
 		if (!this->index.empty())
 			return (this->index);
 		else
-			return ();
+			return (std::vector<std::string>());
 	}
-	if (this->location.at(this->getLoc(path)).index.empty())
+	if (!this->location.at(this->getLoc(path)).index.empty())
 		return (this->location.at(this->getLoc(path)).index);
+	return (std::vector<std::string>());
 }
 /////////////////////////////
 // Setters                 //
