@@ -32,7 +32,7 @@ ft::Request::~Request(void){
 /*
     Add the raw request to a vector
 */
-void ft::Request::fillRequest(char *buffer)
+void ft::Request::fillRequest(std::string buffer)
 {
     std::string newbuffer;
     std::string value;
@@ -123,7 +123,7 @@ void ft::Request::getRequestLine(std::string line)
     Function that checks if request exists, then parse the request
     and send it to create the response
 */
-std::string ft::Request::requestStarter(int readBytes, char *buffer){
+std::string ft::Request::requestStarter(int readBytes, std::string buffer){
     ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
 

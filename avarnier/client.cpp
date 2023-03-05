@@ -32,5 +32,8 @@ int main(int argc, char const *argv[])
 
 	std::string	msg = "this is a message from a client\r\n";
     send(sock ,msg.c_str() ,msg.size() , 0 );
-    return 0;
+	char buff[1024];
+	recv(sock, buff, 1024, 0);
+	std::cout << buff << '\n';
+    return (0);
 }

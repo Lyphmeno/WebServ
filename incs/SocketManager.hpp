@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/02 16:19:42 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/04 02:05:02 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,20 @@
 #include "../incs/Socket.hpp"
 #include "../incs/Request.hpp"
 
-#define MAXEVENTS 10
-#define MAXQUEU 10
+#define MAXEVENTS 128
+#define MAXQUEU 128
 #define MAXHEADER 8192
+#define MAXBUFF 33 // always > 26
+
 #define NOTFD 0
 #define CLI 1
 #define SRV 2
+
 namespace ft {
 
 class SocketManager
 {
-private:
+public:
 	typedef std::map<int, Socket>									sock_type;
 	typedef	std::map<int, Socket>::iterator							sock_it;
 	typedef	std::map<int, Socket>::const_iterator					sock_cit;
@@ -59,6 +62,7 @@ public:
 	bool	isServer(const int &fd) const;
 	void	close(const int &fd);
 	void	getData(const int &fd, const char *data);
+	sock_it	findClient(const int &fd);
 
 private:
 	SocketManager(const SocketManager &x);

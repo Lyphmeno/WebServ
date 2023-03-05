@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/02 20:13:45 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/04 01:34:56 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,24 +99,33 @@ bool	SocketManager::isServer(const int &fd) const
 
 void	SocketManager::getData(const int &fd, const char *s)
 {
-	sock_it sock = this->clients.find((this->linker.find(fd)->second))->second.find(fd);
+	sock_it sock = this->findClient(fd);
 	std::string	data(s);
 
-	if (sock->second.request.find("\r\n") != sock->second.request.npos)
-		sock->second.blen += data.size();
+	if (sock->second.data.header == true)
+		sock->second.data.blen += data.size();
 	else if (data.find("\r\n") != data.npos)
 	{
-		sock->second.hlen += data.find("\r\n") + 1;
-		sock->second.blen += data.size() - (data.find("\r\n") + 1);
+		sock->second.data.hlen += data.find("\r\n") + 1;
+		sock->second.data.blen += data.size() - (data.find("\r\n") + 1);
+		sock->second.data.header = true;
 	}
 	else
-		sock->second.hlen += data.size();
+		sock->second.data.hlen += data.size();
+	
+	// if (sock->second.hlen > MAXHEADER)
+	// {
+	//		send response 431;
+	// }
+	// if (sock->second.hlen > MAXBODY)
+	// {
+	//		send response 413;
+	// }
+}
 
-	std::cerr << "sock bytes: " << sock->second.hlen + sock->second.blen << std::endl;
-	//if (sock->second.hlen > MAXHEADER)
-	//	sock->second.response = 431;
-	//if (sock->second.blen > this->getMaxBody())
-	// 	sock->second.response = 413;
+SocketManager::sock_it	SocketManager::findClient(const int &fd)
+{
+	return (this->clients.find((this->linker.find(fd)->second))->second.find(fd));
 }
 
 void	SocketManager::close(const int &fd)

@@ -2,7 +2,7 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <string>
+#include "../incs/SocketData.hpp"
 
 namespace ft {
 
@@ -17,10 +17,7 @@ public:
 public:
 	int					fd;
 	sockaddr_in			addr;
-	unsigned long int	hlen;
-	unsigned long int	blen;
-	std::string			request;
-	std::string			response;
+	SocketData			data;
 };
 
 }
