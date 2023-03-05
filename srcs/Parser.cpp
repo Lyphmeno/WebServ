@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 12:31:20 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/04 10:23:16 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ void	Parser::dlt_first()
 {
 	std::string	tmp;
 	tmp = this->line.str();
-	tmp.erase(0, tmp.find_first_of(" ") + 1);
+	tmp.erase(0, tmp.find_first_of(" \t") + 1);
 	if (tmp.empty())
 		throw std::invalid_argument("Error: Argument missing after tag");
 	this->line.str(tmp);
@@ -598,6 +598,8 @@ void	Parser::p_errorpage(std::vector<Server> &servers)
 
 	this->semi_colon();
 	this->dlt_first();
+	if (nbr_words() <= 1)
+		throw std::invalid_argument("Invalid argument: <error_page> need at least 2 arguments");
 	if (this->inbrackets == 1) {
 		if (servers.back().id.at(BS_ERR) == true)
 			throw std::invalid_argument("Invalid argument: multiple <error_page> tag not allowed");
