@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:35:33 by hlevi             #+#    #+#             */
-/*   Updated: 2023/02/23 11:20:48 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/02 14:59:56 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #include <vector>
 // #include <sys/epoll.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -23,13 +25,17 @@
 #include "../incs/SocketManager.hpp"
 #include "../incs/Request.hpp"
 
+#define MAXBUFF 1024
 
 namespace ft {
+
 class Webserv
 {
 public:
 	Webserv(std::string);
 	~Webserv();
+
+	void	run();
 
 private:
 	Webserv();
@@ -38,9 +44,10 @@ private:
 
 public:
 	// SocketManager		manager;
+
 	Parser					parser;
-	std::vector<ft::Socket>	sockets;
 	std::vector<ft::Server>	servers;
 	ft::Request request;
 };
+
 }

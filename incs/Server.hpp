@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 11:41:56 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/02 16:23:52 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,11 @@ public:
 	// Assignation contructors //
 	// Operators //
 	// Getters //
-	int		getLoc(std::string);
-	bool	getAutoIndex(std::string);
+	int							getLoc(std::string);
+	int							getMethods(std::string, std::string);
+	bool						getAutoIndex(std::string);
+	std::string					getRoot(std::string);
+	std::vector<std::string>	getIndex(std::string);
 	// Setters //
 	// Methods //
 	// Exceptions //

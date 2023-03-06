@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/02 12:13:34 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/04 10:13:47 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,23 @@ int	Server::getLoc(std::string path)
 	return (-1);
 }
 
+int	Server::getMethods(std::string path, std::string method)
+{
+	if (this->getLoc(path) == -1) {
+		for (std::vector<std::string>::const_iterator it = this->allow_methods.begin(); it != this->allow_methods.end(); it++)
+			if (!(*it).compare(method))
+				return (1);
+		return (0);
+	}
+	for (std::vector<std::string>::const_iterator it = this->allow_methods.begin(); it != this->allow_methods.end(); it++)
+		if (!(*it).compare(method))
+			return (1);
+	for (std::vector<std::string>::const_iterator it = this->location.at(this->getLoc(path)).allow_methods.begin(); it != this->location.at(this->getLoc(path)).allow_methods.end(); it++)
+		if (!(*it).compare(method))
+			return (1);
+	return (0);
+}
+
 bool	Server::getAutoIndex(std::string path)
 {
 	if (this->getLoc(path) == -1) {
@@ -84,6 +101,25 @@ bool	Server::getAutoIndex(std::string path)
 	return (false);
 }
 
+std::string	Server::getRoot(std::string path)
+{
+	if (this->getLoc(path) == -1)
+		return (this->root);
+	return (this->location.at(this->getLoc(path)).root);
+}
+
+std::vector<std::string>	Server::getIndex(std::string path)
+{
+	if (this->getLoc(path) == -1) {
+		if (!this->index.empty())
+			return (this->index);
+		else
+			return (std::vector<std::string>());
+	}
+	if (!this->location.at(this->getLoc(path)).index.empty())
+		return (this->location.at(this->getLoc(path)).index);
+	return (std::vector<std::string>());
+}
 /////////////////////////////
 // Setters                 //
 /////////////////////////////
