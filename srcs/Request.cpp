@@ -159,23 +159,37 @@ void ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath) {
 
 void ft::Request::getCorrectUrl(void){
 
-    if (_url == "/")
+
+    _url = getRoot + _url;
+    if (_url is directory && getIndexFile(_url) == 1)
+        _url += getIndexFile
+    else if (_url is Directory && getAutoIndex(_url) == 1)
+        reponse._body = createAutoIndexHtmlPage();
+    else
+        _url = 
+    if (servers.at(0).getAutoIndex(_url)) //change the 0 with the correct server number
     {
-        _indexON = 1;
-        _url = _root + _url + _index;
-        return ;
+
     }
-    _url.erase(0, 1);
-    if (Directory(_url)){
-        int i = _url.size();
-        if (_url.at(i - 1) != '/')
-            _url += "/";
-        _url = _root + _url + _index;
+
+
+    // if (_url == "/")
+    // {
+    //     _indexON = 1;
+    //     _url = _root + _url + _index;
+    //     return ;
+    // }
+    // _url.erase(0, 1);
+    // if (Directory(_url)){
+    //     int i = _url.size();
+    //     if (_url.at(i - 1) != '/')
+    //         _url += "/";
+    //     _url = _root + _url + _index;
     
-    }
-    else{
-        _url = _root + _url;
-    }
+    // }
+    // else{
+    //     _url = _root + _url;
+    // }
 
 }
 

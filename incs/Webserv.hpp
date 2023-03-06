@@ -13,7 +13,7 @@
 #pragma once
 
 #include <vector>
-#include <sys/epoll.h>
+// #include <sys/epoll.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -37,7 +37,7 @@ private:
 	Webserv	&operator=(const Webserv &x);
 
 public:
-	SocketManager		manager;
+	// SocketManager		manager;
 	Parser					parser;
 	std::vector<ft::Socket>	sockets;
 	std::vector<ft::Server>	servers;

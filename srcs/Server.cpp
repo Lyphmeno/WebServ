@@ -83,6 +83,7 @@ bool	Server::getAutoIndex(std::string path)
 		return (true);
 	return (false);
 }
+
 /////////////////////////////
 // Setters                 //
 /////////////////////////////
