@@ -2,7 +2,7 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "../incs/SocketData.hpp"
+#include <string>
 
 namespace ft {
 
@@ -15,9 +15,9 @@ public:
 	~Socket();
 
 public:
-	int					fd;
-	sockaddr_in			addr;
-	SocketData			data;
+	int			fd;
+	sockaddr_in	addr;
+	std::string	data;
 };
 
 }
