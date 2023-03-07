@@ -1,36 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   SocketData.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/07 19:04:09 by avarnier         ###   ########.fr       */
+/*   Created: 2023/03/07 18:28:32 by avarnier          #+#    #+#             */
+/*   Updated: 2023/03/07 18:35:02 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incs/Webserv.hpp"
-#include <exception>
+#include "../incs/SocketData.hpp"
 
+namespace ft {
 
-int main(int ac, char **av)
+SocketData::SocketData() : content(), body(false), bytes(0)
 {
-	if (ac != 2)
-	{
-		std::cout << "Webserv only need one .conf" << '\n';
-		return (-1);
-	}
+}
 
-	try
-	{
-		ft::Webserv	engine(av[1]);
-		engine.run();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
+SocketData::SocketData(const SocketData &x) : content(x.content), body(x.body), bytes(x.bytes)
+{
+}
 
-    return (0);
+SocketData	&SocketData::operator=(const SocketData &x)
+{
+	if (this != &x)
+	{
+		this->content = x.content;
+		this->body = x.body;
+		this->bytes = x.bytes;
+	}
+	return (*this);
+}
+
+SocketData::~SocketData()
+{
+}
+
 }

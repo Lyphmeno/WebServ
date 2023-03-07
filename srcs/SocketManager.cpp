@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/04 01:34:56 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/07 18:58:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,27 +100,31 @@ bool	SocketManager::isServer(const int &fd) const
 void	SocketManager::getData(const int &fd, const char *s)
 {
 	sock_it sock = this->findClient(fd);
-	std::string	data(s);
-
-	if (sock->second.data.header == true)
-		sock->second.data.blen += data.size();
-	else if (data.find("\r\n") != data.npos)
+	sock->second.data.content += s;
+	if (sock->second.data.body == false)
 	{
-		sock->second.data.hlen += data.find("\r\n") + 1;
-		sock->second.data.blen += data.size() - (data.find("\r\n") + 1);
-		sock->second.data.header = true;
+		size_t pos = sock->second.data.content.find("\r\n\r\n");
+		std::string	header;
+		if (pos != std::string::npos)
+			header = sock->second.data.content.substr(0, pos + 4);
+		if (header.size() > MAXHEADER)
+		{
+			// send error
+		}
+		// parse header
+		// if (!POST)
+		//	do and send
+		// else
+		// {
+		// sock->second.data.body = true;
+		// sock->second.data.content.erase(0, pos + 4);
+		// }
 	}
-	else
-		sock->second.data.hlen += data.size();
-	
-	// if (sock->second.hlen > MAXHEADER)
-	// {
-	//		send response 431;
-	// }
-	// if (sock->second.hlen > MAXBODY)
-	// {
-	//		send response 413;
-	// }
+	if (sock->second.data.body == true)
+	{
+		sock->second.data.bytes += sock->second.data.content.size();
+		// send body part
+	}
 }
 
 SocketManager::sock_it	SocketManager::findClient(const int &fd)

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/04 02:05:02 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/07 14:37:45 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+#include <string>
 #include "../incs/Socket.hpp"
 #include "../incs/Request.hpp"
 
 #define MAXEVENTS 128
 #define MAXQUEU 128
 #define MAXHEADER 8192
-#define MAXBUFF 33 // always > 26
+#define MAXBUFF 1024
 
 #define NOTFD 0
 #define CLI 1

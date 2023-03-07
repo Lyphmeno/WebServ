@@ -1,36 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   SocketData.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/07 19:04:09 by avarnier         ###   ########.fr       */
+/*   Created: 2023/03/07 18:25:01 by avarnier          #+#    #+#             */
+/*   Updated: 2023/03/07 18:34:29 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../incs/Webserv.hpp"
-#include <exception>
+#pragma once
 
+#include <string>
 
-int main(int ac, char **av)
+namespace ft {
+
+struct SocketData
 {
-	if (ac != 2)
-	{
-		std::cout << "Webserv only need one .conf" << '\n';
-		return (-1);
-	}
 
-	try
-	{
-		ft::Webserv	engine(av[1]);
-		engine.run();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
+public:
+	SocketData();
+	SocketData(const SocketData &x);
+	SocketData	&operator=(const SocketData &x);
+	~SocketData();
 
-    return (0);
+public:
+	std::string			content;
+	bool				body;
+	unsigned long int	bytes;
+
+};
+
 }

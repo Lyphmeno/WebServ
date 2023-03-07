@@ -6,15 +6,12 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/03/04 02:07:57 by avarnier         ###   ########.fr       */
-=======
-/*   Updated: 2023/03/04 10:23:16 by hlevi            ###   ########.fr       */
->>>>>>> main
+/*   Updated: 2023/03/07 19:06:22 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
+
 namespace ft {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,20 +61,10 @@ void	Webserv::run()
 			{
 				char buff[MAXBUFF + 1];
 				ssize_t bytes = recv(fd, buff, MAXBUFF, 0);
-				std::cerr << bytes << '\n';
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					this->manager.getData(fd, buff);	
-					if (bytes < MAXBUFF)
-					{
-						Request	req;
-						SocketManager::sock_it sock = this->manager.findClient(fd);
-						std::string	rep = req.requestStarter
-						(sock->second.data.hlen + sock->second.data.blen, sock->second.data.request);
-						send(fd, rep.c_str(), rep.size(), 0);
-						std::cerr << rep << '\n';
-					}
+					this->manager.getData(fd, buff);
 				}
 				else
 				{
