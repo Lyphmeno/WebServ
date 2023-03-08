@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/07 18:58:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/08 13:36:57 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,15 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock.fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
-	
+
 	this->setNoBlock(sock.fd);
-	
+
 	if (bind(sock.fd, reinterpret_cast<sockaddr *>(&sock.addr), sizeof(sock.addr)) == -1)
 		throw std::runtime_error("Runtime error: Can't bind socket");
-	
+
 	if (listen(sock.fd, MAXQUEU) == -1)
 		throw std::runtime_error("Runtime error: Can't listen socket");
-	
+
 	this->addEp(sock.fd);
 	this->servers.insert(sock_val(sock.fd, sock));
 	this->clients.insert(srv_val(sock.fd, sock_type()));
@@ -123,7 +123,10 @@ void	SocketManager::getData(const int &fd, const char *s)
 	if (sock->second.data.body == true)
 	{
 		sock->second.data.bytes += sock->second.data.content.size();
+		// if (sock->second.data.bytes > MAXBODY)
+		// 	send error
 		// send body part
+		sock->second.data.content.clear();
 	}
 }
 
