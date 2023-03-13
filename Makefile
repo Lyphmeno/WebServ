@@ -7,6 +7,8 @@ SRCDIR		:=	srcs
 SRCEXT		:=	cpp
 SRC			:=	\
 				./srcs/Socket.cpp \
+				./srcs/SocketManager.cpp \
+				./srcs/SocketData.cpp \
 				./srcs/Parser.cpp\
 				./srcs/Webserv.cpp\
 				./srcs/Server.cpp\
@@ -21,6 +23,8 @@ INCEXT		:=	hpp
 HEADERS		:=	\
 				./incs/Location.hpp\
 				./incs/Socket.hpp\
+				./incs/SocketManager.hpp\
+				./incs/SocketData.hpp\
 				./incs/Parser.hpp\
 				./incs/Server.hpp\
 				./incs/Webserv.hpp\

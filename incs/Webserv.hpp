@@ -35,7 +35,7 @@ public:
 	Webserv(std::string);
 	~Webserv();
 
-	// void	run();
+	void	run();
 
 private:
 	Webserv();
@@ -43,7 +43,7 @@ private:
 	Webserv	&operator=(const Webserv &x);
 
 public:
-	// SocketManager		manager;
+	SocketManager		manager;
 
 	Parser					parser;
 	std::vector<ft::Server>	servers;

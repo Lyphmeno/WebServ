@@ -161,8 +161,8 @@ void ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath) {
 void ft::Request::getCorrectUrl(void){
     (void)_indexON;
 
-    std::cout << "URL = " << _url << std::endl;
-    std::cout << "root = " << servers.at(0).getRoot(_url) << std::endl;
+    // std::cout << "URL = " << _url << std::endl;
+    // std::cout << "root = " << servers.at(0).getRoot(_url) << std::endl;
 
     // if (_url is directory && getIndexFile(_url) == 1)
     //     _url += getIndexFile
@@ -176,23 +176,23 @@ void ft::Request::getCorrectUrl(void){
     // }
 
 
-    // if (_url == "/")
-    // {
-    //     _indexON = 1;
-    //     _url = _root + _url + _index;
-    //     return ;
-    // }
-    // _url.erase(0, 1);
-    // if (Directory(_url)){
-    //     int i = _url.size();
-    //     if (_url.at(i - 1) != '/')
-    //         _url += "/";
-    //     _url = _root + _url + _index;
+    if (_url == "/")
+    {
+        _indexON = 1;
+        _url = _root + _url + _index;
+        return ;
+    }
+    _url.erase(0, 1);
+    if (Directory(_url)){
+        int i = _url.size();
+        if (_url.at(i - 1) != '/')
+            _url += "/";
+        _url = _root + _url + _index;
     
-    // }
-    // else{
-    //     _url = _root + _url;
-    // }
+    }
+    else{
+        _url = _root + _url;
+    }
 
 }
 
@@ -220,9 +220,7 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer, std::vector
     ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
 
-    this->servers = server;
-    std::cout << &servers << "et " << &server << std::endl;
-
+    (void)server;
     // if (_code == 0)
     // {
         requestHTTP.fillRequest(buffer);
