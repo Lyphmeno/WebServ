@@ -103,6 +103,7 @@ bool	Server::getAutoIndex(std::string path)
 
 std::string	Server::getRoot(std::string path)
 {
+	std::cout << "root === " << this->root << std::endl;
 	if (this->getLoc(path) == -1)
 		return (this->root);
 	return (this->location.at(this->getLoc(path)).root);

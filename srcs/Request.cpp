@@ -92,6 +92,7 @@ void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
 void ft::Request::parseRequest(ft::Response *response, int readBytes){
+    std::cout << &servers << std::endl;
     response->setRawResponse(_rawRequest);
     response->setRawBody(_rawBody);
     getRequestLine(_requestLine);
@@ -158,19 +159,21 @@ void ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath) {
 
 
 void ft::Request::getCorrectUrl(void){
+    (void)_indexON;
 
+    std::cout << "URL = " << _url << std::endl;
+    std::cout << "root = " << servers.at(0).getRoot(_url) << std::endl;
 
-    _url = getRoot + _url;
-    if (_url is directory && getIndexFile(_url) == 1)
-        _url += getIndexFile
-    else if (_url is Directory && getAutoIndex(_url) == 1)
-        reponse._body = createAutoIndexHtmlPage();
-    else
-        _url = 
-    if (servers.at(0).getAutoIndex(_url)) //change the 0 with the correct server number
-    {
+    // if (_url is directory && getIndexFile(_url) == 1)
+    //     _url += getIndexFile
+    // else if (_url is Directory && getAutoIndex(_url) == 1)
+    //     reponse._body = createAutoIndexHtmlPage();
+    // else
+    //     _url = 
+    // if (servers.at(0).getAutoIndex(_url)) //change the 0 with the correct server number
+    // {
 
-    }
+    // }
 
 
     // if (_url == "/")
@@ -196,6 +199,7 @@ void ft::Request::getCorrectUrl(void){
 
 void ft::Request::getRequestLine(std::string line)
 {
+    std::cout << line << std::endl;
     size_t found = line.find(" ");
     this->_method.insert(0, line, 0, found);
     line.erase(0, _method.size() + 1);
@@ -212,9 +216,12 @@ void ft::Request::getRequestLine(std::string line)
     Function that checks if request exists, then parse the request
     and send it to create the response
 */
-std::string ft::Request::requestStarter(int readBytes, char *buffer){
+std::string ft::Request::requestStarter(int readBytes, char *buffer, std::vector<ft::Server>	server){
     ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
+
+    this->servers = server;
+    std::cout << &servers << "et " << &server << std::endl;
 
     // if (_code == 0)
     // {
@@ -230,8 +237,6 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer){
 
 
 
-
-
 //
 //
 //SERVER
@@ -244,11 +249,9 @@ int ft::Request::server_start(std::vector<ft::Server>	server)
     int server_fd, new_socket; long valread;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
-    ft::Request request;
 
     std::string hello;
 
-    request.servers = server;
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -291,7 +294,7 @@ int ft::Request::server_start(std::vector<ft::Server>	server)
 
         ofs.write((char *)buffer, sizeof(buffer));
         ofs.close();
-        hello = request.requestStarter(valread, buffer);
+        hello = requestStarter(valread, buffer, server);
         // std::cout << hello << std::endl;
         std::ofstream ofs2("response");
         ofs2 << hello;

@@ -37,7 +37,7 @@ public:
         std::string getProtVersion(void){return _protocolVersion;};
         std::string getRequestLine(void){return _requestLine;};
 
-        std::string requestStarter(int readBytes, char *buffer);
+        std::string requestStarter(int readBytes, char *buffer, std::vector<ft::Server>	server);
 
         void fillRequest(char *buffer);
         void parseRequest(ft::Response *reponse, int readBytes);

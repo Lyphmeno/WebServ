@@ -35,7 +35,7 @@ public:
 	Webserv(std::string);
 	~Webserv();
 
-	void	run();
+	// void	run();
 
 private:
 	Webserv();

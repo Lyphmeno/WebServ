@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include "incs/Request.hpp"
+#include "incs/Webserv.hpp"
 #include <fcntl.h>
 
 #define PORT 8080
