@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/04 10:13:47 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/13 12:45:32 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,8 @@ std::vector<std::string>	Server::getIndex(std::string path)
 		return (this->location.at(this->getLoc(path)).index);
 	return (std::vector<std::string>());
 }
+
+
 /////////////////////////////
 // Setters                 //
 /////////////////////////////
