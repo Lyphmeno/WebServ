@@ -45,8 +45,8 @@ ft::Request::~Request(void){
 
 /*
     Add the raw request to a vector
-*/ 
-void ft::Request::fillRequest(char *buffer)
+*/
+void ft::Request::fillRequest(std::string buffer)
 {
     std::string newbuffer;
     std::string value;
@@ -107,7 +107,6 @@ void ft::Request::parseRequest(ft::Response *response, int readBytes){
         response->setBody(_autoIndexBody);
     response->createBody(_url);
 }
-
 
 /*
     Get the URL, method and protocol
@@ -215,7 +214,10 @@ void ft::Request::getRequestLine(std::string line)
     Function that checks if request exists, then parse the request
     and send it to create the response
 */
-std::string ft::Request::requestStarter(int readBytes, char *buffer){
+
+std::string ft::Request::requestStarter(int readBytes, std::string buffer)
+{
+    ft::Request requestHTTP;
     ft::Response *responseHTTP = new ft::Response();
     ft::Request requestHTTP(this->servParsing);
 
@@ -227,7 +229,6 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer){
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
     // responseR.erase(std::remove(responseR.begin(), responseR.end(), 13), responseR.end());
-   
     return responseR;
 }
 

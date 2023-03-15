@@ -6,11 +6,12 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/04 10:23:16 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/07 19:06:22 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
+
 namespace ft {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,33 +48,32 @@ void	Webserv::run()
 			throw std::runtime_error("Runtime error: epoll_wait failed");
 		for (int i = 0; i < n; i++)
 		{
-			if ((this->manager.epev[i].events & EPOLLERR)
-			|| (this->manager.epev[i].events & EPOLLHUP)
-			|| (!(this->manager.epev[i].events & EPOLLIN)))
-				this->manager.close(this->manager.epev[i].data.fd);
+			int fd = this->manager.epev[i].data.fd;
+			uint32_t event = this->manager.epev[i].events;
+			if ((event & EPOLLERR) || (event & EPOLLHUP) || (!(event & EPOLLIN)))
+				this->manager.close(fd);
 			
-			if (this->manager.isServer(this->manager.epev[i].data.fd) == true)
+			if (this->manager.isServer(fd) == true)
 			{
 				Socket		sock;
 				socklen_t	len;
-				sock.fd = accept(this->manager.epev[i].data.fd,
+				sock.fd = accept(fd,
 				reinterpret_cast<sockaddr *>(&sock.addr), &len);
 				if (sock.fd != -1)
-					this->manager.addClient(this->manager.epev[i].data.fd, sock);
+					this->manager.addClient(fd, sock);
 			}
 			else
 			{
 				char buff[MAXBUFF + 1];
-				ssize_t bytes = recv(this->manager.epev[i].data.fd, buff, MAXBUFF, 0);
+				ssize_t bytes = recv(fd, buff, MAXBUFF, 0);
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					std::cerr << bytes << '\n';
-					this->manager.getData(this->manager.epev[i].data.fd, buff);
+					this->manager.getData(fd, buff);
 				}
 				else
 				{
-					this->manager.close(this->manager.epev[i].data.fd);
+					this->manager.close(fd);
 					std::cout << "close connection" << '\n';
 				}
 			}

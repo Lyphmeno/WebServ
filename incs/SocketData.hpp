@@ -31,5 +31,4 @@ public:
 	unsigned long int	bytes;
 
 };
-
 }

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/04 10:23:16 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/15 13:00:25 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,7 +296,7 @@ void	Parser::print_mcbs(std::vector<Server>& servers, int i, int y)
 		iss >> tmp;
 		this->print_tabulation();
 		print(MAGENTA, "[max_client_body_size]");
-		print(BLUE, " " + tmp + "M");
+		print(BLUE, " " + tmp + " octets");
 		print(YELLOW, ";\n");
 	}
 	else {
@@ -304,7 +304,7 @@ void	Parser::print_mcbs(std::vector<Server>& servers, int i, int y)
 		iss >> tmp;
 		this->print_tabulation();
 		print(MAGENTA, "[max_client_body_size]");
-		print(BLUE, " " + tmp + "M");
+		print(BLUE, " " + tmp + " octets");
 		print(YELLOW, ";\n");
 	}
 }
@@ -393,6 +393,8 @@ void	Parser::p_location(std::vector<Server> &servers)
 	if (this->inbrackets >= 3)
 		throw std::invalid_argument("Invalid argument: <location> cannot have <location>");
 	this->line >> tmp;
+	if (tmp.at(tmp.size() - 1) != '/' || tmp[0] != '/')
+		throw std::invalid_argument("Invalid argument: <location> must start and end with '/'");
 	if (servers.back().getLoc(tmp) >= 0)
 		throw std::invalid_argument("Invalid argument: <location> must not be the same");
 	servers.back().location.push_back(ft::Location());
@@ -500,14 +502,22 @@ void	Parser::p_root(std::vector<Server> &servers)
 			throw std::invalid_argument("Invalid argument: multiple <root> tag not allowed");
 		servers.back().id.at(BS_ROOT) = true;
 		while (this->line >> tmp)
+		{
+			if (tmp.at(tmp.size() - 1) == '/')
+				throw std::invalid_argument("Invalid argument: <root> must not end with '/'");
 			servers.back().root = tmp;
+		}
 	}
 	else {
 		if (servers.back().location.back().id.at(BL_ROOT) == true)
 			throw std::invalid_argument("Invalid argument: multiple <root> tag not allowed");
 		servers.back().location.back().id.at(BL_ROOT) = true;
 		while (this->line >> tmp)
+		{
+			if (tmp.at(tmp.size() - 1) == '/')
+				throw std::invalid_argument("Invalid argument: <root> must not end with '/'");
 			servers.back().location.back().root = tmp;
+		}
 	}
 }
 
@@ -562,9 +572,28 @@ void	Parser::p_autoindex(std::vector<Server> &servers)
 	}
 }
 
+unsigned long int	Parser::p_convert_mcbs(std::string tmp)
+{
+	char				unit;
+	unsigned long int	tmpint;
+
+	unit = tmp.at(tmp.size() - 1);
+	tmp.erase(tmp.size() - 1);
+	this->line.str(tmp);
+	this->line >> tmpint;
+	if (unit == 'G')
+		tmpint *= 1073741824;
+	else if (unit == 'M')
+		tmpint *= 1048576;
+	else if (unit == 'K')
+		tmpint *= 1024;
+	if (tmpint > 2147483648)
+		throw std::invalid_argument("Invalid argument: <max_client_body_size> is limited to 2Go");
+	return (tmpint);
+}
+
 void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 {
-	std::stringstream	iss;
 	std::string			tmp;
 	int					tmpint;
 
@@ -573,11 +602,12 @@ void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 	if (nbr_words() != 1)
 		throw std::invalid_argument("Invalid argument: <max_client_body_size> can only have one argument");
 	tmp = this->line.str();
-	if (this->line.str().at(this->line.str().size() - 1) != 'M')
-		throw std::invalid_argument("Invalid argument: <max_client_body_size> need to end with 'M'");
-	tmp.erase(tmp.size() - 1);
-	this->line.str(tmp);
-	this->line >> tmpint;
+	if (this->line.str().at(this->line.str().size() - 1) != 'o' &&
+			this->line.str().at(this->line.str().size() - 1) != 'K' &&
+			this->line.str().at(this->line.str().size() - 1) != 'M' &&
+			this->line.str().at(this->line.str().size() - 1) != 'G')
+		throw std::invalid_argument("Invalid argument: <max_client_body_size> invalid unit");
+	tmpint = this->p_convert_mcbs(tmp);
 	if (this->inbrackets == 1) {
 		if (servers.back().id.at(BS_MCBS) == true)
 			throw std::invalid_argument("Invalid argument: multiple <max_client_body_size> tag not allowed");
@@ -733,7 +763,7 @@ void	Parser::parse_mandatory(std::vector<Server> &servers)
 		if (!it->id.at(BS_ROOT))
 			throw std::invalid_argument("Invalid argument: <root> is mandatory");
 		if (!it->id.at(BS_MCBS))
-			it->max_client_body_size = 1;
+			it->max_client_body_size = 1048576;
 		if (!it->location.empty()) {
 			for (std::vector<Location>::iterator itl = it->location.begin(); itl != it->location.end(); itl++) {
 				if (!itl->id.at(BL_MCBS))
