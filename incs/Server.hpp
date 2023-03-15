@@ -69,6 +69,8 @@ public:
 	Server(const Server &cpy);
 	~Server();
 	Server &operator=(const Server &rhs);
+
+
 	// Assignation contructors //
 	// Operators //
 	// Getters //

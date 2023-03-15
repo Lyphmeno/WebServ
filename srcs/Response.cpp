@@ -12,7 +12,7 @@ static std::string itostring(int toConvert){
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void) : _allowedMethod(0){
+ft::Response::Response(void) : _allowedMethod(0), _body(""){
 
 
 }
@@ -81,8 +81,16 @@ void ft::Response::setRawBody(std::string body){
     this->_rawBody = body;
 }
 
+void ft::Response::setBody(std::string newBody){
+    this->_body = newBody;
+}
+
 void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
+}
+
+void ft::Response::setAutoIndex(bool autoIndex){
+    this->_autoIndex = autoIndex;
 }
 
 void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
@@ -182,21 +190,23 @@ void ft::Response::GET_method(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    std::cout << "URL = " << url << std::endl;
-
-    if (!ifs.is_open())
+    std::cout << "response url - " << _autoIndex << std::endl;
+    if (!ifs.is_open() && _autoIndex == false)
     {
         setError("404");
         return ;
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
-    while (std::getline(ifs, buff) != 0)
+    if (_body == "")
     {
-        _body += buff;
-        _body += "\n";
+        while (std::getline(ifs, buff) != 0)
+        {
+            _body += buff;
+            _body += "\n";
+        }
+        _body.erase(_body.size() - 1,1);
     }
-    _body.erase(_body.size() - 1,1);
 }
 
 /* post */

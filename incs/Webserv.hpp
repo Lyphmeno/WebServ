@@ -47,7 +47,6 @@ public:
 
 	Parser					parser;
 	std::vector<ft::Server>	servers;
-	ft::Request request;
 };
 
 }

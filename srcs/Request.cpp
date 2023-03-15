@@ -23,7 +23,7 @@
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(void) : _indexON(0), _root(), _index("index.html"){
+ft::Request::Request(const std::vector<ft::Server> & servers) : _indexON(0), _root(), _index("index.html"), _autoIndex(false), servParsing(servers){
 }
 
 ft::Request::Request(const Request & src){
@@ -92,15 +92,19 @@ void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
 void ft::Request::parseRequest(ft::Response *response, int readBytes){
-    std::cout << &servers << std::endl;
+    std::cout << "root cpy = " << this->servParsing.at(0).getRoot("/") << std::endl;
+    
     response->setRawResponse(_rawRequest);
     response->setRawBody(_rawBody);
     getRequestLine(_requestLine);
     checkMethodAllowed(response, _method);
+    response->setAutoIndex(_autoIndex);
     response->setProtVersion(_protocolVersion);
     response->setURL(_url);
     response->setContentType(response->addContentType());
     response->setContentLenght(readBytes);
+    if (_autoIndex)
+        response->setBody(_autoIndexBody);
     response->createBody(_url);
 }
 
@@ -121,7 +125,7 @@ bool ft::Request::Directory(std::string url){
     return (false);
 }
 
-void ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath) {
+std::string ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc) {
     // Get the list of HTML files in the directory
     std::vector<std::string> htmlFiles;
 
@@ -129,9 +133,7 @@ void ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath) {
     struct dirent* entry;
     while ((entry = readdir(dir))) {
         std::string filename = entry->d_name;
-        if (filename.find(".html") != std::string::npos) {
-            htmlFiles.push_back(filename);
-        }
+        htmlFiles.push_back(filename);
     }
     closedir(dir);
 
@@ -139,61 +141,58 @@ void ft::Request::createAutoIndexHtmlPage(const std::string& directoryPath) {
     sort(htmlFiles.begin(), htmlFiles.end());
 
     // Create the autoindex HTML page
-    std::ofstream outputFile((directoryPath + "/index.html").c_str());
-    outputFile << "<!DOCTYPE html>\n";
-    outputFile << "<html>\n";
-    outputFile << "  <head>\n";
-    outputFile << "    <title>Autoindex</title>\n";
-    outputFile << "  </head>\n";
-    outputFile << "  <body>\n";
-    outputFile << "    <h1>Index of " << directoryPath << "</h1>\n";
-    outputFile << "    <ul>\n";
+    std::string autoIndexPage;
+    autoIndexPage += "<!DOCTYPE html>\n";
+    autoIndexPage += "<html>\n";
+    autoIndexPage += "  <head>\n";
+    autoIndexPage += "    <title>Autoindex</title>\n";
+    autoIndexPage += "  </head>\n";
+    autoIndexPage += "  <body>\n";
+    autoIndexPage += "    <h1>Index of " + directoryPath + "</h1>\n";
+    autoIndexPage += "    <ul>\n";
     for (std::vector<std::string>::const_iterator it = htmlFiles.begin(); it != htmlFiles.end(); ++it) {
-        outputFile << "      <li><a href=\"" << *it << "\">" << *it << "</a></li>\n";
+        autoIndexPage += "      <li><a href=\"" + tmp_loc + *it + "\">" + *it + "</a></li>\n";
+        std::cout << "YESY = " << "      <li><a href=\"" + tmp_loc+ *it + "\">" + *it + "</a></li>\n";
     }
-    outputFile << "    </ul>\n";
-    outputFile << "  </body>\n";
-    outputFile << "</html>\n";
+    autoIndexPage += "    </ul>\n";
+    autoIndexPage += "  </body>\n";
+    autoIndexPage += "</html>\n";
+    return autoIndexPage;
 }
 
-
+std::string ft::Request::checkIndexVector(std::vector<std::string> Index)
+{
+    std::vector<std::string> tmp = Index;
+    for (std::vector<std::string>::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+        if (*it != "")
+            return (*it);
+    }
+    return ("");
+}
 
 void ft::Request::getCorrectUrl(void){
     (void)_indexON;
+    std::string tmp_loc = _url;
 
-    // std::cout << "URL = " << _url << std::endl;
-    // std::cout << "root = " << servers.at(0).getRoot(_url) << std::endl;
+    _url = this->servParsing.at(0).getRoot(_url) + _url;
 
-    // if (_url is directory && getIndexFile(_url) == 1)
-    //     _url += getIndexFile
-    // else if (_url is Directory && getAutoIndex(_url) == 1)
-    //     reponse._body = createAutoIndexHtmlPage();
-    // else
-    //     _url = 
-    // if (servers.at(0).getAutoIndex(_url)) //change the 0 with the correct server number
-    // {
-
-    // }
-
-
-    if (_url == "/")
+    if (Directory(_url))
     {
-        _indexON = 1;
-        _url = _root + _url + _index;
-        return ;
-    }
-    _url.erase(0, 1);
-    if (Directory(_url)){
-        int i = _url.size();
-        if (_url.at(i - 1) != '/')
+        std::string::iterator ite = _url.end();
+        if (*(--ite) != '/')
             _url += "/";
-        _url = _root + _url + _index;
-    
+        std::string::iterator it = tmp_loc.end();
+        if (*(--it) != '/')
+            tmp_loc += "/";
+        if (this->servParsing.at(0).getAutoIndex(tmp_loc))
+        {
+            _autoIndex = true;
+            _autoIndexBody += createAutoIndexHtmlPage(_url, tmp_loc);
+        }
+        else
+            _url = _url + checkIndexVector(this->servParsing.at(0).getIndex(_url));
     }
-    else{
-        _url = _root + _url;
-    }
-
 }
 
 
@@ -216,11 +215,10 @@ void ft::Request::getRequestLine(std::string line)
     Function that checks if request exists, then parse the request
     and send it to create the response
 */
-std::string ft::Request::requestStarter(int readBytes, char *buffer, std::vector<ft::Server>	server){
-    ft::Request requestHTTP;
+std::string ft::Request::requestStarter(int readBytes, char *buffer){
     ft::Response *responseHTTP = new ft::Response();
+    ft::Request requestHTTP(this->servParsing);
 
-    (void)server;
     // if (_code == 0)
     // {
         requestHTTP.fillRequest(buffer);
@@ -242,7 +240,7 @@ std::string ft::Request::requestStarter(int readBytes, char *buffer, std::vector
 //  
 
 
-int ft::Request::server_start(std::vector<ft::Server>	server)
+int ft::Request::server_start()
 {
     int server_fd, new_socket; long valread;
     struct sockaddr_in address;
@@ -292,7 +290,7 @@ int ft::Request::server_start(std::vector<ft::Server>	server)
 
         ofs.write((char *)buffer, sizeof(buffer));
         ofs.close();
-        hello = requestStarter(valread, buffer, server);
+        hello = requestStarter(valread, buffer);
         // std::cout << hello << std::endl;
         std::ofstream ofs2("response");
         ofs2 << hello;

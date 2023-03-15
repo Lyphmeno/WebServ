@@ -24,7 +24,7 @@ class Request{
 
 public:
         //Constructors
-        Request();
+        Request(const std::vector<ft::Server> & servers);
         Request (const Request & src);
 
         //Destructor
@@ -37,10 +37,10 @@ public:
         std::string getProtVersion(void){return _protocolVersion;};
         std::string getRequestLine(void){return _requestLine;};
 
-        std::string requestStarter(int readBytes, char *buffer, std::vector<ft::Server>	server);
+        std::string requestStarter(int readBytes, char *buffer);
 
         void fillRequest(char *buffer);
-        void parseRequest(ft::Response *reponse, int readBytes);
+        void parseRequest(ft::Response *response, int readBytes);
 
         void getRequestLine(std::string line);
         void checkMethodAllowed(ft::Response *response, std::string method);
@@ -49,10 +49,10 @@ public:
 
         bool Directory(std::string url);
         void getCorrectUrl(void);
-        void createAutoIndexHtmlPage(const std::string& directoryPath);
+        std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
+        std::string checkIndexVector(std::vector<std::string> Index);
 
-
-        int server_start(std::vector<ft::Server>	server);
+        int server_start();
 
 private:
 
@@ -72,10 +72,11 @@ private:
         std::string _root;
         std::string _index;
 //        int _code;
-
+        std::string _autoIndexBody;
+        bool _autoIndex;
 
         //Parser
-	std::vector<ft::Server>	servers;
+	std::vector<ft::Server>	servParsing;
 
 };
 

@@ -41,8 +41,10 @@ public:
         void setURL(std::string url);
         void setMethod(std::string method);
         void setRawBody(std::string body);
+        void setBody(std::string newBody);
         void setContentLenght(int valread);
         void setRawResponse(std::map<std::string, std::string> rr);
+        void setAutoIndex(bool autoIndex);
 
         //Methods
         void GET_method(const std::string & url);
@@ -73,6 +75,7 @@ private:
         std::string _body;
 
         int _contentLenght;
+        bool _autoIndex;
         
         ft::ContentType _Mime;
 
