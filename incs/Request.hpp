@@ -36,6 +36,7 @@ public:
         std::string getUrl(void){return _url;};
         std::string getProtVersion(void){return _protocolVersion;};
         std::string getRequestLine(void){return _requestLine;};
+        std::string  getElementsHeader(std::string element);
 
         std::string requestStarter(int readBytes, std::string buffer);
 
@@ -52,7 +53,6 @@ public:
         std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
         std::string checkIndexVector(std::vector<std::string> Index);
 
-        int server_start();
 
 private:
 

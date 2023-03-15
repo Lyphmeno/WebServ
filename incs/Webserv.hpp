@@ -45,6 +45,9 @@ public:
 
 	Parser					parser;
 	std::vector<ft::Server>	servers;
+
+    int server_start();
+
 };
 
 }

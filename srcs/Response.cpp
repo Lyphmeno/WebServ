@@ -190,7 +190,6 @@ void ft::Response::GET_method(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    std::cout << "response url - " << _autoIndex << std::endl;
     if (!ifs.is_open() && _autoIndex == false)
     {
         setError("404");
