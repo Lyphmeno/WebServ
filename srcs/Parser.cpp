@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 15:37:40 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/15 13:00:25 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,6 +393,8 @@ void	Parser::p_location(std::vector<Server> &servers)
 	if (this->inbrackets >= 3)
 		throw std::invalid_argument("Invalid argument: <location> cannot have <location>");
 	this->line >> tmp;
+	if (tmp.at(tmp.size() - 1) != '/' || tmp[0] != '/')
+		throw std::invalid_argument("Invalid argument: <location> must start and end with '/'");
 	if (servers.back().getLoc(tmp) >= 0)
 		throw std::invalid_argument("Invalid argument: <location> must not be the same");
 	servers.back().location.push_back(ft::Location());
@@ -500,14 +502,22 @@ void	Parser::p_root(std::vector<Server> &servers)
 			throw std::invalid_argument("Invalid argument: multiple <root> tag not allowed");
 		servers.back().id.at(BS_ROOT) = true;
 		while (this->line >> tmp)
+		{
+			if (tmp.at(tmp.size() - 1) == '/')
+				throw std::invalid_argument("Invalid argument: <root> must not end with '/'");
 			servers.back().root = tmp;
+		}
 	}
 	else {
 		if (servers.back().location.back().id.at(BL_ROOT) == true)
 			throw std::invalid_argument("Invalid argument: multiple <root> tag not allowed");
 		servers.back().location.back().id.at(BL_ROOT) = true;
 		while (this->line >> tmp)
+		{
+			if (tmp.at(tmp.size() - 1) == '/')
+				throw std::invalid_argument("Invalid argument: <root> must not end with '/'");
 			servers.back().location.back().root = tmp;
+		}
 	}
 }
 
