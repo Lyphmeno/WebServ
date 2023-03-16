@@ -24,7 +24,7 @@ class Request{
 
 public:
         //Constructors
-        Request(const std::vector<ft::Server> & servers);
+        Request(const ft::Server& server);
         Request (const Request & src);
 
         //Destructor
@@ -32,15 +32,15 @@ public:
 
 
         //Getters
-        std::string getMethod(void){return _method;};
-        std::string getUrl(void){return _url;};
-        std::string getProtVersion(void){return _protocolVersion;};
-        std::string getRequestLine(void){return _requestLine;};
+        std::string getMethod(void);
+        std::string getUrl(void);
+        std::string getProtVersion(void);
+        std::string getRequestLine(void);
         std::string  getElementsHeader(std::string element);
 
         std::string requestStarter(int readBytes, std::string buffer);
 
-        void fillRequest(std::string buffer);
+        void parseHeader(void);
         void parseRequest(ft::Response *reponse, int readBytes);
 
         void getRequestLine(std::string line);
@@ -54,6 +54,9 @@ public:
         std::string checkIndexVector(std::vector<std::string> Index);
 
 
+        std::string rawHeader;
+        std::string rawBody;
+
 private:
 
         //Request line
@@ -61,11 +64,12 @@ private:
         std::string _url;
         std::string _protocolVersion;
 
+        std::string _tmpLoc;
+
         std::string _requestLine;
 
         //Raw
         std::vector<std::string> _requestFull;
-        std::string _rawBody;
         
         //Conf file
         int _indexON;
@@ -76,7 +80,7 @@ private:
         bool _autoIndex;
 
         //Parser
-	std::vector<ft::Server>	servParsing;
+	ft::Server	_serverParsing;
 
 };
 

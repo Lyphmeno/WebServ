@@ -1,16 +1,16 @@
 #include "../incs/Request.hpp"
 #include <dirent.h> 
-
 #include <fstream>
 #include "../incs/Request.hpp"
 #include "../incs/Response.hpp"
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(const std::vector<ft::Server> & servers) : _indexON(0), _root(), _index("index.html"), _autoIndex(false), servParsing(servers){
+ft::Request::Request(const ft::Server & server) : _indexON(0), _root(), _index("index.html"), _autoIndex(false), _serverParsing(server){
 }
 
 ft::Request::Request(const Request & src){
@@ -30,19 +30,24 @@ ft::Request::~Request(void){
 ////////////////////////////////////////////////////////////////////////////////
 
 
-std::string ft::Request::getElementsHeader(std::string element)
-{
+
+//Getters
+std::string ft::Request::getMethod(void){return _method;}
+std::string ft::Request::getUrl(void){return _url;}
+std::string ft::Request::getProtVersion(void){return _protocolVersion;}
+std::string ft::Request::getRequestLine(void){return _requestLine;}
+
+std::string ft::Request::getElementsHeader(std::string element){
     return _rawRequest[element];
 }
 
 /*
     Add the raw request to a vector
 */
-void ft::Request::fillRequest(std::string buffer)
-{
+void ft::Request::parseHeader(){
     std::string newbuffer;
     std::string value;
-    newbuffer = buffer;
+    newbuffer = rawHeader;
 
 
     size_t pos = 0;
@@ -65,17 +70,16 @@ void ft::Request::fillRequest(std::string buffer)
         token.erase(0, 1);
         _rawRequest[token] = value;
     }
-    _rawBody = newbuffer;
-    _rawBody.erase(0, 3);
+    rawBody = newbuffer;
+    rawBody.erase(0, 3);
 }
 
 /*
     Check if method is allowed
 */
-void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
-{
-    if (method != "GET" && method != "POST" && method != "DELETE")
-        response->setAllowedMethod(1);
+void ft::Request::checkMethodAllowed(ft::Response *response, std::string method){
+    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
+        response->setAllowedMethod(0);
     response->setMethod(method);
 }
 
@@ -86,7 +90,7 @@ void ft::Request::checkMethodAllowed(ft::Response *response, std::string method)
 void ft::Request::parseRequest(ft::Response *response, int readBytes){
     
     response->setRawResponse(_rawRequest);
-    response->setRawBody(_rawBody);
+    response->setRawBody(rawBody);
     getRequestLine(_requestLine);
     checkMethodAllowed(response, _method);
     response->setAutoIndex(_autoIndex);
@@ -102,7 +106,6 @@ void ft::Request::parseRequest(ft::Response *response, int readBytes){
 /*
     Get the URL, method and protocol
 */
-
 
 bool ft::Request::Directory(std::string url){
 
@@ -211,31 +214,31 @@ std::string ft::Request::checkIndexVector(std::vector<std::string> Index)
 
 void ft::Request::getCorrectUrl(void){
     (void)_indexON;
-    std::string tmp_loc = _url;
+    _tmpLoc = _url;
 
-    _url = this->servParsing.at(0).getRoot(_url) + _url;
+    _url = this->_serverParsing.getRoot(_url) + _url;
 
     if (Directory(_url))
     {
+        
         std::string::iterator ite = _url.end();
         if (*(--ite) != '/')
             _url += "/";
-        std::string::iterator it = tmp_loc.end();
+        std::string::iterator it = _tmpLoc.end();
         if (*(--it) != '/')
-            tmp_loc += "/";
-        if (this->servParsing.at(0).getAutoIndex(tmp_loc))
+            _tmpLoc += "/";
+        if (this->_serverParsing.getAutoIndex(_tmpLoc))
         {
             _autoIndex = true;
-            _autoIndexBody += createAutoIndexHtmlPage(_url, tmp_loc);
+            _autoIndexBody += createAutoIndexHtmlPage(_url, _tmpLoc);
         }
         else
-            _url = _url + checkIndexVector(this->servParsing.at(0).getIndex(_url));
+            _url = _url + checkIndexVector(this->_serverParsing.getIndex(_url));
     }
 }
 
 
-void ft::Request::getRequestLine(std::string line)
-{
+void ft::Request::getRequestLine(std::string line){
     size_t found = line.find(" ");
     this->_method.insert(0, line, 0, found);
     line.erase(0, _method.size() + 1);
@@ -253,12 +256,12 @@ void ft::Request::getRequestLine(std::string line)
     and send it to create the response
 */
 
-std::string ft::Request::requestStarter(int readBytes, std::string buffer)
-{
+std::string ft::Request::requestStarter(int code, std::string buffer){
     ft::Response *responseHTTP = new ft::Response();
 
-    fillRequest(buffer);
-    parseRequest(responseHTTP, readBytes);
+    rawHeader = buffer; //a enlever
+    parseHeader(); //a enlever une fois le server ajoute 
+    parseRequest(responseHTTP, code);
 
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 

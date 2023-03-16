@@ -47,9 +47,9 @@ public:
         void setAutoIndex(bool autoIndex);
 
         //Methods
-        void GET_method(const std::string & url);
-        void POST_method(const std::string & url);
-        void DELETE_method(const std::string & url);
+        void getM(const std::string & url);
+        void postM(const std::string & url);
+        void deleteM(const std::string & url);
 
         //Functions
         const std::string & addContentType(void);

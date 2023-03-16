@@ -12,7 +12,7 @@ static std::string itostring(int toConvert){
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void) : _allowedMethod(0), _body(""){
+ft::Response::Response(void) : _allowedMethod(1), _body(""){
 
 
 }
@@ -184,8 +184,7 @@ void ft::Response::createAutoIndexHtmlPage(const std::string& directoryPath) {
 ..............................................................................*/
 
 /* get */
-
-void ft::Response::GET_method(const std::string & url){
+void ft::Response::getM(const std::string & url){
     
     std::ifstream ifs(url.c_str());
     std::string buff;
@@ -256,7 +255,7 @@ void ft::Response::plain(void){
 
 }
 
-void ft::Response::POST_method(const std::string & url){
+void ft::Response::postM(const std::string & url){
     
     std::ifstream ifs(url.c_str());
     std::string enctype;
@@ -294,7 +293,7 @@ void ft::Response::POST_method(const std::string & url){
 
 /* delete */
 
-void ft::Response::DELETE_method(const std::string & url){
+void ft::Response::deleteM(const std::string & url){
     
     int status;
 
@@ -320,14 +319,15 @@ void ft::Response::DELETE_method(const std::string & url){
 */
 void ft::Response::createBody(const std::string & url){
 
-    if (_allowedMethod == 0)
+
+    if (_allowedMethod != 0)
     {
         if (_method == "GET")
-            GET_method(url);
+            getM(url);
         else if (_method == "POST")
-            POST_method(url);
+            postM(url);
         else if (_method == "DELETE")
-            DELETE_method(url);
+            deleteM(url);
         return ;
     }
     setError("405");

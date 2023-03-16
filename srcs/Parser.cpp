@@ -677,7 +677,7 @@ void	Parser::p_allowmethods(std::vector<Server> &servers)
 	this->semi_colon();
 	this->dlt_first();
 	while (this->line >> tmp)
-		if (tmp.compare("GET") && tmp.compare("POST"))
+		if (tmp.compare("GET") && tmp.compare("POST") && tmp.compare("DELETE") )
 			throw std::invalid_argument("Invalid Argument: Invalid method");
 	this->line.clear();
 	this->line.seekg(0);
