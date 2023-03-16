@@ -30,7 +30,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-	std::string	msg = "this is a message from a client\r\n\r\nerror";
+	std::string	msg = "this is a message from a client\r\n\r\n";
     send(sock, msg.c_str(), msg.size(), 0);
 	// char buff[1024];
 	// recv(sock, buff, 1024, 0);

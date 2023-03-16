@@ -6,12 +6,11 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/08 13:36:57 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/17 00:53:59 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/SocketManager.hpp"
-#include <iostream>
 
 namespace ft {
 
@@ -41,10 +40,17 @@ SocketManager::~SocketManager()
 //                                  methods                                   //
 ////////////////////////////////////////////////////////////////////////////////
 
-void	SocketManager::addServer(const sockaddr_in &addr)
+void	SocketManager::start()
+{
+	for (conf_cit cit = this->config.begin(); cit != this->config.end(); cit++)
+		this->addServer(cit);
+
+}
+
+void	SocketManager::addServer(const conf_cit &configIt)
 {
 	Socket	sock;
-	sock.addr = addr;
+	sock.addr = configIt->addr;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock.fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
@@ -60,6 +66,7 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 	this->addEp(sock.fd);
 	this->servers.insert(sock_val(sock.fd, sock));
 	this->clients.insert(srv_val(sock.fd, sock_type()));
+	this->configLinker.insert(link_val(sock.fd, configIt - this->config.begin()));
 }
 
 void	SocketManager::addClient(const int &sfd, const Socket &sock)
@@ -67,7 +74,7 @@ void	SocketManager::addClient(const int &sfd, const Socket &sock)
 	this->setNoBlock(sock.fd);
 	this->addEp(sock.fd);
 	this->clients.find(sfd)->second.insert(sock_val(sock.fd, sock));
-	this->linker.insert(link_val(sock.fd, sfd));
+	this->clientLinker.insert(link_val(sock.fd, sfd));
 }
 
 void	SocketManager::addEp(const int &fd) const
@@ -97,42 +104,21 @@ bool	SocketManager::isServer(const int &fd) const
 	return (false);
 }
 
-void	SocketManager::getData(const int &fd, const char *s)
+void	SocketManager::getData(const int &fd, std::string buff)
 {
-	sock_it sock = this->findClient(fd);
-	sock->second.data.content += s;
-	if (sock->second.data.body == false)
-	{
-		size_t pos = sock->second.data.content.find("\r\n\r\n");
-		std::string	header;
-		if (pos != std::string::npos)
-			header = sock->second.data.content.substr(0, pos + 4);
-		if (header.size() > MAXHEADER)
-		{
-			// send error
-		}
-		// parse header
-		// if (!POST)
-		//	do and send
-		// else
-		// {
-		// sock->second.data.body = true;
-		// sock->second.data.content.erase(0, pos + 4);
-		// }
-	}
-	if (sock->second.data.body == true)
-	{
-		sock->second.data.bytes += sock->second.data.content.size();
-		// if (sock->second.data.bytes > MAXBODY)
-		// 	send error
-		// send body part
-		sock->second.data.content.clear();
-	}
+	Socket &sock = this->findClient(fd);
+	(void)buff;
+	(void)sock;
 }
 
-SocketManager::sock_it	SocketManager::findClient(const int &fd)
+Socket	&SocketManager::findClient(const int &fd)
 {
-	return (this->clients.find((this->linker.find(fd)->second))->second.find(fd));
+	return (this->clients.find((this->clientLinker.find(fd)->second))->second.find(fd)->second);
+}
+
+Server	&SocketManager::findConfig(const int &fd)
+{
+	return (this->config.at(this->configLinker.find(this->clientLinker.find(fd)->second)->second));
 }
 
 void	SocketManager::close(const int &fd)
@@ -142,7 +128,7 @@ void	SocketManager::close(const int &fd)
 		srv_it sit = this->clients.find(fd);
 		for (sock_it it = sit->second.begin(); it != sit->second.end(); it++)
 		{
-			this->linker.erase(it->second.fd);
+			this->clientLinker.erase(it->second.fd);
 			::close(it->second.fd);
 		}
 		::close(fd);
@@ -152,8 +138,8 @@ void	SocketManager::close(const int &fd)
 	else
 	{
 		::close(fd);
-		this->clients.find((this->linker.find(fd)->second))->second.erase(fd);
-		this->linker.erase(fd);
+		this->clients.find((this->clientLinker.find(fd)->second))->second.erase(fd);
+		this->clientLinker.erase(fd);
 	}
 }
 

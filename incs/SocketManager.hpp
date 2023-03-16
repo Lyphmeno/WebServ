@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/07 14:37:45 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/17 00:22:49 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <string>
 #include "../incs/Socket.hpp"
 #include "../incs/Request.hpp"
+#include "../incs/Server.hpp"
 
 #define MAXEVENTS 128
 #define MAXQUEU 128
@@ -47,34 +48,43 @@ public:
 	typedef std::map<int, std::map<int, Socket> >::const_iterator	srv_cit;
 	typedef std::map<int, std::map<int, Socket> >::value_type		srv_val;
 
-	typedef std::map<int, int>										linker_type;
+	typedef std::map<int, int>										link_type;
 	typedef	std::map<int, int>::iterator							link_it;
 	typedef	std::map<int, int>::const_iterator						link_cit;
 	typedef	std::map<int, int>::value_type							link_val;
+
+	typedef std::vector<Server>										conf_type;
+	typedef std::vector<Server>::iterator							conf_it;
+	typedef std::vector<Server>::const_iterator						conf_cit;
+	typedef std::vector<Server>::value_type							conf_val;
 
 public:
 	SocketManager();
 	~SocketManager();
 
-	void	addServer(const sockaddr_in &addr);
+	void	start();
+	void	addServer(const conf_cit &configIt);
 	void	addClient(const int &sfd, const Socket &sock);
 	void	addEp(const int &fd) const;
 	void	setNoBlock(const int &fd) const;
 	bool	isServer(const int &fd) const;
 	void	close(const int &fd);
-	void	getData(const int &fd, const char *data);
-	sock_it	findClient(const int &fd);
+	void	getData(const int &fd, std::string buff);
+	Socket	&findClient(const int &fd);
+	Server	&findConfig(const int &fd);
 
 private:
 	SocketManager(const SocketManager &x);
 	SocketManager	&operator=(const SocketManager &x);
 
 public:
-	int										epfd;
-	epoll_event								epev[MAXEVENTS];
-	std::map<int, int>						linker;
-	std::map<int, Socket>					servers;
-	std::map<int, std::map<int, Socket> >	clients;
+	int			epfd;
+	epoll_event	epev[MAXEVENTS];
+	link_type	clientLinker;
+	link_type	configLinker;
+	sock_type	servers;
+	srv_type	clients;
+	conf_type	config;
 };
 
 }
