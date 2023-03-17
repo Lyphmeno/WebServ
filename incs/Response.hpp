@@ -41,13 +41,15 @@ public:
         void setURL(std::string url);
         void setMethod(std::string method);
         void setRawBody(std::string body);
+        void setBody(std::string newBody);
         void setContentLenght(int valread);
         void setRawResponse(std::map<std::string, std::string> rr);
+        void setAutoIndex(bool autoIndex);
 
         //Methods
-        void GET_method(const std::string & url);
-        void POST_method(const std::string & url);
-        void DELETE_method(const std::string & url);
+        void getM(const std::string & url);
+        void postM(const std::string & url);
+        void deleteM(const std::string & url);
 
         //Functions
         const std::string & addContentType(void);
@@ -55,7 +57,10 @@ public:
         void buildFullResponse();
         void handleErrors();
         void setError(std::string code);
+        
+        void createAutoIndexHtmlPage(const std::string& directoryPath);
 
+        
 private:
         //request line
         std::string _protVersion;
@@ -70,6 +75,7 @@ private:
         std::string _body;
 
         int _contentLenght;
+        bool _autoIndex;
         
         ft::ContentType _Mime;
 
@@ -84,6 +90,8 @@ private:
         std::map<std::string, std::string> _rawResponse;
         std::map<std::string, std::string> _formValues;
         std::string _rawBody;
+
+        // std::map<std::string, bool> _autoIndex;
 
         void urlencoded(void);
         void multi(void);

@@ -1,4 +1,5 @@
 #include "../incs/Response.hpp"
+#include <dirent.h> 
 #include <algorithm>
 
 static std::string itostring(int toConvert){
@@ -11,7 +12,8 @@ static std::string itostring(int toConvert){
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void) : _allowedMethod(0){
+ft::Response::Response(void) : _allowedMethod(1), _body(""){
+
 
 }
 
@@ -79,8 +81,16 @@ void ft::Response::setRawBody(std::string body){
     this->_rawBody = body;
 }
 
+void ft::Response::setBody(std::string newBody){
+    this->_body = newBody;
+}
+
 void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
+}
+
+void ft::Response::setAutoIndex(bool autoIndex){
+    this->_autoIndex = autoIndex;
 }
 
 void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
@@ -132,30 +142,69 @@ const std::string & ft::Response::addContentType(void){
     return (_Mime.getType(extension));
 }
 
+void ft::Response::createAutoIndexHtmlPage(const std::string& directoryPath) {
+    // Get the list of HTML files in the directory
+    std::vector<std::string> htmlFiles;
+
+    DIR* dir = opendir(directoryPath.c_str());
+    struct dirent* entry;
+    while ((entry = readdir(dir))) {
+        std::string filename = entry->d_name;
+        if (filename.find(".html") != std::string::npos) {
+            htmlFiles.push_back(filename);
+        }
+    }
+    closedir(dir);
+
+    // Sort the list of HTML files
+    sort(htmlFiles.begin(), htmlFiles.end());
+
+    // Create the autoindex HTML page
+    std::ofstream outputFile((directoryPath + "/index.html").c_str());
+    outputFile << "<!DOCTYPE html>\n";
+    outputFile << "<html>\n";
+    outputFile << "  <head>\n";
+    outputFile << "    <title>Autoindex</title>\n";
+    outputFile << "  </head>\n";
+    outputFile << "  <body>\n";
+    outputFile << "    <h1>Index of " << directoryPath << "</h1>\n";
+    outputFile << "    <ul>\n";
+    for (std::vector<std::string>::const_iterator it = htmlFiles.begin(); it != htmlFiles.end(); ++it) {
+        outputFile << "      <li><a href=\"" << *it << "\">" << *it << "</a></li>\n";
+    }
+    outputFile << "    </ul>\n";
+    outputFile << "  </body>\n";
+    outputFile << "</html>\n";
+}
+
+
+
 /*..............................................................................
 ..                                 METHODS                                    ..
 ..............................................................................*/
 
 /* get */
-
-void ft::Response::GET_method(const std::string & url){
+void ft::Response::getM(const std::string & url){
     
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    if (!ifs.is_open())
+    if (!ifs.is_open() && _autoIndex == false)
     {
         setError("404");
         return ;
     }
     _code = "200";
     _status = _codeStatus.getStatus("200");
-    while (std::getline(ifs, buff) != 0)
+    if (_body == "")
     {
-        _body += buff;
-        _body += "\n";
+        while (std::getline(ifs, buff) != 0)
+        {
+            _body += buff;
+            _body += "\n";
+        }
+        _body.erase(_body.size() - 1,1);
     }
-    _body.erase(_body.size() - 1,1);
 }
 
 /* post */
@@ -206,7 +255,7 @@ void ft::Response::plain(void){
 
 }
 
-void ft::Response::POST_method(const std::string & url){
+void ft::Response::postM(const std::string & url){
     
     std::ifstream ifs(url.c_str());
     std::string enctype;
@@ -244,7 +293,7 @@ void ft::Response::POST_method(const std::string & url){
 
 /* delete */
 
-void ft::Response::DELETE_method(const std::string & url){
+void ft::Response::deleteM(const std::string & url){
     
     int status;
 
@@ -270,14 +319,15 @@ void ft::Response::DELETE_method(const std::string & url){
 */
 void ft::Response::createBody(const std::string & url){
 
-    if (_allowedMethod == 0)
+
+    if (_allowedMethod != 0)
     {
         if (_method == "GET")
-            GET_method(url);
+            getM(url);
         else if (_method == "POST")
-            POST_method(url);
+            postM(url);
         else if (_method == "DELETE")
-            DELETE_method(url);
+            deleteM(url);
         return ;
     }
     setError("405");

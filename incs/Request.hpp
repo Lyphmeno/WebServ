@@ -2,10 +2,13 @@
 #define REQUEST_HPP
 
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
+#include <algorithm>
+
+#include "Parser.hpp"
 #include "Response.hpp"
-
-
 
 #define GET 1
 #define POST 2
@@ -21,7 +24,7 @@ class Request{
 
 public:
         //Constructors
-        Request();
+        Request(const ft::Server& server);
         Request (const Request & src);
 
         //Destructor
@@ -29,19 +32,30 @@ public:
 
 
         //Getters
-        std::string getMethod(void){return _method;};
-        std::string getUrl(void){return _url;};
-        std::string getProtVersion(void){return _protocolVersion;};
-        std::string getRequestLine(void){return _requestLine;};
+        std::string getMethod(void);
+        std::string getUrl(void);
+        std::string getProtVersion(void);
+        std::string getRequestLine(void);
+        std::string  getElementsHeader(std::string element);
 
         std::string requestStarter(int readBytes, std::string buffer);
 
-        void fillRequest(std::string buffer);
+        void parseHeader(void);
         void parseRequest(ft::Response *reponse, int readBytes);
 
         void getRequestLine(std::string line);
         void checkMethodAllowed(ft::Response *response, std::string method);
         std::map<std::string, std::string> _rawRequest;
+
+
+        bool Directory(std::string url);
+        void getCorrectUrl(void);
+        std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
+        std::string checkIndexVector(std::vector<std::string> Index);
+
+
+        std::string rawHeader;
+        std::string rawBody;
 
 private:
 
@@ -50,16 +64,24 @@ private:
         std::string _url;
         std::string _protocolVersion;
 
+        std::string _tmpLoc;
+
         std::string _requestLine;
 
         //Raw
         std::vector<std::string> _requestFull;
-        std::string _rawBody;
         
         //Conf file
         int _indexON;
         std::string _root;
-       int _code;
+        std::string _index;
+//        int _code;
+        std::string _autoIndexBody;
+        bool _autoIndex;
+
+        //Parser
+	ft::Server	_serverParsing;
+
 };
 
 }
