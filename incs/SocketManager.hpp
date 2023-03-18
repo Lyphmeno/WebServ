@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/17 00:22:49 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/18 11:10:38 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,13 @@ public:
 	void	addEp(const int &fd) const;
 	void	setNoBlock(const int &fd) const;
 	bool	isServer(const int &fd) const;
-	void	close(const int &fd);
-	void	getData(const int &fd, std::string buff);
 	Socket	&findClient(const int &fd);
 	Server	&findConfig(const int &fd);
+	void	handleHeader(SocketData &data, std::string &buff);
+	void	handleBody(SocketData &data, std::string &buff);
+	void	sendResponse(Socket &sock);
+	void	getData(const int &fd, std::string buff);
+	void	close(const int &fd);
 
 private:
 	SocketManager(const SocketManager &x);

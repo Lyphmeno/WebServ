@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 14:55:36 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 12:45:47 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/18 11:11:09 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,6 @@ struct	Location
 	std::string					root;
     std::string					auto_index;
     std::string					cgi_dir;
-	unsigned long int			max_client_body_size;
+	size_t						max_client_body_size;
 };
 }

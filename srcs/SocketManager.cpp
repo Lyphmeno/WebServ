@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/17 00:53:59 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/18 11:15:54 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	SocketManager::start()
 
 void	SocketManager::addServer(const conf_cit &configIt)
 {
-	Socket	sock;
+	Socket	sock(*configIt);
 	sock.addr = configIt->addr;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock.fd == -1)
@@ -104,13 +104,6 @@ bool	SocketManager::isServer(const int &fd) const
 	return (false);
 }
 
-void	SocketManager::getData(const int &fd, std::string buff)
-{
-	Socket &sock = this->findClient(fd);
-	(void)buff;
-	(void)sock;
-}
-
 Socket	&SocketManager::findClient(const int &fd)
 {
 	return (this->clients.find((this->clientLinker.find(fd)->second))->second.find(fd)->second);
@@ -118,7 +111,99 @@ Socket	&SocketManager::findClient(const int &fd)
 
 Server	&SocketManager::findConfig(const int &fd)
 {
+	if (this->clientLinker.find(fd) == this->clientLinker.end())
+		return (this->config.at(this->configLinker.find(fd)->second));
 	return (this->config.at(this->configLinker.find(this->clientLinker.find(fd)->second)->second));
+}
+
+void	SocketManager::handleHeader(SocketData &data, std::string &buff)
+{
+	size_t pos = buff.find("\r\n\r\n");
+	if (pos != buff.npos)
+	{
+		data.req.rawHeader += buff.substr(0, pos + 4);
+		buff.erase(0, pos + 4);
+		data.step = PARSING;
+	}
+	else
+	{
+		data.req.rawHeader += buff;
+		buff.clear();
+	}
+
+	if (data.req.rawHeader.size() > MAXHEADER)
+	{
+		data.rep = data.req.requestStarter(431);
+		data.step = SENDING;
+	}
+}
+
+void	SocketManager::handleBody(SocketData &data, std::string &buff)
+{
+	if (buff.size() + data.req.rawBody.size() <= data.bodysize)
+	{
+		data.req.rawBody += buff;
+		buff.clear();
+	}
+	else
+	{
+		size_t pos = data.bodysize - data.req.rawBody.size();
+		data.req.rawBody += buff.substr(0, pos);
+		buff.erase(0, pos);
+	}
+
+	if (data.req.rawBody.size() == data.bodysize)
+	{
+		data.rep = data.req.requestStarter(0);
+		data.step = SENDING;
+	}
+}
+
+void	SocketManager::sendResponse(Socket &sock)
+{
+	std::cerr << sock.data.req.rawHeader << '\n';
+	sockaddr_in addr = sock.addr;
+	int fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (fd == -1)
+	{}
+	this->setNoBlock(fd);
+	if (connect(fd, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == -1)
+	{}
+	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
+	sock.data.clear();
+}
+
+void	SocketManager::getData(const int &fd, std::string buff)
+{
+	Socket &sock = this->findClient(fd);
+	SocketData &data = sock.data;
+	while (buff.size() > 0)
+	{
+		std::cerr << buff << '\n';
+		switch (data.step)
+		{
+			case HEADER:
+				this->handleHeader(data, buff);
+				// fall through
+			case PARSING:
+				data.req.parseHeader();
+				if (data.req.getMethod() == "POST" && data.bodysize > 0)
+					data.step = BODY;
+				else
+				{
+					std::cerr << "before requestStarter" << '\n';
+					data.rep = data.req.requestStarter(0);
+					std::cerr << "after requestStarter" << '\n';
+					data.step = SENDING;
+				}
+				// fall through
+			case BODY:
+				this->handleBody(data, buff);
+				// fall through
+			case SENDING:
+				this->sendResponse(sock);
+		}
+	}
 }
 
 void	SocketManager::close(const int &fd)

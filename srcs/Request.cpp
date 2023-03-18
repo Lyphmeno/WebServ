@@ -10,7 +10,7 @@
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(const ft::Server & server) : _indexON(0), _root(), _index("index.html"), _autoIndex(false), _serverParsing(server){
+ft::Request::Request(const ft::Server & server) : _serverParsing(server), _indexON(0), _root(), _index("index.html"), _autoIndex(false){
 }
 
 ft::Request::Request(const Request & src){
@@ -36,6 +36,7 @@ std::string ft::Request::getMethod(void){return _method;}
 std::string ft::Request::getUrl(void){return _url;}
 std::string ft::Request::getProtVersion(void){return _protocolVersion;}
 std::string ft::Request::getRequestLine(void){return _requestLine;}
+
 
 std::string ft::Request::getElementsHeader(std::string element){
     return _rawRequest[element];
@@ -70,8 +71,6 @@ void ft::Request::parseHeader(){
         token.erase(0, 1);
         _rawRequest[token] = value;
     }
-    rawBody = newbuffer;
-    rawBody.erase(0, 3);
 }
 
 /*
@@ -256,14 +255,44 @@ void ft::Request::getRequestLine(std::string line){
     and send it to create the response
 */
 
-std::string ft::Request::requestStarter(int code, std::string buffer){
+std::string ft::Request::requestStarter(int code){
     ft::Response *responseHTTP = new ft::Response();
 
-    rawHeader = buffer; //a enlever
-    parseHeader(); //a enlever une fois le server ajoute 
     parseRequest(responseHTTP, code);
 
     responseHTTP->buildFullResponse();
     std::string responseR = responseHTTP->getFullResponse(); 
     return responseR;
+}
+
+
+// add by avarnier
+
+size_t	ft::Request::getContentLength(void)
+{
+	size_t ret = 0;
+	std::map<std::string, std::string>::const_iterator cit = this->_rawRequest.find("Content-Length");
+	if (cit != this->_rawRequest.end())
+		std::istringstream(cit->second) >> ret;
+	return ret;
+}
+
+void	ft::Request::clear()
+{
+	rawHeader.clear();
+	rawBody.clear();
+	_rawRequest.clear();
+	_method.clear();
+	_url.clear();
+	_protocolVersion.clear();
+	_tmpLoc.clear();
+	_requestLine.clear();
+	_requestFull.clear();
+	//	to be checked:
+	//
+	// _indexON = 0;
+	// _root.clear();
+	// _index.clear();
+	// _autoIndexBody.clear();
+	// _autoIndex = false;
 }
