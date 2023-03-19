@@ -98,7 +98,7 @@ void ft::Request::parseRequest(ft::Response *response, int readBytes){
     response->setContentType(response->addContentType());
     response->setContentLenght(readBytes);
     if (_autoIndex)
-        response->setBody(_autoIndexBody);
+		response->setBody(_autoIndexBody);
     response->createBody(_url);
 }
 
@@ -247,7 +247,7 @@ void ft::Request::getRequestLine(std::string line){
     found = line.find("\n");
     this->_protocolVersion.insert(0, line, 0, found);
     _protocolVersion.erase(_protocolVersion.size(), 1);
-    getCorrectUrl();
+//   getCorrectUrl();
 }
 
 /*

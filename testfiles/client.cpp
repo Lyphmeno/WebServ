@@ -31,6 +31,7 @@ int main()
     }
 
 	std::string	msg = "This is a client message\r\n\r\n";
+//	std::string	msg = "GET /avarnier HTTP/1.1\r\n\r\n";
     send(sock, msg.c_str(), msg.size(), 0);
 	char buff[10240];
 	recv(sock, buff, 10240, 0);

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/18 11:15:54 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/19 04:52:07 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,18 +118,17 @@ Server	&SocketManager::findConfig(const int &fd)
 
 void	SocketManager::handleHeader(SocketData &data, std::string &buff)
 {
-	size_t pos = buff.find("\r\n\r\n");
-	if (pos != buff.npos)
+	std::string	&header = data.req.rawHeader;
+	header += buff;
+	size_t pos = header.find("\r\n\r\n");
+	if (pos != header.npos)
 	{
-		data.req.rawHeader += buff.substr(0, pos + 4);
-		buff.erase(0, pos + 4);
+		buff = header.substr(pos + 4, header.npos);
+		header.erase(pos + 4, header.npos);
 		data.step = PARSING;
 	}
 	else
-	{
-		data.req.rawHeader += buff;
 		buff.clear();
-	}
 
 	if (data.req.rawHeader.size() > MAXHEADER)
 	{
@@ -161,7 +160,6 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 
 void	SocketManager::sendResponse(Socket &sock)
 {
-	std::cerr << sock.data.req.rawHeader << '\n';
 	sockaddr_in addr = sock.addr;
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd == -1)
@@ -179,30 +177,23 @@ void	SocketManager::getData(const int &fd, std::string buff)
 	SocketData &data = sock.data;
 	while (buff.size() > 0)
 	{
-		std::cerr << buff << '\n';
-		switch (data.step)
+		if (data.step == HEADER)
+			this->handleHeader(data, buff);
+		if (data.step == PARSING)
 		{
-			case HEADER:
-				this->handleHeader(data, buff);
-				// fall through
-			case PARSING:
-				data.req.parseHeader();
-				if (data.req.getMethod() == "POST" && data.bodysize > 0)
-					data.step = BODY;
-				else
-				{
-					std::cerr << "before requestStarter" << '\n';
-					data.rep = data.req.requestStarter(0);
-					std::cerr << "after requestStarter" << '\n';
-					data.step = SENDING;
-				}
-				// fall through
-			case BODY:
-				this->handleBody(data, buff);
-				// fall through
-			case SENDING:
-				this->sendResponse(sock);
+			data.req.parseHeader();
+			if (data.req.getMethod() == "POST" && data.bodysize > 0)
+				data.step = BODY;
+			else
+			{
+				data.rep = data.req.requestStarter(0);
+				data.step = SENDING;
+			}
 		}
+		if (data.step == BODY)
+			this->handleBody(data, buff);
+		if (data.step == SENDING)
+			this->sendResponse(sock);
 	}
 }
 
