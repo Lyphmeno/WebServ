@@ -76,30 +76,30 @@ void ft::Request::parseHeader(){
 /*
     Check if method is allowed
 */
-void ft::Request::checkMethodAllowed(ft::Response *response, std::string method){
+void ft::Request::checkMethodAllowed(ft::Response &response, std::string method){
     if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
-        response->setAllowedMethod(0);
-    response->setMethod(method);
+        response.setAllowedMethod(0);
+    response.setMethod(method);
 }
 
 
 /*
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
-void ft::Request::parseRequest(ft::Response *response, int readBytes){
+void ft::Request::parseRequest(ft::Response &response, int readBytes){
     
-    response->setRawResponse(_rawRequest);
-    response->setRawBody(rawBody);
+    response.setRawResponse(_rawRequest);
+    response.setRawBody(rawBody);
     getRequestLine(_requestLine);
     checkMethodAllowed(response, _method);
-    response->setAutoIndex(_autoIndex);
-    response->setProtVersion(_protocolVersion);
-    response->setURL(_url);
-    response->setContentType(response->addContentType());
-    response->setContentLenght(readBytes);
+    response.setAutoIndex(_autoIndex);
+    response.setProtVersion(_protocolVersion);
+    response.setURL(_url);
+    response.setContentType(response.addContentType());
+    response.setContentLenght(readBytes);
     if (_autoIndex)
-		response->setBody(_autoIndexBody);
-    response->createBody(_url);
+		response.setBody(_autoIndexBody);
+    response.createBody(_url);
 }
 
 /*
@@ -256,12 +256,12 @@ void ft::Request::getRequestLine(std::string line){
 */
 
 std::string ft::Request::requestStarter(int code){
-    ft::Response *responseHTTP = new ft::Response();
+    ft::Response responseHTTP;
 
     parseRequest(responseHTTP, code);
 
-    responseHTTP->buildFullResponse();
-    std::string responseR = responseHTTP->getFullResponse(); 
+    responseHTTP.buildFullResponse();
+    std::string responseR = responseHTTP.getFullResponse(); 
     return responseR;
 }
 

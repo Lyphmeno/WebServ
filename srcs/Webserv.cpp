@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/19 03:25:54 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:50:29 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	Webserv::run()
 			if (this->manager.isServer(fd) == true)
 			{
 				Socket		sock(this->manager.findConfig(fd));
-				socklen_t	len;
+				socklen_t	len = 0;
 				sock.fd = accept(fd,
 				reinterpret_cast<sockaddr *>(&sock.addr), &len);
 				if (sock.fd != -1)
