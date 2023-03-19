@@ -247,7 +247,7 @@ void ft::Request::getRequestLine(std::string line){
     found = line.find("\n");
     this->_protocolVersion.insert(0, line, 0, found);
     _protocolVersion.erase(_protocolVersion.size(), 1);
-//   getCorrectUrl();
+	getCorrectUrl();
 }
 
 /*
