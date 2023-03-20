@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/20 15:45:27 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/20 17:26:48 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,6 @@ void	SocketManager::addServer(const conf_cit &configIt)
 
 	if (bind(sock.fd, reinterpret_cast<sockaddr *>(&sock.addr), sizeof(sock.addr)) == -1)
 	{
-		std::cerr << sock.addr.sin_port << '\n';
-		std::cerr << sock.addr.sin_addr.s_addr << '\n';
 		throw std::runtime_error("Runtime error: Can't bind socket");
 	}
 
