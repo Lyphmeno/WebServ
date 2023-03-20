@@ -216,12 +216,10 @@ void ft::Request::getCorrectUrl(void){
     _tmpLoc = _url;
 
     _url = this->_serverParsing.getRoot(_url) + _url;
-
     if (Directory(_url))
     {
-        
         std::string::iterator ite = _url.end();
-        if (*(--ite) != '/')
+		if (*(--ite) != '/')
             _url += "/";
         std::string::iterator it = _tmpLoc.end();
         if (*(--it) != '/')

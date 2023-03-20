@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 12:45:32 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/20 17:07:34 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ bool	Server::getAutoIndex(std::string path)
 
 std::string	Server::getRoot(std::string path)
 {
-	if (this->getLoc(path) == -1)
+	if (this->getLoc(path) < 0)
 		return (this->root);
 	return (this->location.at(this->getLoc(path)).root);
 }

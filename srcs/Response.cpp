@@ -38,8 +38,7 @@ const std::string & ft::Response::getProtVersion(void){
 }
 
 const std::string & ft::Response::getContentType(void){
-    return this->_contentType;
-    
+    return this->_contentType;   
 }
 
 const std::string & ft::Response::getURL(void){
