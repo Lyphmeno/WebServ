@@ -10,11 +10,8 @@
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-ft::Request::Request(const ft::Server & server) : _indexON(0), _root(), _index("index.html"), _autoIndex(false), _serverParsing(server){
-=======
+
 ft::Request::Request(const ft::Server & server) : _serverParsing(server), _indexON(0), _root(), _index("index.html"), _autoIndex(false){
->>>>>>> avarnier
 }
 
 ft::Request::Request(const Request & src){
@@ -41,10 +38,6 @@ std::string ft::Request::getUrl(void){return _url;}
 std::string ft::Request::getProtVersion(void){return _protocolVersion;}
 std::string ft::Request::getRequestLine(void){return _requestLine;}
 
-<<<<<<< HEAD
-=======
-
->>>>>>> avarnier
 std::string ft::Request::getElementsHeader(std::string element){
     return _rawRequest[element];
 }
@@ -78,51 +71,24 @@ void ft::Request::parseHeader(){
         token.erase(0, 1);
         _rawRequest[token] = value;
     }
-<<<<<<< HEAD
-    rawBody = newbuffer;
-    rawBody.erase(0, 3);
-=======
->>>>>>> avarnier
 }
 
 /*
     Check if method is allowed
 */
-<<<<<<< HEAD
-void ft::Request::checkMethodAllowed(ft::Response *response, std::string method){
-    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
-        response->setAllowedMethod(0);
-    response->setMethod(method);
-=======
+
 void ft::Request::checkMethodAllowed(ft::Response &response, std::string method){
     if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
         response.setAllowedMethod(0);
     response.setMethod(method);
->>>>>>> avarnier
 }
 
 
 /*
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
-<<<<<<< HEAD
-void ft::Request::parseRequest(ft::Response *response, int readBytes){
-    
-    response->setRawResponse(_rawRequest);
-    response->setRawBody(rawBody);
-    getRequestLine(_requestLine);
-    checkMethodAllowed(response, _method);
-    response->setAutoIndex(_autoIndex);
-    response->setProtVersion(_protocolVersion);
-    response->setURL(_url);
-    response->setContentType(response->addContentType());
-    response->setContentLenght(readBytes);
-    if (_autoIndex)
-        response->setBody(_autoIndexBody);
-    response->createBody(_url);
-=======
+
 void ft::Request::parseRequest(ft::Response &response, int readBytes){
-    
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
     getRequestLine(_requestLine);
@@ -135,7 +101,6 @@ void ft::Request::parseRequest(ft::Response &response, int readBytes){
     if (_autoIndex)
 		response.setBody(_autoIndexBody);
     response.createBody(_url);
->>>>>>> avarnier
 }
 
 /*
