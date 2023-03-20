@@ -7,7 +7,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 15:12:16 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/07 19:00:13 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:51:14 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ namespace ft {
 //                                constructor                                 //
 ////////////////////////////////////////////////////////////////////////////////
 
-Socket::Socket() : fd(-1), addr(), data()
+Socket::Socket(const Server &config) : fd(-1), addr(), data(config)
 {
 }
 

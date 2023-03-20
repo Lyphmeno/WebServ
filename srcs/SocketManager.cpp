@@ -6,12 +6,11 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/08 13:36:57 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/19 04:52:07 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/SocketManager.hpp"
-#include <iostream>
 
 namespace ft {
 
@@ -41,10 +40,17 @@ SocketManager::~SocketManager()
 //                                  methods                                   //
 ////////////////////////////////////////////////////////////////////////////////
 
-void	SocketManager::addServer(const sockaddr_in &addr)
+void	SocketManager::start()
 {
-	Socket	sock;
-	sock.addr = addr;
+	for (conf_cit cit = this->config.begin(); cit != this->config.end(); cit++)
+		this->addServer(cit);
+
+}
+
+void	SocketManager::addServer(const conf_cit &configIt)
+{
+	Socket	sock(*configIt);
+	sock.addr = configIt->addr;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock.fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
@@ -60,6 +66,7 @@ void	SocketManager::addServer(const sockaddr_in &addr)
 	this->addEp(sock.fd);
 	this->servers.insert(sock_val(sock.fd, sock));
 	this->clients.insert(srv_val(sock.fd, sock_type()));
+	this->configLinker.insert(link_val(sock.fd, configIt - this->config.begin()));
 }
 
 void	SocketManager::addClient(const int &sfd, const Socket &sock)
@@ -67,7 +74,7 @@ void	SocketManager::addClient(const int &sfd, const Socket &sock)
 	this->setNoBlock(sock.fd);
 	this->addEp(sock.fd);
 	this->clients.find(sfd)->second.insert(sock_val(sock.fd, sock));
-	this->linker.insert(link_val(sock.fd, sfd));
+	this->clientLinker.insert(link_val(sock.fd, sfd));
 }
 
 void	SocketManager::addEp(const int &fd) const
@@ -97,42 +104,97 @@ bool	SocketManager::isServer(const int &fd) const
 	return (false);
 }
 
-void	SocketManager::getData(const int &fd, const char *s)
+Socket	&SocketManager::findClient(const int &fd)
 {
-	sock_it sock = this->findClient(fd);
-	sock->second.data.content += s;
-	if (sock->second.data.body == false)
+	return (this->clients.find((this->clientLinker.find(fd)->second))->second.find(fd)->second);
+}
+
+Server	&SocketManager::findConfig(const int &fd)
+{
+	if (this->clientLinker.find(fd) == this->clientLinker.end())
+		return (this->config.at(this->configLinker.find(fd)->second));
+	return (this->config.at(this->configLinker.find(this->clientLinker.find(fd)->second)->second));
+}
+
+void	SocketManager::handleHeader(SocketData &data, std::string &buff)
+{
+	std::string	&header = data.req.rawHeader;
+	header += buff;
+	size_t pos = header.find("\r\n\r\n");
+	if (pos != header.npos)
 	{
-		size_t pos = sock->second.data.content.find("\r\n\r\n");
-		std::string	header;
-		if (pos != std::string::npos)
-			header = sock->second.data.content.substr(0, pos + 4);
-		if (header.size() > MAXHEADER)
-		{
-			// send error
-		}
-		// parse header
-		// if (!POST)
-		//	do and send
-		// else
-		// {
-		// sock->second.data.body = true;
-		// sock->second.data.content.erase(0, pos + 4);
-		// }
+		buff = header.substr(pos + 4, header.npos);
+		header.erase(pos + 4, header.npos);
+		data.step = PARSING;
 	}
-	if (sock->second.data.body == true)
+	else
+		buff.clear();
+
+	if (data.req.rawHeader.size() > MAXHEADER)
 	{
-		sock->second.data.bytes += sock->second.data.content.size();
-		// if (sock->second.data.bytes > MAXBODY)
-		// 	send error
-		// send body part
-		sock->second.data.content.clear();
+		data.rep = data.req.requestStarter(431);
+		data.step = SENDING;
 	}
 }
 
-SocketManager::sock_it	SocketManager::findClient(const int &fd)
+void	SocketManager::handleBody(SocketData &data, std::string &buff)
 {
-	return (this->clients.find((this->linker.find(fd)->second))->second.find(fd));
+	if (buff.size() + data.req.rawBody.size() <= data.bodysize)
+	{
+		data.req.rawBody += buff;
+		buff.clear();
+	}
+	else
+	{
+		size_t pos = data.bodysize - data.req.rawBody.size();
+		data.req.rawBody += buff.substr(0, pos);
+		buff.erase(0, pos);
+	}
+
+	if (data.req.rawBody.size() == data.bodysize)
+	{
+		data.rep = data.req.requestStarter(0);
+		data.step = SENDING;
+	}
+}
+
+void	SocketManager::sendResponse(Socket &sock)
+{
+	sockaddr_in addr = sock.addr;
+	int fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (fd == -1)
+	{}
+	this->setNoBlock(fd);
+	if (connect(fd, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == -1)
+	{}
+	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
+	sock.data.clear();
+}
+
+void	SocketManager::getData(const int &fd, std::string buff)
+{
+	Socket &sock = this->findClient(fd);
+	SocketData &data = sock.data;
+	while (buff.size() > 0)
+	{
+		if (data.step == HEADER)
+			this->handleHeader(data, buff);
+		if (data.step == PARSING)
+		{
+			data.req.parseHeader();
+			if (data.req.getMethod() == "POST" && data.bodysize > 0)
+				data.step = BODY;
+			else
+			{
+				data.rep = data.req.requestStarter(0);
+				data.step = SENDING;
+			}
+		}
+		if (data.step == BODY)
+			this->handleBody(data, buff);
+		if (data.step == SENDING)
+			this->sendResponse(sock);
+	}
 }
 
 void	SocketManager::close(const int &fd)
@@ -142,7 +204,7 @@ void	SocketManager::close(const int &fd)
 		srv_it sit = this->clients.find(fd);
 		for (sock_it it = sit->second.begin(); it != sit->second.end(); it++)
 		{
-			this->linker.erase(it->second.fd);
+			this->clientLinker.erase(it->second.fd);
 			::close(it->second.fd);
 		}
 		::close(fd);
@@ -152,8 +214,8 @@ void	SocketManager::close(const int &fd)
 	else
 	{
 		::close(fd);
-		this->clients.find((this->linker.find(fd)->second))->second.erase(fd);
-		this->linker.erase(fd);
+		this->clients.find((this->clientLinker.find(fd)->second))->second.erase(fd);
+		this->clientLinker.erase(fd);
 	}
 }
 

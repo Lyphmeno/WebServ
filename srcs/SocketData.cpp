@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 18:28:32 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/07 18:35:02 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/17 22:43:48 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 
 namespace ft {
 
-SocketData::SocketData() : content(), body(false), bytes(0)
+SocketData::SocketData(const Server &config)
+: step(0), bodysize(0), req(config), rep()
 {
 }
 
-SocketData::SocketData(const SocketData &x) : content(x.content), body(x.body), bytes(x.bytes)
+SocketData::SocketData(const SocketData &x)
+: step(x.step), bodysize(x.bodysize), req(x.req), rep(x.rep)
 {
 }
 
@@ -26,15 +28,24 @@ SocketData	&SocketData::operator=(const SocketData &x)
 {
 	if (this != &x)
 	{
-		this->content = x.content;
-		this->body = x.body;
-		this->bytes = x.bytes;
+		this->step = x.step;
+		this->bodysize = x.bodysize;
+		this->req = x.req;
+		this->rep = x.rep;
 	}
 	return (*this);
 }
 
 SocketData::~SocketData()
 {
+}
+
+void	SocketData::clear()
+{
+	this->step = 0;
+	this->bodysize = 0;
+	this->req.clear();
+	this->rep.clear();
 }
 
 }

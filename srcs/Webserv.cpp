@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/07 19:06:22 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/19 17:50:29 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,9 @@ namespace ft {
 
 Webserv::Webserv(std::string filename)
 {
-	this->parser.parsing(filename, this->servers);
 
-	server_start();
-	// for (std::vector<Server>::const_iterator it = this->servers.begin();
-	// it != this->servers.end(); it++)
-	// {
-	// 	this->manager.addServer(it->addr);
-	// }
-
+	this->parser.parsing(filename, this->manager.config);
+	this->manager.start();
 }
 
 Webserv::~Webserv()
@@ -68,8 +62,8 @@ void	Webserv::run()
 			
 			if (this->manager.isServer(fd) == true)
 			{
-				Socket		sock;
-				socklen_t	len;
+				Socket		sock(this->manager.findConfig(fd));
+				socklen_t	len = 0;
 				sock.fd = accept(fd,
 				reinterpret_cast<sockaddr *>(&sock.addr), &len);
 				if (sock.fd != -1)
@@ -85,13 +79,11 @@ void	Webserv::run()
 					this->manager.getData(fd, buff);
 				}
 				else
-				{
 					this->manager.close(fd);
-					std::cout << "close connection" << '\n';
-				}
 			}
 		}
 	}
+	std::cerr << "end\n";
 }
 
 

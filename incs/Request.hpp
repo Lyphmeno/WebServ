@@ -38,13 +38,13 @@ public:
         std::string getRequestLine(void);
         std::string  getElementsHeader(std::string element);
 
-        std::string requestStarter(int readBytes, std::string buffer);
+        std::string requestStarter(int code);
 
         void parseHeader(void);
-        void parseRequest(ft::Response *reponse, int readBytes);
+        void parseRequest(ft::Response &reponse, int readBytes);
 
         void getRequestLine(std::string line);
-        void checkMethodAllowed(ft::Response *response, std::string method);
+        void checkMethodAllowed(ft::Response &response, std::string method);
         std::map<std::string, std::string> _rawRequest;
 
 
@@ -53,9 +53,13 @@ public:
         std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
         std::string checkIndexVector(std::vector<std::string> Index);
 
+		// add by avarnier
+	size_t	getContentLength(void);
+	void	clear();
 
         std::string rawHeader;
         std::string rawBody;
+	ft::Server	_serverParsing;
 
 private:
 
@@ -78,9 +82,6 @@ private:
 //        int _code;
         std::string _autoIndexBody;
         bool _autoIndex;
-
-        //Parser
-	ft::Server	_serverParsing;
 
 };
 

@@ -9,7 +9,7 @@
 
 #define PORT 8080
 
-int main(int argc, char const *argv[])
+int main()
 {
     struct sockaddr_in addr;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -30,10 +30,11 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-	std::string	msg = "this is a message from a client\r\n\r\nerror";
+	std::string	msg = "This is a client message\r\n\r\n";
+//	std::string	msg = "GET /avarnier HTTP/1.1\r\n\r\n";
     send(sock, msg.c_str(), msg.size(), 0);
-	// char buff[1024];
-	// recv(sock, buff, 1024, 0);
-	// std::cout << buff << '\n';
+	char buff[10240];
+	recv(sock, buff, 10240, 0);
+	std::cerr << "receive by client = " << buff << '\n';
     return (0);
 }
