@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/17 00:53:59 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/21 15:19:26 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,13 +102,6 @@ bool	SocketManager::isServer(const int &fd) const
 	if (this->servers.find(fd) != this->servers.end())
 		return (true);
 	return (false);
-}
-
-void	SocketManager::getData(const int &fd, std::string buff)
-{
-	Socket &sock = this->findClient(fd);
-	(void)buff;
-	(void)sock;
 }
 
 Socket	&SocketManager::findClient(const int &fd)
