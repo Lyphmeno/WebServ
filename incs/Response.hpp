@@ -43,6 +43,7 @@ public:
         void setRawBody(std::string body);
         void setBody(std::string newBody);
         void setContentLenght(int valread);
+        void setCode(std::string code);
         void setRawResponse(std::map<std::string, std::string> rr);
         void setAutoIndex(bool autoIndex);
 

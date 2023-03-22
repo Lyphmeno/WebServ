@@ -49,7 +49,7 @@ public:
 
 
         bool Directory(std::string url);
-        void getCorrectUrl(void);
+        std::string getCorrectUrl(void);
         std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
         std::string checkIndexVector(std::vector<std::string> Index);
 
@@ -60,6 +60,7 @@ public:
         std::string rawHeader;
         std::string rawBody;
 	ft::Server	_serverParsing;
+        std::string _code;
 
 private:
 
@@ -82,6 +83,8 @@ private:
 //        int _code;
         std::string _autoIndexBody;
         bool _autoIndex;
+
+        int isAllowed;
 
 };
 

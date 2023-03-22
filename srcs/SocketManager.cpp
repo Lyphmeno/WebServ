@@ -42,8 +42,10 @@ SocketManager::~SocketManager()
 
 void	SocketManager::start()
 {
+	
 	for (conf_cit cit = this->config.begin(); cit != this->config.end(); cit++)
 		this->addServer(cit);
+	
 
 }
 
@@ -52,9 +54,11 @@ void	SocketManager::addServer(const conf_cit &configIt)
 	Socket	sock(*configIt);
 	sock.addr = configIt->addr;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
+
 	if (sock.fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
-
+	int on = 1;
+	setsockopt(sock.fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &on, sizeof(int));
 	this->setNoBlock(sock.fd);
 
 	if (bind(sock.fd, reinterpret_cast<sockaddr *>(&sock.addr), sizeof(sock.addr)) == -1)

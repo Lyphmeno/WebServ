@@ -89,6 +89,10 @@ void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
 }
 
+void ft::Response::setCode(std::string code){
+    this->_code = code;
+}
+
 void ft::Response::setAutoIndex(bool autoIndex){
     this->_autoIndex = autoIndex;
 }
@@ -189,11 +193,12 @@ void ft::Response::getM(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    if (!ifs.is_open() && _autoIndex == false)
-    {
-        setError("404");
-        return ;
-    }
+    // if (!ifs.is_open() && _autoIndex == false)
+    // {
+    //     setError("404");
+    //     return ;
+    // }
+    
     _code = "200";
     _status = _codeStatus.getStatus("200");
     if (_body == "")
@@ -344,6 +349,9 @@ void ft::Response::buildFullResponse(){
     std::string lenght = itostring(_contentLenght);
     char* date_time = std::ctime(&now);
 
+    if (_code != "200")
+        setError(_code);
+    
     full = _protVersion + " " + _code + " " + _status;
     full += "\n";
     full += "Date: ";
