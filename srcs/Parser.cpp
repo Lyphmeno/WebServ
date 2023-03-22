@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/21 13:57:19 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/22 15:51:09 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <iostream>
 #include <netinet/in.h>
@@ -622,6 +623,25 @@ void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 	}
 }
 
+void	Parser::p_check_errorpage(std::vector<std::string> err)
+{
+	std::string	tmphtml;
+
+	if (err.empty())
+		return ;
+	tmphtml = err.back();
+	std::cout << tmphtml <<  "\n";
+	if (tmphtml.size() < 6)
+		throw std::invalid_argument("Error: invalid <error_page> last argument exemple -> 'filename.html'");
+	if (tmphtml[tmphtml.size() - 1] != 'l' || tmphtml[tmphtml.size() - 2] != 'm' || tmphtml[tmphtml.size() - 3] != 't'
+			|| tmphtml[tmphtml.size() - 4] != 'h' || tmphtml[tmphtml.size() - 5] != '.')
+		throw std::invalid_argument("Error: invalid <error_page> (must end with '.html')");
+	for (std::vector<std::string>::const_iterator it = err.begin(); it != err.end() - 1; it++) {
+		if (it->find_first_not_of("0123456789") != it->npos)
+			throw std::invalid_argument("Error: invalid <error_page>");
+	}
+}
+
 void	Parser::p_errorpage(std::vector<Server> &servers)
 {
 	std::string	tmp;
@@ -636,6 +656,7 @@ void	Parser::p_errorpage(std::vector<Server> &servers)
 		servers.back().id.at(BS_ERR) = true;
 		while (this->line >> tmp)
 			servers.back().err_page.push_back(tmp);
+		this->p_check_errorpage(servers.back().err_page);
 	}
 	else {
 		if (servers.back().location.back().id.at(BL_ERR) == true)
@@ -643,6 +664,7 @@ void	Parser::p_errorpage(std::vector<Server> &servers)
 		servers.back().location.back().id.at(BL_ERR) = true;
 		while (this->line >> tmp)
 			servers.back().location.back().err_page.push_back(tmp);
+		this->p_check_errorpage(servers.back().location.back().err_page);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 15:34:18 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/22 15:34:48 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ private:
 	void	p_autoindex(std::vector<Server>&);
 	unsigned long int	p_convert_mcbs(std::string);
 	void	p_maxclientbodysize(std::vector<Server>&);
+	void	p_check_errorpage(std::vector<std::string>);
 	void	p_errorpage(std::vector<Server>&);
 	void	p_cgidir(std::vector<Server>&);
 	void	p_allowmethods(std::vector<Server>&);
