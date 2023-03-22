@@ -136,7 +136,8 @@ void	SocketManager::handleHeader(SocketData &data, std::string &buff)
 
 	if (data.req.rawHeader.size() > MAXHEADER)
 	{
-		data.rep = data.req.requestStarter(431);
+		data.req._code = "431"; //add by abourdar
+		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
 }
@@ -154,10 +155,9 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 		data.req.rawBody += buff.substr(0, pos);
 		buff.erase(0, pos);
 	}
-
 	if (data.req.rawBody.size() == data.bodysize)
 	{
-		data.rep = data.req.requestStarter(0);
+		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
 }
@@ -190,7 +190,7 @@ void	SocketManager::getData(const int &fd, std::string buff)
 				data.step = BODY;
 			else
 			{
-				data.rep = data.req.requestStarter(0);
+				data.rep = data.req.requestStarter();
 				data.step = SENDING;
 			}
 		}

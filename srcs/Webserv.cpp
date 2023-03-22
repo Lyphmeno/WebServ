@@ -20,7 +20,6 @@
 #include <string.h>
 #include "../incs/Request.hpp"
 #include <fcntl.h>
-const int PORT = 8080;
 
 namespace ft {
 

@@ -4,14 +4,20 @@
 #include "../incs/Request.hpp"
 #include "../incs/Response.hpp"
 
+static int stringtoint(std::string toConvert){
+    std::istringstream is(toConvert);
+    int i;
 
+    is >> i;
+    return i;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
 
-ft::Request::Request(const ft::Server & server) : _serverParsing(server), _code("0"), _indexON(0), _root(), _index("index.html"), _autoIndex(false), isAllowed(1){
+ft::Request::Request(const ft::Server & server) : _serverParsing(server), _code("0"), _root(), _index("index.html"), _autoIndex(false){
 }
 
 ft::Request::Request(const Request & src){
@@ -53,7 +59,8 @@ void ft::Request::parseHeader(){
 
     size_t pos = 0;
     std::string token;
-   
+
+
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -71,37 +78,33 @@ void ft::Request::parseHeader(){
         token.erase(0, 1);
         _rawRequest[token] = value;
     }
+    // size_t pos1;
+    // std::string tok;
+    // std::string tmp_url;
+
+    // tmp_url = _url;
+    // while ((pos1 = tmp_url.find("/")) != std::string::npos){
+    //     tok = tmp_url.substr(0, pos);
+    //     std::cout << tok << std::endl;
+    //     tmp_url.erase(0, pos + 1);
+    // }
+
     getRequestLine(_requestLine);
-    // if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
-    //     isAllowed = 0;
+    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 1)
+        responseHTTP.setAllowedMethod(1);
+    responseHTTP.setMethod(_method);
 }
-
-/*
-    Check if method is allowed
-*/
-
-void ft::Request::checkMethodAllowed(ft::Response &response, std::string method){
-    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
-        response.setAllowedMethod(0);
-    response.setMethod(method);
-}
-
-
 /*
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
 
-void ft::Request::parseRequest(ft::Response &response, int readBytes){
+void ft::Request::parseRequest(ft::Response &response){
 
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
-    checkMethodAllowed(response, _method);
     response.setAutoIndex(_autoIndex);
-    response.setProtVersion(_protocolVersion);
-    response.setURL(_url);
     response.setContentType(response.addContentType());
-    response.setContentLenght(readBytes);
-
+    response.setContentLenght(stringtoint(_rawRequest["Content-Length"]));
     if (_autoIndex)
         response.setBody(_autoIndexBody);
     response.createBody(_url);
@@ -217,12 +220,9 @@ std::string ft::Request::checkIndexVector(std::vector<std::string> Index)
 }
 
 std::string ft::Request::getCorrectUrl(void){
-    (void)_indexON;
     _tmpLoc = _url;
 
-    std::cout << _url << std::endl;
     _url = this->_serverParsing.getRoot(_url) + _url;
-
     if (Directory(_url))
     {
         
@@ -242,6 +242,7 @@ std::string ft::Request::getCorrectUrl(void){
     }
     std::ifstream ifs(_url.c_str());
 
+    responseHTTP.setURL(_url);
     if (!ifs.is_open())
         return ("404");
     return ("200");
@@ -259,6 +260,7 @@ void ft::Request::getRequestLine(std::string line){
     found = line.find("\n");
     this->_protocolVersion.insert(0, line, 0, found);
     _protocolVersion.erase(_protocolVersion.size(), 1);
+    responseHTTP.setProtVersion(_protocolVersion);
 	_code = getCorrectUrl();
 }
 
@@ -267,13 +269,12 @@ void ft::Request::getRequestLine(std::string line){
     and send it to create the response
 */
 
-std::string ft::Request::requestStarter(int code){
-    ft::Response responseHTTP;
+std::string ft::Request::requestStarter(){
+    std::cout << "RAW BODY" << rawBody << std::endl;
 
     responseHTTP.setCode(_code);
-    std::cout << _code << std::endl;
     if (_code == "200")
-        parseRequest(responseHTTP, code);
+        parseRequest(responseHTTP);
 
     responseHTTP.buildFullResponse();
     std::string responseR = responseHTTP.getFullResponse(); 
@@ -303,6 +304,7 @@ void	ft::Request::clear()
 	_tmpLoc.clear();
 	_requestLine.clear();
 	_requestFull.clear();
+    responseHTTP.clear();
 	//	to be checked:
 	//
 	// _indexON = 0;

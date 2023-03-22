@@ -12,7 +12,7 @@ static std::string itostring(int toConvert){
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void) : _allowedMethod(1), _body(""){
+ft::Response::Response(void) : _allowedMethod(0), _body(""){
 
 
 }
@@ -362,4 +362,35 @@ void ft::Response::buildFullResponse(){
     full += _body;
 
     _responseFull = full;
+
+    std::cout << "FULL RESPONSE \n" << full;
+}
+
+void	ft::Response::clear()
+{
+	_protVersion.clear();
+	_url.clear();
+	_method.clear();
+	_contentType.clear();
+	_server.clear();
+	_body.clear();
+	_code.clear();
+	_status.clear();
+	_responseFull.clear();
+	_rawResponse.clear();
+	_formValues.clear();
+	_rawBody.clear();
+
+	// _allowedMethod.clear();
+	// _contentLenght.clear();
+	// _autoIndex.clear();
+	// _codeStatus = ;
+
+	//	to be checked:
+	//
+	// _indexON = 0;
+	// _root.clear();
+	// _index.clear();
+	// _autoIndexBody.clear();
+	// _autoIndex = false;
 }

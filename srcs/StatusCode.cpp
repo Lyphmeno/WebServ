@@ -21,6 +21,7 @@ ft::StatusCode::StatusCode(void){
     initStruct("403", "Forbidden");
     initStruct("404", "Not Found");
     initStruct("405", "Method Not Allowed");
+    initStruct("431", "Request Header Fields Too Large");
     initStruct("500", "Internal Server Error");
 }
 
