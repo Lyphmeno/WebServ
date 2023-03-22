@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/21 15:19:26 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/22 14:26:35 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,8 +167,6 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 void	SocketManager::sendResponse(Socket &sock)
 {
 	sockaddr_in addr = sock.addr;
-    std::cout << "FULL RESPONSE \n" << sock.data.rep;
-
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd == -1)
 	{}
@@ -190,6 +188,7 @@ void	SocketManager::getData(const int &fd, std::string buff)
 		if (data.step == PARSING)
 		{
 			data.req.parseHeader();
+			data.bodysize = data.req.getContentLength();
 			if (data.req.getMethod() == "POST" && data.bodysize > 0)
 				data.step = BODY;
 			else
