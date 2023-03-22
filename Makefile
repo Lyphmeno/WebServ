@@ -25,6 +25,7 @@ HEADERS		:=	\
 				./incs/Socket.hpp\
 				./incs/SocketData.hpp\
 				./incs/SocketManager.hpp\
+				./incs/SocketData.hpp\
 				./incs/Parser.hpp\
 				./incs/Server.hpp\
 				./incs/Webserv.hpp\

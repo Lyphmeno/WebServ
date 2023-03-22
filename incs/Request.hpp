@@ -38,10 +38,10 @@ public:
         std::string getRequestLine(void);
         std::string  getElementsHeader(std::string element);
 
-        std::string requestStarter(int code);
+        std::string requestStarter();
 
         void parseHeader(void);
-        void parseRequest(ft::Response &reponse, int readBytes);
+        void parseRequest(ft::Response &reponse);
 
         void getRequestLine(std::string line);
         void checkMethodAllowed(ft::Response &response, std::string method);
@@ -49,18 +49,21 @@ public:
 
 
         bool Directory(std::string url);
-        void getCorrectUrl(void);
+        std::string getCorrectUrl(void);
         std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
         std::string checkIndexVector(std::vector<std::string> Index);
-		
+
 		// add by avarnier
-		size_t	getContentLength(void);
-		void	clear();
+	size_t	getContentLength(void);
+	void	clear();
 
         std::string rawHeader;
         std::string rawBody;
-		ft::Server	_serverParsing;
+	ft::Server	_serverParsing;
+        std::string _code;
 
+
+        ft::Response responseHTTP;
 private:
 
         //Request line
@@ -76,12 +79,14 @@ private:
         std::vector<std::string> _requestFull;
         
         //Conf file
-        int _indexON;
         std::string _root;
         std::string _index;
 //        int _code;
         std::string _autoIndexBody;
         bool _autoIndex;
+
+        // int isAllowed;
+
 };
 
 }

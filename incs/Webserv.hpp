@@ -13,7 +13,7 @@
 #pragma once
 
 #include <vector>
-#include <sys/epoll.h>
+// #include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -22,6 +22,7 @@
 #include "../incs/Parser.hpp"
 #include "../incs/Socket.hpp"
 #include "../incs/SocketManager.hpp"
+#include "../incs/Request.hpp"
 
 namespace ft {
 
@@ -39,7 +40,7 @@ private:
 	Webserv	&operator=(const Webserv &x);
 
 public:
-	SocketManager			manager;
+	SocketManager		manager;
 	Parser					parser;
 };
 

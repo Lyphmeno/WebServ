@@ -6,11 +6,20 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/20 16:48:54 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/21 15:19:13 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
+
+#include <stdio.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+#include "../incs/Request.hpp"
+#include <fcntl.h>
 
 namespace ft {
 
@@ -20,6 +29,7 @@ namespace ft {
 
 Webserv::Webserv(std::string filename)
 {
+
 	this->parser.parsing(filename, this->manager.config);
 	this->manager.start();
 }
@@ -62,7 +72,7 @@ void	Webserv::run()
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					this->manager.getData(fd, buff);
+					//getData();
 				}
 				else
 					this->manager.close(fd);
@@ -71,5 +81,4 @@ void	Webserv::run()
 	}
 	std::cerr << "end\n";
 }
-
 }

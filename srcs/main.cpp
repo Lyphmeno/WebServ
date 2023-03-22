@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/19 17:35:14 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/21 15:17:49 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 #include <exception>
 #include <csignal>
 
-void	signalHandler(int sig)
+void    signalHandler(int sig)
 {
-	if (sig == SIGINT)
-		throw std::runtime_error("SIGINT received");
+    if (sig == SIGINT)
+    	throw std::runtime_error("SIGINT received");
 }
 
 int main(int ac, char **av)
@@ -31,7 +31,7 @@ int main(int ac, char **av)
 	try 
 	{
 		std::signal(SIGINT, signalHandler);
-		ft::Webserv	engine(av[1]);
+		ft::Webserv     engine(av[1]);
 		engine.run();
 	}
 	catch (std::exception &e)

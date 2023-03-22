@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/20 17:26:48 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/21 15:19:26 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,10 @@ SocketManager::~SocketManager()
 
 void	SocketManager::start()
 {
+	
 	for (conf_cit cit = this->config.begin(); cit != this->config.end(); cit++)
 		this->addServer(cit);
+	
 
 }
 
@@ -52,9 +54,11 @@ void	SocketManager::addServer(const conf_cit &configIt)
 	Socket	sock(*configIt);
 	sock.addr = configIt->addr;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
+
 	if (sock.fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
-
+	int on = 1;
+	setsockopt(sock.fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &on, sizeof(int));
 	this->setNoBlock(sock.fd);
 
 	if (bind(sock.fd, reinterpret_cast<sockaddr *>(&sock.addr), sizeof(sock.addr)) == -1)
@@ -134,7 +138,8 @@ void	SocketManager::handleHeader(SocketData &data, std::string &buff)
 
 	if (data.req.rawHeader.size() > MAXHEADER)
 	{
-		data.rep = data.req.requestStarter(431);
+		data.req._code = "431"; //add by abourdar
+		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
 }
@@ -152,10 +157,9 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 		data.req.rawBody += buff.substr(0, pos);
 		buff.erase(0, pos);
 	}
-
 	if (data.req.rawBody.size() == data.bodysize)
 	{
-		data.rep = data.req.requestStarter(0);
+		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
 }
@@ -188,7 +192,7 @@ void	SocketManager::getData(const int &fd, std::string buff)
 				data.step = BODY;
 			else
 			{
-				data.rep = data.req.requestStarter(0);
+				data.rep = data.req.requestStarter();
 				data.step = SENDING;
 			}
 		}

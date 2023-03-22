@@ -41,5 +41,4 @@ public:
 	std::string	rep;
 
 };
-
 }

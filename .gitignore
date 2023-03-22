@@ -4,3 +4,5 @@ response
 objs
 *.o
 webserv
+incs/SocketManager.hpp
+incs/SocketManager.cpp

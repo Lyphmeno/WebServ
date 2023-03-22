@@ -12,7 +12,7 @@ static std::string itostring(int toConvert){
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Response::Response(void) : _allowedMethod(1), _body(""){
+ft::Response::Response(void) : _allowedMethod(0), _body(""){
 
 
 }
@@ -86,6 +86,10 @@ void ft::Response::setBody(std::string newBody){
 
 void ft::Response::setContentLenght(int valread){
     this->_contentLenght = valread;
+}
+
+void ft::Response::setCode(std::string code){
+    this->_code = code;
 }
 
 void ft::Response::setAutoIndex(bool autoIndex){
@@ -188,11 +192,12 @@ void ft::Response::getM(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    if (!ifs.is_open() && _autoIndex == false)
-    {
-        setError("404");
-        return ;
-    }
+    // if (!ifs.is_open() && _autoIndex == false)
+    // {
+    //     setError("404");
+    //     return ;
+    // }
+    
     _code = "200";
     _status = _codeStatus.getStatus("200");
     if (_body == "")
@@ -343,6 +348,9 @@ void ft::Response::buildFullResponse(){
     std::string lenght = itostring(_contentLenght);
     char* date_time = std::ctime(&now);
 
+    if (_code != "200")
+        setError(_code);
+    
     full = _protVersion + " " + _code + " " + _status;
     full += "\n";
     full += "Date: ";
@@ -353,4 +361,35 @@ void ft::Response::buildFullResponse(){
     full += _body;
 
     _responseFull = full;
+
+    std::cout << "FULL RESPONSE \n" << full;
+}
+
+void	ft::Response::clear()
+{
+	_protVersion.clear();
+	_url.clear();
+	_method.clear();
+	_contentType.clear();
+	_server.clear();
+	_body.clear();
+	_code.clear();
+	_status.clear();
+	_responseFull.clear();
+	_rawResponse.clear();
+	_formValues.clear();
+	_rawBody.clear();
+
+	// _allowedMethod.clear();
+	// _contentLenght.clear();
+	// _autoIndex.clear();
+	// _codeStatus = ;
+
+	//	to be checked:
+	//
+	// _indexON = 0;
+	// _root.clear();
+	// _index.clear();
+	// _autoIndexBody.clear();
+	// _autoIndex = false;
 }

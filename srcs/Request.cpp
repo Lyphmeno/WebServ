@@ -4,13 +4,20 @@
 #include "../incs/Request.hpp"
 #include "../incs/Response.hpp"
 
+static int stringtoint(std::string toConvert){
+    std::istringstream is(toConvert);
+    int i;
 
+    is >> i;
+    return i;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //                              CONSTRUCTORS                                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-ft::Request::Request(const ft::Server & server) : _serverParsing(server), _indexON(0), _root(), _index("index.html"), _autoIndex(false){
+
+ft::Request::Request(const ft::Server & server) : _serverParsing(server), _code("0"), _root(), _index("index.html"), _autoIndex(false){
 }
 
 ft::Request::Request(const Request & src){
@@ -37,7 +44,6 @@ std::string ft::Request::getUrl(void){return _url;}
 std::string ft::Request::getProtVersion(void){return _protocolVersion;}
 std::string ft::Request::getRequestLine(void){return _requestLine;}
 
-
 std::string ft::Request::getElementsHeader(std::string element){
     return _rawRequest[element];
 }
@@ -53,7 +59,8 @@ void ft::Request::parseHeader(){
 
     size_t pos = 0;
     std::string token;
-   
+
+
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -71,34 +78,35 @@ void ft::Request::parseHeader(){
         token.erase(0, 1);
         _rawRequest[token] = value;
     }
+    // size_t pos1;
+    // std::string tok;
+    // std::string tmp_url;
+
+    // tmp_url = _url;
+    // while ((pos1 = tmp_url.find("/")) != std::string::npos){
+    //     tok = tmp_url.substr(0, pos);
+    //     std::cout << tok << std::endl;
+    //     tmp_url.erase(0, pos + 1);
+    // }
+
+    getRequestLine(_requestLine);
+    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 1)
+        responseHTTP.setAllowedMethod(1);
+    responseHTTP.setMethod(_method);
 }
-
-/*
-    Check if method is allowed
-*/
-void ft::Request::checkMethodAllowed(ft::Response &response, std::string method){
-    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 0)
-        response.setAllowedMethod(0);
-    response.setMethod(method);
-}
-
-
 /*
     Parse the request line example GET /index.html HTTP/1.1, to set variables
 */
-void ft::Request::parseRequest(ft::Response &response, int readBytes){
-    
+
+void ft::Request::parseRequest(ft::Response &response){
+
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
-    getRequestLine(_requestLine);
-    checkMethodAllowed(response, _method);
     response.setAutoIndex(_autoIndex);
-    response.setProtVersion(_protocolVersion);
-    response.setURL(_url);
     response.setContentType(response.addContentType());
-    response.setContentLenght(readBytes);
+    response.setContentLenght(stringtoint(_rawRequest["Content-Length"]));
     if (_autoIndex)
-		response.setBody(_autoIndexBody);
+        response.setBody(_autoIndexBody);
     response.createBody(_url);
 }
 
@@ -211,8 +219,7 @@ std::string ft::Request::checkIndexVector(std::vector<std::string> Index)
     return ("");
 }
 
-void ft::Request::getCorrectUrl(void){
-    (void)_indexON;
+std::string ft::Request::getCorrectUrl(void){
     _tmpLoc = _url;
 
     _url = this->_serverParsing.getRoot(_url) + _url;
@@ -232,10 +239,17 @@ void ft::Request::getCorrectUrl(void){
         else
             _url = _url + checkIndexVector(this->_serverParsing.getIndex(_url));
     }
+    std::ifstream ifs(_url.c_str());
+
+    responseHTTP.setURL(_url);
+    if (!ifs.is_open())
+        return ("404");
+    return ("200");
 }
 
 
 void ft::Request::getRequestLine(std::string line){
+
     size_t found = line.find(" ");
     this->_method.insert(0, line, 0, found);
     line.erase(0, _method.size() + 1);
@@ -245,7 +259,8 @@ void ft::Request::getRequestLine(std::string line){
     found = line.find("\n");
     this->_protocolVersion.insert(0, line, 0, found);
     _protocolVersion.erase(_protocolVersion.size(), 1);
-	getCorrectUrl();
+    responseHTTP.setProtVersion(_protocolVersion);
+	_code = getCorrectUrl();
 }
 
 /*
@@ -253,10 +268,12 @@ void ft::Request::getRequestLine(std::string line){
     and send it to create the response
 */
 
-std::string ft::Request::requestStarter(int code){
-    ft::Response responseHTTP;
+std::string ft::Request::requestStarter(){
+    std::cout << "RAW BODY" << rawBody << std::endl;
 
-    parseRequest(responseHTTP, code);
+    responseHTTP.setCode(_code);
+    if (_code == "200")
+        parseRequest(responseHTTP);
 
     responseHTTP.buildFullResponse();
     std::string responseR = responseHTTP.getFullResponse(); 
@@ -286,6 +303,7 @@ void	ft::Request::clear()
 	_tmpLoc.clear();
 	_requestLine.clear();
 	_requestFull.clear();
+    responseHTTP.clear();
 	//	to be checked:
 	//
 	// _indexON = 0;
