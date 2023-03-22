@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 12:45:32 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/21 13:53:25 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ Server &Server::operator=(const Server &rhs)
 int	Server::getLoc(std::string path)
 {
 	if (this->location.empty())
-		return (-2);
+		return (-1);
 	for (std::vector<Location>::const_iterator it = this->location.begin(); it != this->location.end(); it++) {
 		if (it->path == path)
 			return (it - this->location.begin());
@@ -73,7 +73,7 @@ int	Server::getLoc(std::string path)
 
 int	Server::getMethods(std::string path, std::string method)
 {
-	if (this->getLoc(path) == -1) {
+	if (this->getLoc(path) < 0) {
 		for (std::vector<std::string>::const_iterator it = this->allow_methods.begin(); it != this->allow_methods.end(); it++)
 			if (!(*it).compare(method))
 				return (1);
@@ -90,7 +90,7 @@ int	Server::getMethods(std::string path, std::string method)
 
 bool	Server::getAutoIndex(std::string path)
 {
-	if (this->getLoc(path) == -1) {
+	if (this->getLoc(path) < 0) {
 		if (!this->auto_index.compare("on"))
 			return (true);
 		else
@@ -110,7 +110,7 @@ std::string	Server::getRoot(std::string path)
 
 std::vector<std::string>	Server::getIndex(std::string path)
 {
-	if (this->getLoc(path) == -1) {
+	if (this->getLoc(path) < 0) {
 		if (!this->index.empty())
 			return (this->index);
 		else
