@@ -72,7 +72,7 @@ void	Webserv::run()
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					//getData();
+					this->manager.getData(fd, buff);
 				}
 				else
 					this->manager.close(fd);

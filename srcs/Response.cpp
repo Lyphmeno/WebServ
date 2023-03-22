@@ -360,9 +360,9 @@ void ft::Response::buildFullResponse(){
     full += "\n\n";
     full += _body;
 
+    std::cout << _url << std::endl;
     _responseFull = full;
 
-    std::cout << "FULL RESPONSE \n" << full;
 }
 
 void	ft::Response::clear()

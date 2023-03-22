@@ -303,7 +303,7 @@ void	ft::Request::clear()
 	_tmpLoc.clear();
 	_requestLine.clear();
 	_requestFull.clear();
-    responseHTTP.clear();
+    // responseHTTP.clear();
 	//	to be checked:
 	//
 	// _indexON = 0;

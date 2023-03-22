@@ -167,6 +167,8 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 void	SocketManager::sendResponse(Socket &sock)
 {
 	sockaddr_in addr = sock.addr;
+    std::cout << "FULL RESPONSE \n" << sock.data.rep;
+
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd == -1)
 	{}
