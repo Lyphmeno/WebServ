@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/22 14:26:35 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/22 16:15:27 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,15 +166,8 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 
 void	SocketManager::sendResponse(Socket &sock)
 {
-	sockaddr_in addr = sock.addr;
-	int fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (fd == -1)
-	{}
-	this->setNoBlock(fd);
-	if (connect(fd, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == -1)
-	{}
 	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
-	sock.data.clear();
+	this->close(sock.fd);
 }
 
 void	SocketManager::getData(const int &fd, std::string buff)
@@ -200,7 +193,10 @@ void	SocketManager::getData(const int &fd, std::string buff)
 		if (data.step == BODY)
 			this->handleBody(data, buff);
 		if (data.step == SENDING)
-			this->sendResponse(sock);
+		{
+			send(sock.fd, data.rep.c_str(), data.rep.size(), 0);
+			this->close(sock.fd);
+		}
 	}
 }
 
