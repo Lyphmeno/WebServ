@@ -73,7 +73,7 @@ int	Server::getLoc(std::string path)
 
 int	Server::getMethods(std::string path, std::string method)
 {
-	if (this->getLoc(path) == -1) {
+	if (this->getLoc(path) < 0) {
 		for (std::vector<std::string>::const_iterator it = this->allow_methods.begin(); it != this->allow_methods.end(); it++)
 			if (!(*it).compare(method))
 				return (1);
@@ -90,7 +90,7 @@ int	Server::getMethods(std::string path, std::string method)
 
 bool	Server::getAutoIndex(std::string path)
 {
-	if (this->getLoc(path) == -1) {
+	if (this->getLoc(path) < 0) {
 		if (!this->auto_index.compare("on"))
 			return (true);
 		else
@@ -103,14 +103,14 @@ bool	Server::getAutoIndex(std::string path)
 
 std::string	Server::getRoot(std::string path)
 {
-	if (this->getLoc(path) == -1)
+	if (this->getLoc(path) < 0)
 		return (this->root);
 	return (this->location.at(this->getLoc(path)).root);
 }
 
 std::vector<std::string>	Server::getIndex(std::string path)
 {
-	if (this->getLoc(path) == -1) {
+	if (this->getLoc(path) < 0) {
 		if (!this->index.empty())
 			return (this->index);
 		else
