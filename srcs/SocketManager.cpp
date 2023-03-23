@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/23 14:09:22 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/23 14:26:06 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void	SocketManager::handleHeader(SocketData &data, std::string &buff)
 
 	if (data.req.rawHeader.size() > MAXHEADER)
 	{
-		data.req._code = "431"; //add by abourdar
+		data.req._code = "431";
 		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
@@ -164,6 +164,29 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 	}
 }
 
+void	SocketManager::handleParsing(SocketData &data)
+{
+	data.req.parseHeader();
+	data.bodysize = data.req.getContentLength();
+
+	if (data.req.getMethod() == "POST" && data.bodysize > 0)
+	{
+		if (data.bodysize > MAXBODY)
+		{
+			data.req._code = "413";
+			data.rep = data.req.requestStarter();
+			data.step = SENDING;
+		}
+		else
+			data.step = BODY;	
+	}
+	else
+	{
+		data.rep = data.req.requestStarter();
+		data.step = SENDING;
+	}
+}
+
 void	SocketManager::getData(const int &fd, std::string buff)
 {
 	Socket &sock = this->findClient(fd);
@@ -173,17 +196,7 @@ void	SocketManager::getData(const int &fd, std::string buff)
 		if (data.step == HEADER)
 			this->handleHeader(data, buff);
 		if (data.step == PARSING)
-		{
-			data.req.parseHeader();
-			data.bodysize = data.req.getContentLength();
-			if (data.req.getMethod() == "POST" && data.bodysize > 0)
-				data.step = BODY;
-			else
-			{
-				data.rep = data.req.requestStarter();
-				data.step = SENDING;
-			}
-		}
+			this->handleParsing(data);
 		if (data.step == BODY)
 			this->handleBody(data, buff);
 		if (data.step == SENDING)
