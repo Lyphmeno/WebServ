@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/21 15:19:30 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/23 14:09:24 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ public:
 	Server	&findConfig(const int &fd);
 	void	handleHeader(SocketData &data, std::string &buff);
 	void	handleBody(SocketData &data, std::string &buff);
-	void	sendResponse(Socket &sock);
 	void	getData(const int &fd, std::string buff);
 	void	close(const int &fd);
 

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/22 16:15:27 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/23 14:09:22 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,12 +162,6 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
-}
-
-void	SocketManager::sendResponse(Socket &sock)
-{
-	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
-	this->close(sock.fd);
 }
 
 void	SocketManager::getData(const int &fd, std::string buff)
