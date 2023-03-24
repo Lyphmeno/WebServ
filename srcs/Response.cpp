@@ -2,6 +2,7 @@
 #include <dirent.h> 
 #include <algorithm>
 
+
 static std::string itostring(int toConvert){
     std::ostringstream tm;
     tm << toConvert;
@@ -142,6 +143,7 @@ const std::string & ft::Response::addContentType(void){
     
     size_t found = _url.find(".");
     extension.insert(0, _url, found + 1);
+    std::cout << extension << std::endl;
     return (_Mime.getType(extension));
 }
 
@@ -234,9 +236,77 @@ void ft::Response::urlencoded(void){
     _formValues[token] = _rawBody;
 }
 
-void ft::Response::multi(void){
-    std::cout << "multi" << std::endl;
+void ft::Response::initPostStruct(std::string fullBody){
+    size_t pos = 0;
+    std::string value;
+    std::string token;
 
+    while ((pos = fullBody.find(": ")) != std::string::npos) {
+        token = fullBody.substr(0, pos);
+        fullBody.erase(0, pos + 2);
+        if ((pos = fullBody.find("\n")) != std::string::npos)
+        {
+            value = fullBody.substr(0, pos);
+            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+        }
+        fullBody.erase(0, pos + 1);
+        if (token == "Content-Disposition")
+        {
+            if ((pos = value.find("name=\"")) != std::string::npos) {
+                value.erase(0, pos + 6);
+                if ((pos = value.find("\"")) != std::string::npos)
+                    token = value.substr(0, pos);
+            }
+            if ((pos = value.find("filename=\"")) != std::string::npos) {
+                value.erase(0, pos + 10);
+                if ((pos = value.find("\"")) != std::string::npos)
+                {
+                    std::string filename = value.substr(0, pos);
+                    _multipartForm[token].filename = filename; 
+                }
+            }
+            _multipartForm[token].name = token;
+            tmpName = token;
+        }
+    }
+    _multipartForm[tmpName].value = fullBody.erase(0, 2);
+    filename = "html/uploads/" + _multipartForm[tmpName].filename;//add root
+    std::ofstream ofs(filename.c_str());
+    if (ofs.is_open())
+        ofs << _multipartForm[tmpName].value;
+}
+
+std::string getOnlyBody(std::string *body, std::string tmp){
+    size_t pos = 0;
+    std::string fullBody;
+
+    tmp = "------" + tmp;
+    if ((pos = body->find(tmp)) != std::string::npos){
+        if (pos != body->size())
+            fullBody = body->substr(0, pos);
+        else
+            fullBody = body->substr(0, pos + 2);
+    }
+    body->erase(0, fullBody.size());
+    return (fullBody);
+}
+
+void ft::Response::multi(void){
+
+    size_t pos = 0;
+    std::string tmp = _rawResponse["Content-Type"];
+    std::string tmpRawBody = _rawBody;
+
+    
+    if ((pos = tmp.find(" boundary=----")) != std::string::npos) {
+        tmp.erase(0, pos + 14);
+    }
+    while ((pos = tmpRawBody.find(tmp)) != std::string::npos){
+        tmpRawBody.erase(0, tmp.size() + 8);
+        initPostStruct(getOnlyBody(&tmpRawBody, tmp));
+        if (tmpRawBody.size() == tmp.size() + 10)
+            break;
+    }
 }
 
 
@@ -356,7 +426,7 @@ void ft::Response::buildFullResponse(){
     full += "Date: ";
     full += date_time;
     full += "Content-type: " + _contentType;
-    full += "\nContent-Lenght: " + lenght; 
+    full += "\nContent-Lenght: " + itostring(_body.size()); 
     full += "\n\n";
     full += _body;
 

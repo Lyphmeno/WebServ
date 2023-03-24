@@ -10,6 +10,11 @@
 #include <ctime>
 #include <sstream>
 
+typedef struct s_data1{
+        std::string value;
+        std::string filename;
+        std::string name;
+}               t_data1;
 
 namespace ft{
 
@@ -61,6 +66,7 @@ public:
         
         void createAutoIndexHtmlPage(const std::string& directoryPath);
 
+        void initPostStruct(std::string fullBody);
         void	clear();
         
 private:
@@ -76,6 +82,8 @@ private:
         std::string _server;
         std::string _body;
 
+        std::string filename;
+
         int _contentLenght;
         bool _autoIndex;
         
@@ -90,8 +98,10 @@ private:
         std::string _responseFull;
 
         std::map<std::string, std::string> _rawResponse;
+        std::map<std::string, t_data1> _multipartForm;
         std::map<std::string, std::string> _formValues;
         std::string _rawBody;
+        std::string tmpName;
 
         // std::map<std::string, bool> _autoIndex;
 

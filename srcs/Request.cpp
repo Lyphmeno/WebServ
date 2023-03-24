@@ -31,14 +31,6 @@ ft::Request::Request(const Request & src){
 ft::Request::~Request(void){
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-//                                OPERATORS                                   //
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-//Getters
 std::string ft::Request::getMethod(void){return _method;}
 std::string ft::Request::getUrl(void){return _url;}
 std::string ft::Request::getProtVersion(void){return _protocolVersion;}
@@ -48,9 +40,6 @@ std::string ft::Request::getElementsHeader(std::string element){
     return _rawRequest[element];
 }
 
-/*
-    Add the raw request to a vector
-*/
 void ft::Request::parseHeader(){
     std::string newbuffer;
     std::string value;
@@ -60,7 +49,7 @@ void ft::Request::parseHeader(){
     size_t pos = 0;
     std::string token;
 
-
+    std::cout << rawHeader << std::endl;
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -76,43 +65,55 @@ void ft::Request::parseHeader(){
         }
         newbuffer.erase(0, pos + 1);
         token.erase(0, 1);
+        // std::cout << token << " = " << value << std::endl;
         _rawRequest[token] = value;
     }
-    // size_t pos1;
-    // std::string tok;
-    // std::string tmp_url;
-
-    // tmp_url = _url;
-    // while ((pos1 = tmp_url.find("/")) != std::string::npos){
-    //     tok = tmp_url.substr(0, pos);
-    //     std::cout << tok << std::endl;
-    //     tmp_url.erase(0, pos + 1);
-    // }
 
     getRequestLine(_requestLine);
     if (this->_serverParsing.getMethods(_tmpLoc, _method) == 1)
         responseHTTP.setAllowedMethod(1);
     responseHTTP.setMethod(_method);
 }
-/*
-    Parse the request line example GET /index.html HTTP/1.1, to set variables
-*/
+
+void ft::Request::getRequestLine(std::string line){
+
+    size_t found = line.find(" ");
+    this->_method.insert(0, line, 0, found);
+    line.erase(0, _method.size() + 1);
+    found = line.find(" ");
+    this->_url.insert(0, line, 0, found);
+    line.erase(0, _url.size() + 1);
+    found = line.find("\n");
+    this->_protocolVersion.insert(0, line, 0, found);
+    _protocolVersion.erase(_protocolVersion.size(), 1);
+    responseHTTP.setProtVersion(_protocolVersion);
+	_code = getCorrectUrl();
+}
+
+std::string ft::Request::requestStarter(){
+    std::cout << "RAW BODY\n[" << rawBody << "]" << std::endl;
+
+    responseHTTP.setCode(_code);
+    if (_code == "200")
+        parseRequest(responseHTTP);
+
+    responseHTTP.buildFullResponse();
+    std::string responseR = responseHTTP.getFullResponse(); 
+    return responseR;
+}
+
 
 void ft::Request::parseRequest(ft::Response &response){
 
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
     response.setAutoIndex(_autoIndex);
-    response.setContentType(response.addContentType());
+    response.setContentType(_rawRequest["Content-Type"]);
     response.setContentLenght(stringtoint(_rawRequest["Content-Length"]));
     if (_autoIndex)
         response.setBody(_autoIndexBody);
     response.createBody(_url);
 }
-
-/*
-    Get the URL, method and protocol
-*/
 
 bool ft::Request::Directory(std::string url){
 
@@ -246,42 +247,6 @@ std::string ft::Request::getCorrectUrl(void){
         return ("404");
     return ("200");
 }
-
-
-void ft::Request::getRequestLine(std::string line){
-
-    size_t found = line.find(" ");
-    this->_method.insert(0, line, 0, found);
-    line.erase(0, _method.size() + 1);
-    found = line.find(" ");
-    this->_url.insert(0, line, 0, found);
-    line.erase(0, _url.size() + 1);
-    found = line.find("\n");
-    this->_protocolVersion.insert(0, line, 0, found);
-    _protocolVersion.erase(_protocolVersion.size(), 1);
-    responseHTTP.setProtVersion(_protocolVersion);
-	_code = getCorrectUrl();
-}
-
-/*
-    Function that checks if request exists, then parse the request
-    and send it to create the response
-*/
-
-std::string ft::Request::requestStarter(){
-    std::cout << "RAW BODY" << rawBody << std::endl;
-
-    responseHTTP.setCode(_code);
-    if (_code == "200")
-        parseRequest(responseHTTP);
-
-    responseHTTP.buildFullResponse();
-    std::string responseR = responseHTTP.getFullResponse(); 
-    return responseR;
-}
-
-
-// add by avarnier
 
 size_t	ft::Request::getContentLength(void)
 {
