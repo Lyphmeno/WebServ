@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/21 13:53:25 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/27 10:59:26 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,13 @@ int	Server::getMethods(std::string path, std::string method)
 		if (!(*it).compare(method))
 			return (1);
 	return (0);
+}
+
+size_t	Server::getMCBS(std::string path)
+{
+	if (this->getLoc(path) < 0)
+		return (this->max_client_body_size);
+	return (this->location.at(this->getLoc(path)).max_client_body_size);
 }
 
 bool	Server::getAutoIndex(std::string path)

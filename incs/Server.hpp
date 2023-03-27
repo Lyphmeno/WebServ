@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/18 11:11:26 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/27 10:55:50 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ public:
 	// Getters //
 	int							getLoc(std::string);
 	int							getMethods(std::string, std::string);
+	size_t						getMCBS(std::string);
 	bool						getAutoIndex(std::string);
 	std::string					getRoot(std::string);
 	std::vector<std::string>	getIndex(std::string);
