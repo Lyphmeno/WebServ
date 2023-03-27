@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 11:10:59 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/27 12:39:04 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ Webserv::Webserv(std::string filename)
 {
 
 	this->parser.parsing(filename, this->manager.config);
-	std::cout << this->manager.config.at(0).getMCBS("/post_test/") << "\n";
+	std::cout << this->manager.config.at(0).getErrorPage("/fdfds", "404") << "\n";
 	this->manager.start();
 }
 

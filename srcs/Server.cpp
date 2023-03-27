@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 10:59:26 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/27 12:39:20 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,54 @@ std::string	Server::getRoot(std::string path)
 	if (this->getLoc(path) < 0)
 		return (this->root);
 	return (this->location.at(this->getLoc(path)).root);
+}
+
+std::string	Server::getErrorPage(std::string path, std::string err)
+{
+	int	i = 0;
+	if (this->getLoc(path) < 0)
+	{
+		if (this->err_page.empty())
+			return (NULL);
+		for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
+		{
+			if ((*it).empty())
+				return (NULL);
+			for (std::vector<std::string>::const_iterator ite = this->err_page.at(i).begin(); ite != this->err_page.at(i).end(); ite++)
+				if (!err.compare(*ite))
+					return (this->err_page.at(i).back());
+			i++;
+		}
+		return (NULL);
+	}
+	else
+	{
+		if (this->location.at(this->getLoc(path)).err_page.empty())
+		{
+			i = 0;
+			if (this->err_page.empty())
+				return (NULL);
+			for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
+			{
+				if ((*it).empty())
+					return (NULL);
+				for (std::vector<std::string>::const_iterator ite = this->err_page.at(i).begin(); ite != this->err_page.at(i).end(); ite++)
+					if (!err.compare(*ite))
+						return (this->err_page.at(i).back());
+				i++;
+			}
+		}
+		for (std::vector<std::vector<std::string> >::const_iterator it = this->location.at(this->getLoc(path)).err_page.begin(); it != this->location.at(this->getLoc(path)).err_page.end(); it++)
+		{
+			if ((*it).empty())
+				return (NULL);
+			for (std::vector<std::string>::const_iterator ite = this->location.at(this->getLoc(path)).err_page.at(i).begin(); ite != this->location.at(this->getLoc(path)).err_page.at(i).end(); ite++)
+				if (!err.compare(*ite))
+					return (this->location.at(this->getLoc(path)).err_page.at(i).back());
+			i++;
+		}
+		return (NULL);
+	}
 }
 
 std::vector<std::string>	Server::getIndex(std::string path)

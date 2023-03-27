@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 11:50:35 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/27 12:03:15 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ public:
 	size_t						getMCBS(std::string);
 	bool						getAutoIndex(std::string);
 	std::string					getRoot(std::string);
+	std::string					getErrorPage(std::string, std::string);
 	std::vector<std::string>	getIndex(std::string);
 	// Setters //
 	// Methods //
