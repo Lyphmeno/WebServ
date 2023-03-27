@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 10:55:50 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/27 11:50:35 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,19 +50,19 @@ namespace ft {
 class Server
 {
 public:
-	std::vector<bool>			id;
-	std::vector<Location>		location;
-	std::vector<std::string>	server_names;
-	std::vector<std::string>	allow_methods;
-	std::vector<std::string>	index;
-	std::vector<std::string>	err_page;
-	std::string					listen;
-	std::string					root;
-    std::string					auto_index;
-    std::string					cgi_dir;
-	size_t						max_client_body_size;
+	std::vector<bool>						id;
+	std::vector<Location>					location;
+	std::vector<std::string>				server_names;
+	std::vector<std::string>				allow_methods;
+	std::vector<std::string>				index;
+	std::vector<std::vector<std::string> >	err_page;
+	std::string								listen;
+	std::string								root;
+    std::string								auto_index;
+    std::string								cgi_dir;
+	size_t									max_client_body_size;
 	// avarnier
-	sockaddr_in					addr;
+	sockaddr_in								addr;
 public:
 	// Coplien //
 	Server();
