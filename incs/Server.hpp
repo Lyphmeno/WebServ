@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 12:03:15 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/28 11:14:22 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ public:
 	// Assignation contructors //
 	// Operators //
 	// Getters //
+	std::string					isLoc(std::string);
 	int							getLoc(std::string);
 	int							getMethods(std::string, std::string);
 	size_t						getMCBS(std::string);

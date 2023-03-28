@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 12:48:37 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/28 11:24:54 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,24 @@ Server &Server::operator=(const Server &rhs)
 /////////////////////////////
 // Getters                 //
 /////////////////////////////
+std::string	Server::isLoc(std::string path)
+{
+	int			i = 0;
+	std::string tmp;
+
+	if (this->location.empty())
+		return (NULL);
+	for (std::vector<Location>::const_iterator it = this->location.begin(); it != this->location.end(); it++) {
+		if (path.find(it->path) != std::string::npos && static_cast<size_t>(i) < path.find(it->path)) {
+			tmp = it->path;
+			i = path.find(it->path);
+		}
+	}
+	if (!i)
+		return (NULL);
+	return (tmp);
+}
+
 int	Server::getLoc(std::string path)
 {
 	if (this->location.empty())
