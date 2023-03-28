@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/22 16:05:29 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/27 12:49:41 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Webserv::Webserv(std::string filename)
 {
 
 	this->parser.parsing(filename, this->manager.config);
+	std::cout << this->manager.config.at(0).getErrorPage("/post_tfdfest/", "505") << "\n";
 	this->manager.start();
 }
 

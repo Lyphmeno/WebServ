@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/21 13:57:19 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/27 11:55:43 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,23 +226,32 @@ void	Parser::print_index(std::vector<Server>& servers, int i, int y)
 
 void	Parser::print_errpage(std::vector<Server>& servers, int i, int y)
 {
+	int	x = 0;
 	if (y >= 0) {
 		if (servers.at(i).location.at(y).err_page.empty())
 			return ;
-		this->print_tabulation();
-		print(MAGENTA, "[error_page]");
-		for (std::vector<std::string>::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
-			print(BLUE, " " + *it);
-		print(YELLOW, ";\n");
+		for (std::vector<std::vector<std::string> >::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
+		{
+			this->print_tabulation();
+			print(MAGENTA, "[error_page]");
+			for (std::vector<std::string>::const_iterator ite = servers.at(0).err_page.at(x).begin() ; ite != servers.at(0).err_page.at(x).end(); ite++)
+				print(BLUE, " " + *ite);
+			print(YELLOW, ";\n");
+			x++;
+		}
 	}
 	else {
 		if (servers.at(i).err_page.empty())
 			return ;
-		this->print_tabulation();
-		print(MAGENTA, "[error_page]");
-		for (std::vector<std::string>::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
-			print(BLUE, " " + *it);
-		print(YELLOW, ";\n");
+		for (std::vector<std::vector<std::string> >::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
+		{
+			this->print_tabulation();
+			print(MAGENTA, "[error_page]");
+			for (std::vector<std::string>::const_iterator ite = servers.at(0).err_page.at(x).begin() ; ite != servers.at(0).err_page.at(x).end(); ite++)
+				print(BLUE, " " + *ite);
+			print(YELLOW, ";\n");
+			x++;
+		}
 	}
 }
 
@@ -624,25 +633,22 @@ void	Parser::p_maxclientbodysize(std::vector<Server> &servers)
 
 void	Parser::p_errorpage(std::vector<Server> &servers)
 {
-	std::string	tmp;
+	std::string					tmp;
+	std::vector<std::string>	tmpvec;
 
 	this->semi_colon();
 	this->dlt_first();
 	if (nbr_words() <= 1)
 		throw std::invalid_argument("Invalid argument: <error_page> need at least 2 arguments");
 	if (this->inbrackets == 1) {
-		if (servers.back().id.at(BS_ERR) == true)
-			throw std::invalid_argument("Invalid argument: multiple <error_page> tag not allowed");
-		servers.back().id.at(BS_ERR) = true;
 		while (this->line >> tmp)
-			servers.back().err_page.push_back(tmp);
+			tmpvec.push_back(tmp);
+		servers.back().err_page.push_back(tmpvec);
 	}
 	else {
-		if (servers.back().location.back().id.at(BL_ERR) == true)
-			throw std::invalid_argument("Invalid argument: multiple <error_page> tag not allowed");
-		servers.back().location.back().id.at(BL_ERR) = true;
 		while (this->line >> tmp)
-			servers.back().location.back().err_page.push_back(tmp);
+			tmpvec.push_back(tmp);
+		servers.back().location.back().err_page.push_back(tmpvec);
 	}
 }
 
