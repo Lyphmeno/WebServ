@@ -364,32 +364,3 @@ void ft::Response::buildFullResponse(){
     _responseFull = full;
 
 }
-
-void	ft::Response::clear()
-{
-	_protVersion.clear();
-	_url.clear();
-	_method.clear();
-	_contentType.clear();
-	_server.clear();
-	_body.clear();
-	_code.clear();
-	_status.clear();
-	_responseFull.clear();
-	_rawResponse.clear();
-	_formValues.clear();
-	_rawBody.clear();
-
-	// _allowedMethod.clear();
-	// _contentLenght.clear();
-	// _autoIndex.clear();
-	// _codeStatus = ;
-
-	//	to be checked:
-	//
-	// _indexON = 0;
-	// _root.clear();
-	// _index.clear();
-	// _autoIndexBody.clear();
-	// _autoIndex = false;
-}
