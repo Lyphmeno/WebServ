@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 18:25:01 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/19 04:52:53 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/28 09:11:10 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ public:
 	SocketData(const SocketData &x);
 	SocketData	&operator=(const SocketData &x);
 	~SocketData();
-	void	clear();
 private:
 	SocketData();
 

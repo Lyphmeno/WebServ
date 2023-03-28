@@ -55,7 +55,6 @@ public:
 
 		// add by avarnier
 	size_t	getContentLength(void);
-	void	clear();
 
         std::string rawHeader;
         std::string rawBody;

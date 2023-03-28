@@ -291,24 +291,3 @@ size_t	ft::Request::getContentLength(void)
 		std::istringstream(cit->second) >> ret;
 	return ret;
 }
-
-void	ft::Request::clear()
-{
-	rawHeader.clear();
-	rawBody.clear();
-	_rawRequest.clear();
-	_method.clear();
-	_url.clear();
-	_protocolVersion.clear();
-	_tmpLoc.clear();
-	_requestLine.clear();
-	_requestFull.clear();
-    // responseHTTP.clear();
-	//	to be checked:
-	//
-	// _indexON = 0;
-	// _root.clear();
-	// _index.clear();
-	// _autoIndexBody.clear();
-	// _autoIndex = false;
-}
