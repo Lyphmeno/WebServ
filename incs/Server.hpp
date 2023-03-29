@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/18 11:11:26 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/28 11:14:22 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,19 +50,19 @@ namespace ft {
 class Server
 {
 public:
-	std::vector<bool>			id;
-	std::vector<Location>		location;
-	std::vector<std::string>	server_names;
-	std::vector<std::string>	allow_methods;
-	std::vector<std::string>	index;
-	std::vector<std::string>	err_page;
-	std::string					listen;
-	std::string					root;
-    std::string					auto_index;
-    std::string					cgi_dir;
-	size_t						max_client_body_size;
+	std::vector<bool>						id;
+	std::vector<Location>					location;
+	std::vector<std::string>				server_names;
+	std::vector<std::string>				allow_methods;
+	std::vector<std::string>				index;
+	std::vector<std::vector<std::string> >	err_page;
+	std::string								listen;
+	std::string								root;
+    std::string								auto_index;
+    std::string								cgi_dir;
+	size_t									max_client_body_size;
 	// avarnier
-	sockaddr_in					addr;
+	sockaddr_in								addr;
 public:
 	// Coplien //
 	Server();
@@ -74,10 +74,13 @@ public:
 	// Assignation contructors //
 	// Operators //
 	// Getters //
+	std::string					isLoc(std::string);
 	int							getLoc(std::string);
 	int							getMethods(std::string, std::string);
+	size_t						getMCBS(std::string);
 	bool						getAutoIndex(std::string);
 	std::string					getRoot(std::string);
+	std::string					getErrorPage(std::string, std::string);
 	std::vector<std::string>	getIndex(std::string);
 	// Setters //
 	// Methods //
