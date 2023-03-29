@@ -6,7 +6,11 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2023/03/29 03:46:26 by avarnier         ###   ########.fr       */
+=======
+/*   Updated: 2023/03/28 09:06:46 by avarnier         ###   ########.fr       */
+>>>>>>> f06d50a9e0a4da562642a23b1c76eae82e51faf9
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +175,7 @@ void	SocketManager::handleParsing(SocketData &data)
 
 	if (data.req.getMethod() == "POST" && data.bodysize > 0)
 	{
-		if (data.bodysize > MAXBODY)
+		if (data.bodysize > data.req._serverParsing.getMCBS(data.req.getUrl()) > 0)
 		{
 			data.req._code = "413";
 			data.rep = data.req.requestStarter();

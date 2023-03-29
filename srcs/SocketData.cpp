@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 18:28:32 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/17 22:43:48 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/28 09:11:11 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,6 @@ SocketData	&SocketData::operator=(const SocketData &x)
 
 SocketData::~SocketData()
 {
-}
-
-void	SocketData::clear()
-{
-	this->step = 0;
-	this->bodysize = 0;
-	this->req.clear();
-	this->rep.clear();
 }
 
 }
