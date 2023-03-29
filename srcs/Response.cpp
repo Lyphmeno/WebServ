@@ -270,6 +270,7 @@ void ft::Response::initPostStruct(std::string fullBody){
         }
     }
     _multipartForm[tmpName].value = fullBody.erase(0, 2);
+    std::cout << "VALUE FILE = |\n" <<  _multipartForm[tmpName].value << "\n|\n";
     filename = "html/uploads/" + _multipartForm[tmpName].filename;//add root
     std::ofstream ofs(filename.c_str());
     if (ofs.is_open())
