@@ -45,7 +45,7 @@ public:
         void setAllowedMethod(int allowed);
         void setURL(std::string url);
         void setMethod(std::string method);
-        void setRawBody(std::string body);
+        void setRawBody(std::vector<unsigned char> body);
         void setBody(std::string newBody);
         void setContentLenght(int valread);
         void setCode(std::string code);
@@ -100,7 +100,7 @@ private:
         std::map<std::string, std::string> _rawResponse;
         std::map<std::string, t_data1> _multipartForm;
         std::map<std::string, std::string> _formValues;
-        std::string _rawBody;
+        std::vector<unsigned char> _rawBody;
         std::string tmpName;
 
         // std::map<std::string, bool> _autoIndex;

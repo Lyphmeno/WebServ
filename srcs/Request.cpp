@@ -91,7 +91,6 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(){
-    std::cout << "RAW BODY\n[" << rawBody << "]" << std::endl;
 
     responseHTTP.setCode(_code);
     if (_code == "200")

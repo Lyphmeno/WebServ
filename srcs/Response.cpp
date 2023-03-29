@@ -77,7 +77,7 @@ void ft::Response::setMethod(std::string method){
     this->_method = method;
 }
 
-void ft::Response::setRawBody(std::string body){
+void ft::Response::setRawBody(std::vector<unsigned char> body){
     this->_rawBody = body;
 }
 
@@ -199,7 +199,6 @@ void ft::Response::getM(const std::string & url){
     //     setError("404");
     //     return ;
     // }
-    
     _code = "200";
     _status = _codeStatus.getStatus("200");
     if (_body == "")
@@ -218,22 +217,22 @@ void ft::Response::getM(const std::string & url){
 typedef void(ft::Response::*fPtr)(void);
 
 void ft::Response::urlencoded(void){
-    size_t pos = 0;
-    std::string token;
-    std::string value;
+    // size_t pos = 0;
+    // std::string token;
+    // std::string value;
 
-    while ((pos = _rawBody.find("=")) != std::string::npos) {
-        token = _rawBody.substr(0, pos);
-        _rawBody.erase(0, pos + 1);
-        if ((pos = _rawBody.find("&")) != std::string::npos)
-        {
-            value = _rawBody.substr(0, pos);
-            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
-        }
-        _rawBody.erase(0, pos + 1);
-        _formValues[token] = value;
-    }
-    _formValues[token] = _rawBody;
+    // while ((pos = _rawBody.find("=")) != std::string::npos) {
+    //     token = _rawBody.substr(0, pos);
+    //     _rawBody.erase(0, pos + 1);
+    //     if ((pos = _rawBody.find("&")) != std::string::npos)
+    //     {
+    //         value = _rawBody.substr(0, pos);
+    //         value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+    //     }
+    //     _rawBody.erase(0, pos + 1);
+    //     _formValues[token] = value;
+    // }
+    // _formValues[token] = _rawBody;
 }
 
 void ft::Response::initPostStruct(std::string fullBody){
@@ -294,38 +293,58 @@ std::string getOnlyBody(std::string *body, std::string tmp){
 
 void ft::Response::multi(void){
 
-    size_t pos = 0;
-    std::string tmp = _rawResponse["Content-Type"];
-    std::string tmpRawBody = _rawBody;
+    // size_t pos = 0;
+    // std::string tmp = _rawResponse["Content-Type"];
+    // std::string tmpRawBody = _rawBody;
 
     
-    if ((pos = tmp.find(" boundary=----")) != std::string::npos) {
-        tmp.erase(0, pos + 14);
-    }
-    while ((pos = tmpRawBody.find(tmp)) != std::string::npos){
-        tmpRawBody.erase(0, tmp.size() + 8);
-        initPostStruct(getOnlyBody(&tmpRawBody, tmp));
-        if (tmpRawBody.size() == tmp.size() + 10)
-            break;
-    }
+    // if ((pos = tmp.find(" boundary=----")) != std::string::npos) {
+    //     tmp.erase(0, pos + 14);
+    // }
+    // while ((pos = tmpRawBody.find(tmp)) != std::string::npos){
+    //     tmpRawBody.erase(0, tmp.size() + 8);
+    //     initPostStruct(getOnlyBody(&tmpRawBody, tmp));
+    //     if (tmpRawBody.size() == tmp.size() + 10)
+    //         break;
+    // }
 }
 
 
 void ft::Response::plain(void){
-    size_t pos = 0;
+    // size_t pos = 0;
+    // std::string token;
+    // std::string value;
+
+    // while ((pos = _rawBody.find("=")) != std::string::npos) {
+    //     token = _rawBody.substr(0, pos);
+    //     _rawBody.erase(0, pos + 1);
+    //     if ((pos = _rawBody.find("\n")) != std::string::npos)
+    //     {
+    //         value = _rawBody.substr(0, pos);
+    //         value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+    //     }
+    //     _rawBody.erase(0, pos + 1);
+    //     _formValues[token] = value;
+    // }
+
+
+    // Assuming _rawBody is a std::vector<unsigned char>
+    std::vector<unsigned char>::iterator pos;
     std::string token;
     std::string value;
 
-    while ((pos = _rawBody.find("=")) != std::string::npos) {
-        token = _rawBody.substr(0, pos);
-        _rawBody.erase(0, pos + 1);
-        if ((pos = _rawBody.find("\n")) != std::string::npos)
-        {
-            value = _rawBody.substr(0, pos);
-            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+    std::map<std::string, std::string> _formValues;
+
+    while ((pos = std::find(_rawBody.begin(), _rawBody.end(), '=')) != _rawBody.end()) {
+        token.assign(_rawBody.begin(), pos);
+        _rawBody.erase(_rawBody.begin(), pos + 1);
+        if ((pos = std::find(_rawBody.begin(), _rawBody.end(), '\n')) != _rawBody.end()) {
+            value.assign(_rawBody.begin(), pos);
+            value.erase(std::remove(value.begin(), value.end(), '\r'), value.end());
         }
-        _rawBody.erase(0, pos + 1);
+        _rawBody.erase(_rawBody.begin(), pos + 1);
         _formValues[token] = value;
+        std::cout << _formValues[token] << " " << token << std::endl;
     }
 
 }
@@ -433,5 +452,6 @@ void ft::Response::buildFullResponse(){
 
     std::cout << _url << std::endl;
     _responseFull = full;
+    std::cout << "FULL RESPONSE = " << _responseFull << std::endl;
 
 }
