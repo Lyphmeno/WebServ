@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/23 14:26:06 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/29 03:46:26 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,13 +148,13 @@ void	SocketManager::handleBody(SocketData &data, std::string &buff)
 {
 	if (buff.size() + data.req.rawBody.size() <= data.bodysize)
 	{
-		data.req.rawBody += buff;
+		data.req.rawBody.insert(data.req.rawBody.end(), buff.begin(), buff.end());
 		buff.clear();
 	}
 	else
 	{
 		size_t pos = data.bodysize - data.req.rawBody.size();
-		data.req.rawBody += buff.substr(0, pos);
+		data.req.rawBody.insert(data.req.rawBody.end(), buff.begin(), buff.begin() + pos);
 		buff.erase(0, pos);
 	}
 	if (data.req.rawBody.size() == data.bodysize)
