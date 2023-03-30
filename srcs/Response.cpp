@@ -61,6 +61,10 @@ void ft::Response::setProtVersion(std::string version){
     this->_protVersion = version;
 }
 
+void ft::Response::setProtVersion(ft::Server server){
+    this->_serverParsing = server;
+}
+
 void ft::Response::setContentType(std::string contentType){
     this->_contentType = contentType;
 }
@@ -115,6 +119,8 @@ void ft::Response::handleErrors(){
     pageName.append(".html");
     std::ifstream ifs(pageName.c_str());
     std::string buff;
+
+    pageName = _serverParsing.getErrorPage(tmp)
 
     while (std::getline(ifs, buff) != 0)
     {
@@ -302,22 +308,6 @@ std::vector<unsigned char> getOnlyBody(std::vector<unsigned char> &body, std::st
 }
 
 void ft::Response::multi(void){
-
-    // size_t pos = 0;
-    // std::string tmp = _rawResponse["Content-Type"];
-    // std::string tmpRawBody = _rawBody;
-
-    
-    // if ((pos = tmp.find(" boundary=----")) != std::string::npos) {
-    //     tmp.erase(0, pos + 14);
-    // }
-    // while ((pos = tmpRawBody.find(tmp)) != std::string::npos){
-    //     tmpRawBody.erase(0, tmp.size() + 8);
-    //     initPostStruct(getOnlyBody(&tmpRawBody, tmp));
-    //     if (tmpRawBody.size() == tmp.size() + 10)
-    //         break;
-    // }
-
     size_t pos = 0;
     std::string tmp = _rawResponse["Content-Type"];
     std::vector<unsigned char> tmpRawBody = _rawBody;
@@ -332,7 +322,6 @@ void ft::Response::multi(void){
     std::vector<unsigned char>::iterator it;
     while ((it = std::search(tmpRawBody.begin(), tmpRawBody.end(), boundary.begin(), boundary.end())) != tmpRawBody.end()) {
         tmpRawBody.erase(tmpRawBody.begin(), it + boundary.size() + 2);
-        // ret = getOnlyBody(tmpRawBody, boundary);
         initPostStruct(getOnlyBody(tmpRawBody, boundary));
         if (tmpRawBody.size() == boundary.size() + 10)
             break;
@@ -341,24 +330,6 @@ void ft::Response::multi(void){
 
 
 void ft::Response::plain(void){
-    std::cout << "plain";
-    // size_t pos = 0;
-    // std::string token;
-    // std::string value;
-
-    // while ((pos = _rawBody.find("=")) != std::string::npos) {
-    //     token = _rawBody.substr(0, pos);
-    //     _rawBody.erase(0, pos + 1);
-    //     if ((pos = _rawBody.find("\n")) != std::string::npos)
-    //     {
-    //         value = _rawBody.substr(0, pos);
-    //         value.erase(std::remove(value.begin(), value.end(), 13), value.end());
-    //     }
-    //     _rawBody.erase(0, pos + 1);
-    //     _formValues[token] = value;
-    // }
-
-
     size_t pos = 0;
     std::vector<unsigned char> token;
     std::vector<unsigned char> value;

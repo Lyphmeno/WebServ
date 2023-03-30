@@ -103,6 +103,9 @@ private:
         std::vector<unsigned char> _rawBody;
         std::string tmpName;
 
+
+	ft::Server	_serverParsing;
+
         // std::map<std::string, bool> _autoIndex;
 
         void urlencoded(void);

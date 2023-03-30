@@ -108,6 +108,7 @@ std::string ft::Request::requestStarter(){
 
 
 void ft::Request::parseRequest(ft::Response &response){
+    response.setServerParsing(_serverParsing);
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
     response.setAutoIndex(_autoIndex);
