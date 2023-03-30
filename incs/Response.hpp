@@ -11,7 +11,7 @@
 #include <sstream>
 
 typedef struct s_data1{
-        std::string value;
+        std::vector<unsigned char> value;
         std::string filename;
         std::string name;
 }               t_data1;
@@ -66,7 +66,7 @@ public:
         
         void createAutoIndexHtmlPage(const std::string& directoryPath);
 
-        void initPostStruct(std::string fullBody);
+        void initPostStruct(std::vector<unsigned char> fullBody);
         void	clear();
         
 private:

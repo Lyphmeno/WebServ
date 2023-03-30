@@ -91,6 +91,10 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(){
+    std::cout << "RAW BODY - ";
+    for (size_t i = 0; i < rawBody.size(); ++i) {
+        std::cout << rawBody[i];
+    }
 
     responseHTTP.setCode(_code);
     if (_code == "200")
@@ -102,8 +106,8 @@ std::string ft::Request::requestStarter(){
 }
 
 
-void ft::Request::parseRequest(ft::Response &response){
 
+void ft::Request::parseRequest(ft::Response &response){
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
     response.setAutoIndex(_autoIndex);

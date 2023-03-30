@@ -70,19 +70,16 @@ void	Webserv::run()
 			}
 			else
 			{
-				std::vector<unsigned char> buff(MAXBUFF);
-				ssize_t bytes = recv(fd, &buff[0], MAXBUFF, 0);
-				for (std::vector<unsigned char>::iterator it = buff.begin(); it != buff.end();it++){
-   					std::cout << (*it);
- 				}
-				(void)bytes;
-				// if (bytes > 0)
-				// {
-				// 	buff[bytes] = '\0';
-				// 	this->manager.getData(fd, buff);
-				// }
-				// else
-				// 	this->manager.close(fd);
+				
+				char buff[MAXBUFF + 1];
+				ssize_t bytes = recv(fd, buff, MAXBUFF, 0);
+				if (bytes > 0)
+				{
+					buff[bytes] = '\0';
+					this->manager.getData(fd, buff);
+				}
+				else
+					this->manager.close(fd);
 			}
 		}
 	}
