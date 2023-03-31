@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/28 11:24:54 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/31 09:59:09 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,17 +139,17 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 	if (this->getLoc(path) < 0)
 	{
 		if (this->err_page.empty())
-			return (NULL);
+			return ("");
 		for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
 		{
 			if ((*it).empty())
-				return (NULL);
+				return ("");
 			for (std::vector<std::string>::const_iterator ite = this->err_page.at(i).begin(); ite != this->err_page.at(i).end(); ite++)
 				if (!err.compare(*ite))
 					return (this->err_page.at(i).back());
 			i++;
 		}
-		return (NULL);
+		return ("");
 	}
 	else
 	{
@@ -161,7 +161,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 			for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
 			{
 				if ((*it).empty())
-					return (NULL);
+					return ("");
 				for (std::vector<std::string>::const_iterator ite = this->err_page.at(i).begin(); ite != this->err_page.at(i).end(); ite++)
 					if (!err.compare(*ite))
 						return (this->err_page.at(i).back());
@@ -179,7 +179,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 		}
 		i = 0;
 		if (this->err_page.empty())
-			return (NULL);
+			return ("");
 		for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
 		{
 			if ((*it).empty())
@@ -189,7 +189,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 					return (this->err_page.at(i).back());
 			i++;
 		}
-		return (NULL);
+		return ("");
 	}
 }
 
