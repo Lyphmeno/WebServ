@@ -2,6 +2,7 @@
 #include <dirent.h> 
 #include <algorithm>
 
+
 static std::string itostring(int toConvert){
     std::ostringstream tm;
     tm << toConvert;
@@ -60,12 +61,20 @@ void ft::Response::setProtVersion(std::string version){
     this->_protVersion = version;
 }
 
+void ft::Response::setServerParsing(ft::Server server){
+    this->_serverParsing = server;
+}
+
 void ft::Response::setContentType(std::string contentType){
     this->_contentType = contentType;
 }
 
 void ft::Response::setURL(std::string url){
     this->_url = url;
+}
+
+void ft::Response::setLocation(std::string url){
+    this->_urlLocation = url;
 }
 
 void ft::Response::setAllowedMethod(int allowed){
@@ -76,7 +85,7 @@ void ft::Response::setMethod(std::string method){
     this->_method = method;
 }
 
-void ft::Response::setRawBody(std::string body){
+void ft::Response::setRawBody(std::vector<unsigned char> body){
     this->_rawBody = body;
 }
 
@@ -114,7 +123,14 @@ void ft::Response::handleErrors(){
     pageName.append(".html");
     std::ifstream ifs(pageName.c_str());
     std::string buff;
+    std::string urlTmp;
 
+    std::cout << "URL LOC" << _urlLocation << std::endl;       
+    pageName = _serverParsing.getErrorPage(_urlLocation, _code);
+    if (pageName != ""){
+        pageName = _serverParsing.getRoot(_urlLocation) + pageName;
+    }
+    std::cout << "PageName" << pageName << std::endl;
     while (std::getline(ifs, buff) != 0)
     {
         _body += buff;
@@ -142,6 +158,7 @@ const std::string & ft::Response::addContentType(void){
     
     size_t found = _url.find(".");
     extension.insert(0, _url, found + 1);
+    std::cout << extension << std::endl;
     return (_Mime.getType(extension));
 }
 
@@ -197,7 +214,6 @@ void ft::Response::getM(const std::string & url){
     //     setError("404");
     //     return ;
     // }
-    
     _code = "200";
     _status = _codeStatus.getStatus("200");
     if (_body == "")
@@ -216,47 +232,137 @@ void ft::Response::getM(const std::string & url){
 typedef void(ft::Response::*fPtr)(void);
 
 void ft::Response::urlencoded(void){
-    size_t pos = 0;
+    std::vector<unsigned char>::iterator pos;
     std::string token;
     std::string value;
 
-    while ((pos = _rawBody.find("=")) != std::string::npos) {
-        token = _rawBody.substr(0, pos);
-        _rawBody.erase(0, pos + 1);
-        if ((pos = _rawBody.find("&")) != std::string::npos)
-        {
-            value = _rawBody.substr(0, pos);
-            value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+    std::map<std::string, std::string> _formValues;
+
+    while ((pos = std::find(_rawBody.begin(), _rawBody.end(), '=')) != _rawBody.end()) {
+        token.assign(_rawBody.begin(), pos);
+        _rawBody.erase(_rawBody.begin(), pos + 1);
+        if ((pos = std::find(_rawBody.begin(), _rawBody.end(), '&')) != _rawBody.end()) {
+            value.assign(_rawBody.begin(), pos);
+            value.erase(std::remove(value.begin(), value.end(), '\r'), value.end());
+            _rawBody.erase(_rawBody.begin(), pos + 1);
+            _formValues[token] = value;
         }
-        _rawBody.erase(0, pos + 1);
-        _formValues[token] = value;
     }
-    _formValues[token] = _rawBody;
+    _formValues[token] = std::string(_rawBody.begin(), _rawBody.end());
+
+    std::map<std::string ,std::string>::iterator it;
+    for( it=_formValues.begin();it !=_formValues.end();++it)
+    {
+       std::cout << it->first << ' ' <<it->second << std::endl;
+    }
+
+}
+
+void ft::Response::initPostStruct(std::vector<unsigned char> fullBody){
+
+    std::vector<unsigned char>::iterator it;
+    std::string limiter = "\r\n\r\n";
+    std::string headers;
+    size_t pos = 0;
+    std::string token;
+
+    if ((it = std::search(fullBody.begin(), fullBody.end(), limiter.begin(), limiter.end())) != fullBody.end()){
+        headers.assign(fullBody.begin(), it);
+        fullBody.erase(fullBody.begin(), it + limiter.size());
+    }
+    while ((pos = headers.find(": ")) != std::string::npos) {
+        token = headers.substr(0, pos);
+        headers.erase(0, pos + 2);
+        if (token == "Content-Disposition")
+        {
+            if ((pos = headers.find("name=\"")) != std::string::npos) {
+                headers.erase(0, pos + 6);
+                if ((pos = headers.find("\"")) != std::string::npos)
+                    token = headers.substr(0, pos);
+            }
+            if ((pos = headers.find("filename=\"")) != std::string::npos) {
+                headers.erase(0, pos + 10);
+                if ((pos = headers.find("\"")) != std::string::npos)
+                {
+                    std::string filename = headers.substr(0, pos);
+                    _multipartForm[token].filename = filename; 
+                }
+            }
+            _multipartForm[token].name = token;
+            std::cout << token << " = "   <<  _multipartForm[token].name << std::endl;
+            tmpName = token;
+        }
+    }
+    _multipartForm[tmpName].value = fullBody;
+    filename = "html/uploads/" + _multipartForm[tmpName].filename;//add root
+    std::ofstream ofs(filename.c_str());
+    if (ofs.is_open()){
+        for (size_t i = 0; i < fullBody.size(); ++i) {
+            ofs << fullBody[i];
+        }
+    }
+
+}
+
+std::vector<unsigned char> getOnlyBody(std::vector<unsigned char> &body, std::string tmp){
+    std::vector<unsigned char> fullBody;
+
+    std::string boundary = "------" + tmp;
+    std::vector<unsigned char> boundaryVec(boundary.begin(), boundary.end());
+    std::vector<unsigned char>::iterator it;
+
+    if ((it = std::search(body.begin(), body.end(), boundaryVec.begin(), boundaryVec.end())) != body.end()) {
+        if (it != body.end()) {
+            fullBody.assign(body.begin(), it);
+        } else {
+            fullBody.assign(body.begin(), it + 2);
+        }
+    }
+    body.erase(body.begin(), body.begin() + fullBody.size());
+    return fullBody;
 }
 
 void ft::Response::multi(void){
-    std::cout << "multi" << std::endl;
+    size_t pos = 0;
+    std::string tmp = _rawResponse["Content-Type"];
+    std::vector<unsigned char> tmpRawBody = _rawBody;
+    std::vector<unsigned char> ret;
 
+
+    if ((pos = tmp.find(" boundary=----")) != std::string::npos) {
+        tmp.erase(0, pos + 14);
+    }
+    std::string boundary(tmp.begin(), tmp.end());
+
+    std::vector<unsigned char>::iterator it;
+    while ((it = std::search(tmpRawBody.begin(), tmpRawBody.end(), boundary.begin(), boundary.end())) != tmpRawBody.end()) {
+        tmpRawBody.erase(tmpRawBody.begin(), it + boundary.size() + 2);
+        initPostStruct(getOnlyBody(tmpRawBody, boundary));
+        if (tmpRawBody.size() == boundary.size() + 10)
+            break;
+    }
 }
 
 
 void ft::Response::plain(void){
     size_t pos = 0;
-    std::string token;
-    std::string value;
+    std::vector<unsigned char> token;
+    std::vector<unsigned char> value;
+    std::string tokenStr;
+    std::string valueStr;
 
-    while ((pos = _rawBody.find("=")) != std::string::npos) {
-        token = _rawBody.substr(0, pos);
-        _rawBody.erase(0, pos + 1);
-        if ((pos = _rawBody.find("\n")) != std::string::npos)
-        {
-            value = _rawBody.substr(0, pos);
+    while ((pos = std::find(_rawBody.begin(), _rawBody.end(), '=') - _rawBody.begin()) != _rawBody.size()) {
+        token = std::vector<unsigned char>(_rawBody.begin(), _rawBody.begin() + pos);
+        _rawBody.erase(_rawBody.begin(), _rawBody.begin() + pos + 1);
+        if ((pos = std::find(_rawBody.begin(), _rawBody.end(), '\n') - _rawBody.begin()) != _rawBody.size()) {
+            value = std::vector<unsigned char>(_rawBody.begin(), _rawBody.begin() + pos);
             value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+            _rawBody.erase(_rawBody.begin(), _rawBody.begin() + pos + 1);
         }
-        _rawBody.erase(0, pos + 1);
-        _formValues[token] = value;
+        tokenStr = std::string(token.begin(), token.end());
+        valueStr = std::string(value.begin(), value.end());
+        _formValues[tokenStr] = valueStr;
     }
-
 }
 
 void ft::Response::postM(const std::string & url){
@@ -277,6 +383,7 @@ void ft::Response::postM(const std::string & url){
     else
         enctype = _rawResponse["Content-Type"];
 
+    std::cout << "enctype = " << enctype << std::endl;
     fPtr enc[3] = {
         &ft::Response::urlencoded,
         &ft::Response::multi,
@@ -323,7 +430,6 @@ void ft::Response::deleteM(const std::string & url){
 */
 void ft::Response::createBody(const std::string & url){
 
-
     if (_allowedMethod != 0)
     {
         if (_method == "GET")
@@ -356,40 +462,12 @@ void ft::Response::buildFullResponse(){
     full += "Date: ";
     full += date_time;
     full += "Content-type: " + _contentType;
-    full += "\nContent-Lenght: " + lenght; 
+    full += "\nContent-Lenght: " + itostring(_body.size()); 
     full += "\n\n";
     full += _body;
 
     std::cout << _url << std::endl;
     _responseFull = full;
+    // std::cout << "FULL RESPONSE = " << _responseFull << std::endl;
 
-}
-
-void	ft::Response::clear()
-{
-	_protVersion.clear();
-	_url.clear();
-	_method.clear();
-	_contentType.clear();
-	_server.clear();
-	_body.clear();
-	_code.clear();
-	_status.clear();
-	_responseFull.clear();
-	_rawResponse.clear();
-	_formValues.clear();
-	_rawBody.clear();
-
-	// _allowedMethod.clear();
-	// _contentLenght.clear();
-	// _autoIndex.clear();
-	// _codeStatus = ;
-
-	//	to be checked:
-	//
-	// _indexON = 0;
-	// _root.clear();
-	// _index.clear();
-	// _autoIndexBody.clear();
-	// _autoIndex = false;
 }
