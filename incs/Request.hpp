@@ -69,6 +69,7 @@ private:
 	//Request line
 	std::string  _method;
 	std::string _url;
+	std::string _urlLocation;
 	std::string _protocolVersion;
 
 	std::string _tmpLoc;
@@ -82,6 +83,8 @@ private:
 	std::string _root;
 	std::string _index;
 	
+	std::string _queryString;
+	std::map<std::string, std::string> _dataQuery;
 	//int _code;
 	std::string _autoIndexBody;
 	bool _autoIndex;

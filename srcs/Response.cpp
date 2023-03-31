@@ -61,7 +61,7 @@ void ft::Response::setProtVersion(std::string version){
     this->_protVersion = version;
 }
 
-void ft::Response::setProtVersion(ft::Server server){
+void ft::Response::setServerParsing(ft::Server server){
     this->_serverParsing = server;
 }
 
@@ -71,6 +71,10 @@ void ft::Response::setContentType(std::string contentType){
 
 void ft::Response::setURL(std::string url){
     this->_url = url;
+}
+
+void ft::Response::setLocation(std::string url){
+    this->_urlLocation = url;
 }
 
 void ft::Response::setAllowedMethod(int allowed){
@@ -119,9 +123,14 @@ void ft::Response::handleErrors(){
     pageName.append(".html");
     std::ifstream ifs(pageName.c_str());
     std::string buff;
+    std::string urlTmp;
 
-    pageName = _serverParsing.getErrorPage(tmp)
-
+    std::cout << "URL LOC" << _urlLocation << std::endl;       
+    pageName = _serverParsing.getErrorPage(_urlLocation, _code);
+    if (pageName != ""){
+        pageName = _serverParsing.getRoot(_urlLocation) + pageName;
+    }
+    std::cout << "PageName" << pageName << std::endl;
     while (std::getline(ifs, buff) != 0)
     {
         _body += buff;
@@ -240,6 +249,12 @@ void ft::Response::urlencoded(void){
         }
     }
     _formValues[token] = std::string(_rawBody.begin(), _rawBody.end());
+
+    std::map<std::string ,std::string>::iterator it;
+    for( it=_formValues.begin();it !=_formValues.end();++it)
+    {
+       std::cout << it->first << ' ' <<it->second << std::endl;
+    }
 
 }
 

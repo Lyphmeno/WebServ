@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "StatusCode.hpp"
+#include "Server.hpp"
 #include "ContentType.hpp"
 #include <fstream>
 #include <stdlib.h>
@@ -44,6 +45,7 @@ public:
         void setContentType(std::string contentType);
         void setAllowedMethod(int allowed);
         void setURL(std::string url);
+        void setLocation(std::string url);
         void setMethod(std::string method);
         void setRawBody(std::vector<unsigned char> body);
         void setBody(std::string newBody);
@@ -51,6 +53,8 @@ public:
         void setCode(std::string code);
         void setRawResponse(std::map<std::string, std::string> rr);
         void setAutoIndex(bool autoIndex);
+        void setServerParsing(ft::Server server);
+
 
         //Methods
         void getM(const std::string & url);
@@ -74,6 +78,7 @@ private:
         std::string _protVersion;
         std::string _url;
         std::string _method;
+        std::string _urlLocation;
 
         int _allowedMethod;
 

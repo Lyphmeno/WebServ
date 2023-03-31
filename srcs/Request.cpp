@@ -226,8 +226,28 @@ std::string ft::Request::checkIndexVector(std::vector<std::string> Index)
 
 std::string ft::Request::getCorrectUrl(void){
     _tmpLoc = _url;
+    size_t pos;
 
     _url = this->_serverParsing.getRoot(_url) + _url;
+    _urlLocation =  _serverParsing.isLoc(_url);
+    if ((pos = _url.find("?")) != std::string::npos){
+        _queryString = _url.substr(pos + 1);
+        std::string token;
+        std::string value;
+
+        while ((pos = _queryString.find("=")) != std::string::npos) {
+            token = _queryString.substr(0, pos);
+            _queryString.erase(0, pos + 1);
+            if ((pos = _queryString.find("&")) != std::string::npos)
+            {
+                value = _queryString.substr(0, pos);
+                value.erase(std::remove(value.begin(), value.end(), 13), value.end());
+            }
+            _queryString.erase(0, pos + 1);
+            _dataQuery[token] = value;
+        }
+        _dataQuery[token] = _queryString;
+    }
     if (Directory(_url))
     {
         std::string::iterator ite = _url.end();
@@ -236,7 +256,8 @@ std::string ft::Request::getCorrectUrl(void){
         std::string::iterator it = _tmpLoc.end();
         if (*(--it) != '/')
             _tmpLoc += "/";
-        if (this->_serverParsing.getAutoIndex(_tmpLoc))
+        _urlLocation =  _serverParsing.isLoc(_url);
+        if (this->_serverParsing.getAutoIndex(_urlLocation))
         {
             _autoIndex = true;
             _autoIndexBody += createAutoIndexHtmlPage(_url, _tmpLoc);
@@ -247,6 +268,7 @@ std::string ft::Request::getCorrectUrl(void){
     std::ifstream ifs(_url.c_str());
 
     responseHTTP.setURL(_url);
+    responseHTTP.setLocation(_urlLocation);
     if (!ifs.is_open())
         return ("404");
     return ("200");
