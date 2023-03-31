@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/31 18:32:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/31 18:58:30 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,16 @@ void	SocketManager::handleParsing(SocketData &data)
 	}
 }
 
+void	SocketManager::handleSending(Socket &sock)
+{
+	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
+	sock.data.rep.clear();
+	sock.data.req.clear();
+	sock.data.step = HEADER;
+	sock.data.bodysize = 0;
+	this->close(sock.fd);
+}
+
 void	SocketManager::getData(const int &fd, char *buff)
 {
 	Socket &sock = this->findClient(fd);
@@ -203,10 +213,7 @@ void	SocketManager::getData(const int &fd, char *buff)
 		if (data.step == BODY)
 			this->handleBody(data, buff);
 		if (data.step == SENDING)
-		{
-			send(sock.fd, data.rep.c_str(), data.rep.size(), 0);
-			this->close(sock.fd);
-		}
+			this->handleSending(sock);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/31 18:21:23 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/31 18:48:45 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ public:
 	void	handleHeader(SocketData &data, char *buff);
 	void	handleBody(SocketData &data, char *buff);
 	void	handleParsing(SocketData &data);
+	void	handleSending(Socket &sock);
 	void	getData(const int &fd, char *buff);
 	void	close(const int &fd);
 
