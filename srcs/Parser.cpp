@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/27 11:55:43 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/31 09:51:52 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,11 +230,11 @@ void	Parser::print_errpage(std::vector<Server>& servers, int i, int y)
 	if (y >= 0) {
 		if (servers.at(i).location.at(y).err_page.empty())
 			return ;
-		for (std::vector<std::vector<std::string> >::const_iterator it = servers.at(i).err_page.begin(); it != servers.at(i).err_page.end(); it++)
+		for (std::vector<std::vector<std::string> >::const_iterator it = servers.at(i).location.at(y).err_page.begin(); it != servers.at(i).location.at(y).err_page.end(); it++)
 		{
 			this->print_tabulation();
 			print(MAGENTA, "[error_page]");
-			for (std::vector<std::string>::const_iterator ite = servers.at(0).err_page.at(x).begin() ; ite != servers.at(0).err_page.at(x).end(); ite++)
+			for (std::vector<std::string>::const_iterator ite = servers.at(i).location.at(y).err_page.at(x).begin() ; ite != servers.at(i).location.at(y).err_page.at(x).end(); ite++)
 				print(BLUE, " " + *ite);
 			print(YELLOW, ";\n");
 			x++;

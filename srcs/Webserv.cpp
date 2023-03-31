@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/28 11:24:10 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/03/31 10:00:57 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Webserv::Webserv(std::string filename)
 {
 
 	this->parser.parsing(filename, this->manager.config);
+	std::cout << this->manager.config.at(0).getErrorPage("/post_test/", "504fd") << std::endl;;
 	this->manager.start();
 }
 
