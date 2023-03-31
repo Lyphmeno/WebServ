@@ -60,6 +60,8 @@ public:
         void setError(std::string code);
         
         void createAutoIndexHtmlPage(const std::string& directoryPath);
+
+        void	clear();
         
 private:
         //request line

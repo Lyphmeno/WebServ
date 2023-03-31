@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/29 04:11:12 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/31 18:32:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,19 +122,21 @@ Server	&SocketManager::findConfig(const int &fd)
 	return (this->config.at(this->configLinker.find(this->clientLinker.find(fd)->second)->second));
 }
 
-void	SocketManager::handleHeader(SocketData &data, std::string &buff)
+void	SocketManager::handleHeader(SocketData &data, char *buff)
 {
 	std::string	&header = data.req.rawHeader;
+	size_t oldSize = header.size();
 	header += buff;
 	size_t pos = header.find("\r\n\r\n");
 	if (pos != header.npos)
 	{
-		buff = header.substr(pos + 4, header.npos);
+		memmove(buff, buff + (pos - oldSize), strlen(buff) - (pos - oldSize));
+		buff[pos - oldSize] = '\0';
 		header.erase(pos + 4, header.npos);
 		data.step = PARSING;
 	}
 	else
-		buff.clear();
+		memset(buff, 0, strlen(buff));
 
 	if (data.req.rawHeader.size() > MAXHEADER)
 	{
@@ -144,18 +146,19 @@ void	SocketManager::handleHeader(SocketData &data, std::string &buff)
 	}
 }
 
-void	SocketManager::handleBody(SocketData &data, std::string &buff)
+void	SocketManager::handleBody(SocketData &data, char *buff)
 {
-	if (buff.size() + data.req.rawBody.size() <= data.bodysize)
+	if (strlen(buff) + data.req.rawBody.size() <= data.bodysize)
 	{
-		data.req.rawBody.insert(data.req.rawBody.end(), buff.begin(), buff.end());
-		buff.clear();
+		data.req.rawBody.insert(data.req.rawBody.end(), buff, buff + strlen(buff));
+		memset(buff, 0, strlen(buff));
 	}
 	else
 	{
 		size_t pos = data.bodysize - data.req.rawBody.size();
-		data.req.rawBody.insert(data.req.rawBody.end(), buff.begin(), buff.begin() + pos);
-		buff.erase(0, pos);
+		data.req.rawBody.insert(data.req.rawBody.end(), buff, buff + pos);
+		memmove(buff, buff + pos, pos);
+		buff[pos] = '\0';
 	}
 	if (data.req.rawBody.size() == data.bodysize)
 	{
@@ -187,11 +190,11 @@ void	SocketManager::handleParsing(SocketData &data)
 	}
 }
 
-void	SocketManager::getData(const int &fd, std::string buff)
+void	SocketManager::getData(const int &fd, char *buff)
 {
 	Socket &sock = this->findClient(fd);
 	SocketData &data = sock.data;
-	while (buff.size() > 0)
+	while (strlen(buff) > 0)
 	{
 		if (data.step == HEADER)
 			this->handleHeader(data, buff);

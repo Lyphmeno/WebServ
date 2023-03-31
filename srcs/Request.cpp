@@ -269,6 +269,8 @@ void ft::Request::getRequestLine(std::string line){
 */
 
 std::string ft::Request::requestStarter(){
+    std::cout << "RAW BODY" << rawBody << std::endl;
+
     responseHTTP.setCode(_code);
     if (_code == "200")
         parseRequest(responseHTTP);
@@ -288,4 +290,25 @@ size_t	ft::Request::getContentLength(void)
 	if (cit != this->_rawRequest.end())
 		std::istringstream(cit->second) >> ret;
 	return ret;
+}
+
+void	ft::Request::clear()
+{
+	rawHeader.clear();
+	rawBody.clear();
+	_rawRequest.clear();
+	_method.clear();
+	_url.clear();
+	_protocolVersion.clear();
+	_tmpLoc.clear();
+	_requestLine.clear();
+	_requestFull.clear();
+    // responseHTTP.clear();
+	//	to be checked:
+	//
+	// _indexON = 0;
+	// _root.clear();
+	// _index.clear();
+	// _autoIndexBody.clear();
+	// _autoIndex = false;
 }
