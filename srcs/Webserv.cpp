@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/31 18:19:52 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/02 19:27:58 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ Webserv::Webserv(std::string filename)
 {
 
 	this->parser.parsing(filename, this->manager.config);
-	std::cout << this->manager.config.at(0).getErrorPage("/post_test/", "504fd") << std::endl;;
+	std::cout << this->manager.config.at(0).getErrorPage("/post_test/", "504fd") << std::endl;
 	this->manager.start();
 }
 
@@ -77,7 +77,7 @@ void	Webserv::run()
 				if (bytes > 0)
 				{
 					buff[bytes] = '\0';
-					this->manager.getData(fd, buff);
+					this->manager.getData(fd, buff, bytes);
 				}
 				else
 					this->manager.close(fd);
