@@ -70,8 +70,11 @@ void ft::Request::parseHeader(){
     }
 
     getRequestLine(_requestLine);
-    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 1)
+    std::cout << "-- " << _urlLocation << std::endl;
+    if (this->_serverParsing.getMethods(_url, _method) == 1){
+        std::cout << "here" << std::endl;
         responseHTTP.setAllowedMethod(1);
+    }   
     responseHTTP.setMethod(_method);
 }
 

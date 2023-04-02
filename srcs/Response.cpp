@@ -118,19 +118,15 @@ void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
 */
 void ft::Response::handleErrors(){
     std::string pageName;
-
-    pageName = "html/errors_pages/" + _code;
-    pageName.append(".html");
-    std::ifstream ifs(pageName.c_str());
     std::string buff;
-    std::string urlTmp;
 
-    std::cout << "URL LOC" << _urlLocation << std::endl;       
-    pageName = _serverParsing.getErrorPage(_urlLocation, _code);
+    pageName = _serverParsing.getErrorPage(_url, _code);
     if (pageName != ""){
-        pageName = _serverParsing.getRoot(_urlLocation) + pageName;
+        pageName = _serverParsing.getRoot(_urlLocation) + "/" + pageName;
     }
-    std::cout << "PageName" << pageName << std::endl;
+    std::cout << pageName << std::endl;
+    std::ifstream ifs(pageName.c_str());
+    _body = "";
     while (std::getline(ifs, buff) != 0)
     {
         _body += buff;
@@ -144,9 +140,13 @@ void ft::Response::handleErrors(){
 void ft::Response::setError(std::string code)
 {
     _code = code;
+    std::cout << _code << std::endl;
     _status = _codeStatus.getStatus(code);
     _contentType = "text/html";
     handleErrors();
+
+    std::cout << "BODY = ----------\n" << _body << "\n-------------------\n";
+
 }
 
 /*
@@ -454,9 +454,11 @@ void ft::Response::buildFullResponse(){
     std::string lenght = itostring(_contentLenght);
     char* date_time = std::ctime(&now);
 
+    std::cout << _code << std::endl;
     if (_code != "200")
         setError(_code);
     
+
     full = _protVersion + " " + _code + " " + _status;
     full += "\n";
     full += "Date: ";

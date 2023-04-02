@@ -157,7 +157,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 		{
 			i = 0;
 			if (this->err_page.empty())
-				return ("");
+				return (NULL);
 			for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
 			{
 				if ((*it).empty())
@@ -171,7 +171,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 		for (std::vector<std::vector<std::string> >::const_iterator it = this->location.at(this->getLoc(path)).err_page.begin(); it != this->location.at(this->getLoc(path)).err_page.end(); it++)
 		{
 			if ((*it).empty())
-				return ("");
+				return (NULL);
 			for (std::vector<std::string>::const_iterator ite = this->location.at(this->getLoc(path)).err_page.at(i).begin(); ite != this->location.at(this->getLoc(path)).err_page.at(i).end(); ite++)
 				if (!err.compare(*ite))
 					return (this->location.at(this->getLoc(path)).err_page.at(i).back());
@@ -183,7 +183,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 		for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
 		{
 			if ((*it).empty())
-				return ("");
+				return (NULL);
 			for (std::vector<std::string>::const_iterator ite = this->err_page.at(i).begin(); ite != this->err_page.at(i).end(); ite++)
 				if (!err.compare(*ite))
 					return (this->err_page.at(i).back());
@@ -192,6 +192,7 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 		return ("");
 	}
 }
+
 
 std::vector<std::string>	Server::getIndex(std::string path)
 {
