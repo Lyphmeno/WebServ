@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/02 19:55:16 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/02 20:15:59 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ void	SocketManager::handleBody(SocketData &data, char *buff, ssize_t &bytes)
 	{
 		data.req.rawBody.insert(data.req.rawBody.end(), buff, buff + strlen(buff));
 		memset(buff, 0, strlen(buff));
+		bytes = 0;
 	}
 	else
 	{
