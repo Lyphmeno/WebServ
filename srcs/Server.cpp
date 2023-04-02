@@ -138,15 +138,17 @@ std::string	Server::getErrorPage(std::string path, std::string err)
 	int	i = 0;
 	if (this->getLoc(path) < 0)
 	{
-		if (this->err_page.empty())
+		if (this->err_page.empty()){
 			return ("");
+		}
 		for (std::vector<std::vector<std::string> >::const_iterator it = this->err_page.begin(); it != this->err_page.end(); it++)
 		{
 			if ((*it).empty())
 				return ("");
 			for (std::vector<std::string>::const_iterator ite = this->err_page.at(i).begin(); ite != this->err_page.at(i).end(); ite++)
-				if (!err.compare(*ite))
+				if (!err.compare(*ite)){
 					return (this->err_page.at(i).back());
+				}
 			i++;
 		}
 		return ("");

@@ -120,11 +120,16 @@ void ft::Response::handleErrors(){
     std::string pageName;
     std::string buff;
 
-    pageName = _serverParsing.getErrorPage(_url, _code);
-    if (pageName != ""){
+    if (_urlLocation != ""){
+        pageName = _serverParsing.getErrorPage(_urlLocation, _code);
         pageName = _serverParsing.getRoot(_urlLocation) + "/" + pageName;
     }
-    std::cout << pageName << std::endl;
+    else{
+        pageName = _serverParsing.getErrorPage(_url, _code);
+        pageName = _serverParsing.getRoot(_url) + "/" + pageName;
+
+    }
+    std::cout << "PageName - " << pageName << std::endl;
     std::ifstream ifs(pageName.c_str());
     _body = "";
     while (std::getline(ifs, buff) != 0)
@@ -140,13 +145,9 @@ void ft::Response::handleErrors(){
 void ft::Response::setError(std::string code)
 {
     _code = code;
-    std::cout << _code << std::endl;
     _status = _codeStatus.getStatus(code);
     _contentType = "text/html";
     handleErrors();
-
-    std::cout << "BODY = ----------\n" << _body << "\n-------------------\n";
-
 }
 
 /*
@@ -158,7 +159,6 @@ const std::string & ft::Response::addContentType(void){
     
     size_t found = _url.find(".");
     extension.insert(0, _url, found + 1);
-    std::cout << extension << std::endl;
     return (_Mime.getType(extension));
 }
 
@@ -250,11 +250,11 @@ void ft::Response::urlencoded(void){
     }
     _formValues[token] = std::string(_rawBody.begin(), _rawBody.end());
 
-    std::map<std::string ,std::string>::iterator it;
-    for( it=_formValues.begin();it !=_formValues.end();++it)
-    {
-       std::cout << it->first << ' ' <<it->second << std::endl;
-    }
+    // std::map<std::string ,std::string>::iterator it;
+    // for( it=_formValues.begin();it !=_formValues.end();++it)
+    // {
+    //    std::cout << it->first << ' ' <<it->second << std::endl;
+    // }
 
 }
 
@@ -289,7 +289,6 @@ void ft::Response::initPostStruct(std::vector<unsigned char> fullBody){
                 }
             }
             _multipartForm[token].name = token;
-            std::cout << token << " = "   <<  _multipartForm[token].name << std::endl;
             tmpName = token;
         }
     }
@@ -383,7 +382,6 @@ void ft::Response::postM(const std::string & url){
     else
         enctype = _rawResponse["Content-Type"];
 
-    std::cout << "enctype = " << enctype << std::endl;
     fPtr enc[3] = {
         &ft::Response::urlencoded,
         &ft::Response::multi,
@@ -454,7 +452,6 @@ void ft::Response::buildFullResponse(){
     std::string lenght = itostring(_contentLenght);
     char* date_time = std::ctime(&now);
 
-    std::cout << _code << std::endl;
     if (_code != "200")
         setError(_code);
     
@@ -469,8 +466,6 @@ void ft::Response::buildFullResponse(){
     full += "\n\n";
     full += _body;
 
-    std::cout << _url << std::endl;
     _responseFull = full;
-    std::cout << "FULL RESPONSE = " << _responseFull << std::endl;
 
 }

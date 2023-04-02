@@ -49,7 +49,7 @@ void ft::Request::parseHeader(){
     size_t pos = 0;
     std::string token;
 
-    std::cout << rawHeader << std::endl;
+    // std::cout << rawHeader << std::endl;
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -65,14 +65,11 @@ void ft::Request::parseHeader(){
         }
         newbuffer.erase(0, pos + 1);
         token.erase(0, 1);
-        // std::cout << token << " = " << value << std::endl;
         _rawRequest[token] = value;
     }
 
     getRequestLine(_requestLine);
-    std::cout << "-- " << _urlLocation << std::endl;
     if (this->_serverParsing.getMethods(_url, _method) == 1){
-        std::cout << "here" << std::endl;
         responseHTTP.setAllowedMethod(1);
     }   
     responseHTTP.setMethod(_method);
