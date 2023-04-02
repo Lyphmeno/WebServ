@@ -118,15 +118,12 @@ void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
 */
 void ft::Response::handleErrors(){
     std::string pageName;
+
+    pageName = "html/errors_pages/" + _code;
+    pageName.append(".html");
+    std::ifstream ifs(pageName.c_str());
     std::string buff;
 
-    pageName = _serverParsing.getErrorPage(_url, _code);
-    if (pageName != ""){
-        pageName = _serverParsing.getRoot(_urlLocation) + "/" + pageName;
-    }
-    std::cout << pageName << std::endl;
-    std::ifstream ifs(pageName.c_str());
-    _body = "";
     while (std::getline(ifs, buff) != 0)
     {
         _body += buff;

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/23 14:23:40 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/03/31 19:43:38 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@
 #define MAXEVENTS 128
 #define MAXQUEU 128
 #define MAXHEADER 8192
-#define MAXBODY 1048576
-#define MAXBUFF 2
+#define MAXBUFF 1
 
 #define NOTFD 0
 #define CLI 1
@@ -71,10 +70,11 @@ public:
 	bool	isServer(const int &fd) const;
 	Socket	&findClient(const int &fd);
 	Server	&findConfig(const int &fd);
-	void	handleHeader(SocketData &data, std::string &buff);
-	void	handleBody(SocketData &data, std::string &buff);
+	void	handleHeader(SocketData &data, char *buff);
+	void	handleBody(SocketData &data, char *buff);
 	void	handleParsing(SocketData &data);
-	void	getData(const int &fd, std::string buff);
+	void	handleSending(Socket &sock);
+	void	getData(const int &fd, char *buff);
 	void	close(const int &fd);
 
 private:
