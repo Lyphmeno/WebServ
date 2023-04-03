@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/03 15:14:14 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:33:07 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void	SocketManager::handleHeader(SocketData &data, char *buff, ssize_t &bytes)
 	}
 	else
 	{
-		memset(buff, 0, strlen(buff));
+		memset(buff, 0, bytes);
 		bytes = 0;
 	}
 
@@ -154,8 +154,8 @@ void	SocketManager::handleBody(SocketData &data, char *buff, ssize_t &bytes)
 {
 	if (bytes + data.req.rawBody.size() <= data.bodysize)
 	{
-		data.req.rawBody.insert(data.req.rawBody.end(), buff, buff + strlen(buff));
-		memset(buff, 0, strlen(buff));
+		data.req.rawBody.insert(data.req.rawBody.end(), buff, buff + bytes);
+		memset(buff, 0, bytes);
 		bytes = 0;
 	}
 	else
