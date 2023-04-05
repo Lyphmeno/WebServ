@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/02 19:27:58 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/05 07:26:17 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,12 @@ void	Webserv::run()
 			}
 			else
 			{
-				char buff[MAXBUFF + 1];
-				ssize_t bytes = recv(fd, buff, MAXBUFF, 0);
+				std::vector<unsigned char>	buff(MAXBUFF);
+				ssize_t bytes = recv(fd, &buff[0], MAXBUFF, 0);
 				if (bytes > 0)
 				{
-					buff[bytes] = '\0';
-					this->manager.getData(fd, buff, bytes);
+					buff.resize(bytes);
+					this->manager.getData(fd, buff);
 				}
 				else
 					this->manager.close(fd);
