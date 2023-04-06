@@ -171,7 +171,6 @@ void	SocketManager::handleBody(SocketData &data, char *buff, ssize_t &bytes)
 		data.rep = data.req.requestStarter();
 		data.step = SENDING;
 	}
-	std::cout << data.req.rawBody.size() << " " <<  data.bodysize << std::endl;
 }
 
 void	SocketManager::handleParsing(SocketData &data)

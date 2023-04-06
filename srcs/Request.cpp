@@ -49,7 +49,6 @@ void ft::Request::parseHeader(){
     size_t pos = 0;
     std::string token;
 
-    // std::cout << rawHeader << std::endl;
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -91,10 +90,6 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(){
-    std::cout << "RAW BODY - ";
-    for (size_t i = 0; i < rawBody.size(); ++i) {
-        std::cout << rawBody[i];
-    }
 
     responseHTTP.setCode(_code);
     if (_code == "200")

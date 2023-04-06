@@ -223,7 +223,8 @@ void ft::Response::getM(const std::string & url){
             _body += buff;
             _body += "\n";
         }
-        _body.erase(_body.size() - 1,1);
+        if (_body != "")
+            _body.erase(_body.size() - 1,1);
     }
 }
 
@@ -249,13 +250,6 @@ void ft::Response::urlencoded(void){
         }
     }
     _formValues[token] = std::string(_rawBody.begin(), _rawBody.end());
-
-    // std::map<std::string ,std::string>::iterator it;
-    // for( it=_formValues.begin();it !=_formValues.end();++it)
-    // {
-    //    std::cout << it->first << ' ' <<it->second << std::endl;
-    // }
-
 }
 
 void ft::Response::initPostStruct(std::vector<unsigned char> fullBody){
