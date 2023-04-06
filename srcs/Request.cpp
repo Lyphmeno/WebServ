@@ -277,10 +277,3 @@ size_t	ft::Request::getContentLength(void)
 		std::istringstream(cit->second) >> ret;
 	return ret;
 }
-
-void	ft::Request::clear()
-{
-	this->rawHeader.clear();
-	this->rawBody.clear();
-	this->_code.clear();
-}

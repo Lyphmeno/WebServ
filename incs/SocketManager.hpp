@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/02 19:55:23 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/05 07:23:47 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,11 @@ public:
 	bool	isServer(const int &fd) const;
 	Socket	&findClient(const int &fd);
 	Server	&findConfig(const int &fd);
-	void	handleHeader(SocketData &data, char *buff, ssize_t &bytes);
-	void	handleBody(SocketData &data, char *buff, ssize_t &bytes);
+	void	handleHeader(SocketData &data, std::vector<unsigned char> &buff);
+	void	handleBody(SocketData &data, std::vector<unsigned char> &buff);
 	void	handleParsing(SocketData &data);
 	void	handleSending(Socket &sock);
-	void	getData(const int &fd, char *buff, ssize_t bytes);
+	void	getData(const int &fd, std::vector<unsigned char> &buff);
 	void	close(const int &fd);
 
 private:
