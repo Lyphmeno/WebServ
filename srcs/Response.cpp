@@ -120,6 +120,7 @@ void ft::Response::handleErrors(){
     std::string pageName;
     std::string buff;
 
+    std::cout << _urlLocation << std::endl;
     if (_urlLocation != ""){
         pageName = _serverParsing.getErrorPage(_urlLocation, _code);
         pageName = _serverParsing.getRoot(_urlLocation) + "/" + pageName;
@@ -454,9 +455,12 @@ void ft::Response::buildFullResponse(){
     full += "\n";
     full += "Date: ";
     full += date_time;
-    full += "Content-type: " + _contentType;
-    full += "\nConnection: close";
-    full += "\nContent-Lenght: " + itostring(_body.size()); 
+    if (_method != "POST"){
+        full += "Content-type: " + _contentType;
+        full += "\nContent-Lenght: " + itostring(_body.size());
+        full += "\n";
+    }
+    full += "Connection: close";
     full += "\n\n";
     full += _body;
 

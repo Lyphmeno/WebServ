@@ -136,6 +136,7 @@ std::string	Server::getRoot(std::string path)
 std::string	Server::getErrorPage(std::string path, std::string err)
 {
 	int	i = 0;
+	std::cout << path << std::endl;
 	if (this->getLoc(path) < 0)
 	{
 		if (this->err_page.empty()){
