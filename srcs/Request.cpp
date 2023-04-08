@@ -274,11 +274,43 @@ std::string ft::Request::getCorrectUrl(void){
     return ("200");
 }
 
-size_t	ft::Request::getContentLength(void)
+size_t	ft::Request::getContentLength(void) const
 {
 	size_t ret = 0;
 	std::map<std::string, std::string>::const_iterator cit = this->_rawRequest.find("Content-Length");
 	if (cit != this->_rawRequest.end())
 		std::istringstream(cit->second) >> ret;
 	return ret;
+}
+
+void    ft::Request::addToEnvFromRequest(std::map<std::string, std::string> &env,
+const std::string &name, const std::string &content)
+{
+
+    std::string requestContent;
+    if (content.size() != 0)
+        requestContent = getElementsHeader(content);
+    if (requestContent.size() != 0)
+        env.insert(env.begin(), std::map<std::string, std::string>::value_type(name, requestContent));
+}
+
+void    ft::Request::addToEnv(std::map<std::string, std::string> &env,
+const std::string &name, const std::string &content)
+{
+    if (content.size() != 0)
+        env.insert(env.begin(), std::map<std::string, std::string>::value_type(name, content));
+}
+
+char    **ft::Request::createEnv()
+{
+    std::map<std::string, std::string>  env;
+    this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
+    this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
+    this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
+    //path translated
+    //querry string
+}
+
+void    ft::Request::execCgi()
+{
 }

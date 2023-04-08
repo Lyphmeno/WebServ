@@ -54,8 +54,13 @@ public:
 	std::string checkIndexVector(std::vector<std::string> Index);
 
 	// add by avarnier
-	size_t	getContentLength(void);
-	void	clear();
+	size_t	getContentLength(void) const;
+	void    addToEnvFromRequest(std::map<std::string, std::string> &env,
+	const std::string &name, const std::string &elem);
+	void	addToEnv(std::map<std::string, std::string> &env,
+	const std::string &name, const std::string &content);
+	char	**createEnv();
+	void	execCgi();
 
 	std::string 				rawHeader;
 	std::vector<unsigned char>	rawBody;
