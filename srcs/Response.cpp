@@ -118,25 +118,38 @@ void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
 */
 void ft::Response::handleErrors(){
     std::string pageName;
+    std::string retErrorPage;
     std::string buff;
 
-    std::cout << _urlLocation << std::endl;
+
     if (_urlLocation != ""){
-        pageName = _serverParsing.getErrorPage(_urlLocation, _code);
-        pageName = _serverParsing.getRoot(_urlLocation) + "/" + pageName;
+        retErrorPage = _serverParsing.getErrorPage(_urlLocation, _code);
+        if (retErrorPage != "")
+            pageName = _serverParsing.getRoot(_urlLocation) + "/" + retErrorPage;
     }
     else{
-        pageName = _serverParsing.getErrorPage(_url, _code);
-        pageName = _serverParsing.getRoot(_url) + "/" + pageName;
-
+        retErrorPage = _serverParsing.getErrorPage(_url, _code);
+        if (retErrorPage != "")
+            pageName = _serverParsing.getRoot(_url) + "/" + retErrorPage;
     }
-    std::cout << "PageName - " << pageName << std::endl;
-    std::ifstream ifs(pageName.c_str());
-    _body = "";
-    while (std::getline(ifs, buff) != 0)
-    {
-        _body += buff;
-        _body += "\n";
+    if (retErrorPage == ""){
+        _body = "";
+        _body +=  "<!DOCTYPE html>\n";
+        _body += "<html>\n";
+        _body += "      <head><title>Default Error Page</title></head>\n";
+        _body += "      <head><title>"+  _code + " " + _codeStatus.getStatus(_code) + "</title></head>\n";
+        _body += "      <center><h1>" + _code + " " + _codeStatus.getStatus(_code) + "</h1></center>\n";
+        _body += "  </body>\n";
+        _body += "</html>\n";
+    }
+    else{
+        std::ifstream ifs(pageName.c_str());
+        _body = "";
+        while (std::getline(ifs, buff) != 0)
+        {
+            _body += buff;
+            _body += "\n";
+        }
     }
 }
 
@@ -149,6 +162,7 @@ void ft::Response::setError(std::string code)
     _status = _codeStatus.getStatus(code);
     _contentType = "text/html";
     handleErrors();
+
 }
 
 /*

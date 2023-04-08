@@ -70,7 +70,9 @@ void ft::Request::parseHeader(){
     getRequestLine(_requestLine);
     if (this->_serverParsing.getMethods(_url, _method) == 1){
         responseHTTP.setAllowedMethod(1);
-    }   
+    }
+    else
+        _code = "405";
     responseHTTP.setMethod(_method);
 }
 
@@ -91,6 +93,8 @@ void ft::Request::getRequestLine(std::string line){
 
 std::string ft::Request::requestStarter(){
 
+    responseHTTP.setServerParsing(_serverParsing);
+
     responseHTTP.setCode(_code);
     if (_code == "200")
         parseRequest(responseHTTP);
@@ -103,7 +107,6 @@ std::string ft::Request::requestStarter(){
 
 
 void ft::Request::parseRequest(ft::Response &response){
-    response.setServerParsing(_serverParsing);
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
     response.setAutoIndex(_autoIndex);
