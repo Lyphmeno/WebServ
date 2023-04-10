@@ -274,6 +274,7 @@ std::string ft::Request::getCorrectUrl(void){
     return ("200");
 }
 
+//avarnier
 size_t	ft::Request::getContentLength(void) const
 {
 	size_t ret = 0;
@@ -290,8 +291,7 @@ const std::string &name, const std::string &content)
     std::string requestContent;
     if (content.size() != 0)
         requestContent = getElementsHeader(content);
-    if (requestContent.size() != 0)
-        env.insert(env.begin(), std::map<std::string, std::string>::value_type(name, requestContent));
+    this->addToEnv(env, name, requestContent);
 }
 
 void    ft::Request::addToEnv(std::map<std::string, std::string> &env,
@@ -301,7 +301,17 @@ const std::string &name, const std::string &content)
         env.insert(env.begin(), std::map<std::string, std::string>::value_type(name, content));
 }
 
-char    **ft::Request::createEnv()
+void    ft::Request::addToEnvAddr(std::map<std::string, std::string> &env, const int &fd)
+{
+    sockaddr_in addr;
+    socklen_t   addrlen = 0;
+    getsockname(fd, reinterpret_cast<sockaddr *>(&addr), &addrlen);
+    std::string addr_string = inet_ntoa(addr.sin_addr);
+    this->addToEnv(env, "REMOTE_ADDR", addr_string);
+}
+
+void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
+const int &fd, const std::string &scriptName)
 {
     std::map<std::string, std::string>  env;
     this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
@@ -309,8 +319,61 @@ char    **ft::Request::createEnv()
     this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
     //path translated
     //querry string
+    this->addToEnvAddr(env, fd);
+    this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
+    this->addToEnv(env, "SCRIPT_NAME", scriptName);
+    this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
+    this->addToEnv(env, "SERVER_PORT", this->_serverParsing.getServerPort());
+    this->addToEnv(env, "SERVER_PROTOCOL", "HTTP/1.1");
+    this->addToEnv(env, "SERVER_SOFTWARE", "WEBSERV/1.0");
 }
 
-void    ft::Request::execCgi()
+char    **createC_Env(std::map<std::string, std::string> &env)
 {
+    size_t size = env.size() +1;
+    char **c_env = new char*[size];
+    if (c_env == NULL)
+        return (NULL);
+    std::map<std::string, std::string>::const_iterator it = env.begin();
+    for (size_t x = 0; x < size; x++, it++)
+    {
+        c_env[x] = new char[it->second.size() + 1];
+        if (c_env[x] == NULL)
+        {
+            delete [] c_env;
+            return (NULL);
+        }
+        strcpy(c_env[x], it->second.c_str());
+    }
+    c_env[size] = NULL;
+    return (c_env);
+}
+
+std::string ft::Request::execCgi(const int &fd, const std::string &scriptName)
+{
+    std::map<std::string, std::string>  env;
+    this->fillEnv(env, fd, scriptName);
+    char **c_env = createC_Env(env);
+    if (c_env == NULL)
+        return (std::string());
+
+    std::streambuf *backup = std::cout.rdbuf();
+    std::stringstream buffer;
+    std::streambuf *redir = std::cout.rdbuf(buffer.rdbuf());
+
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        if (execve(scriptName.c_str(), NULL, c_env) == -1)
+        {
+            delete [] c_env;
+            return (std::string());
+        }
+    }
+    else
+        waitpid(-1, NULL, 0);
+
+    std::string response = buffer.str();
+    std::cout.rdbuf(backup);
+    return (response);
 }

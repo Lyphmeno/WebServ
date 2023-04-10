@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "Parser.hpp"
 #include "Response.hpp"
@@ -53,14 +56,17 @@ public:
 	std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
 	std::string checkIndexVector(std::vector<std::string> Index);
 
-	// add by avarnier
-	size_t	getContentLength(void) const;
-	void    addToEnvFromRequest(std::map<std::string, std::string> &env,
-	const std::string &name, const std::string &elem);
-	void	addToEnv(std::map<std::string, std::string> &env,
-	const std::string &name, const std::string &content);
-	char	**createEnv();
-	void	execCgi();
+	//avarnier
+	size_t		getContentLength(void) const;
+	void    	addToEnvFromRequest(std::map<std::string, std::string> &env,
+				const std::string &name, const std::string &elem);
+	void		addToEnv(std::map<std::string, std::string> &env,
+				const std::string &name, const std::string &content);
+	void    	addToEnvAddr(std::map<std::string, std::string> &env, const int &fd);
+	void		fillEnv(std::map<std::string, std::string> &env,
+				const int &fd, const std::string &scriptName);
+	char    	**createC_Env(std::map<std::string, std::string> &env);
+	std::string	execCgi(const int &fd, const std::string &scriptName);
 
 	std::string 				rawHeader;
 	std::vector<unsigned char>	rawBody;

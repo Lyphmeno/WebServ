@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/31 09:59:09 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/04/10 04:03:12 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,24 @@ std::vector<std::string>	Server::getIndex(std::string path)
 	return (std::vector<std::string>());
 }
 
+//avarnier
+//return server name (the first one) or hostnumber if it does not exist
+std::string	Server::getServerName()
+{
+	if (this->server_names.size() == 0)
+		return (std::string(inet_ntoa(this->addr.sin_addr)));
+	else
+		return (server_names[1]);
+}
+
+std::string	Server::getServerPort()
+{
+	std::string	port;
+	std::stringstream ss;
+	ss << htons(this->addr.sin_port);
+	ss >> port;
+	return (port);
+}
 
 /////////////////////////////
 // Setters                 //

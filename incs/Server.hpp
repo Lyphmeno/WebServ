@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/28 11:14:22 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/04/10 04:03:13 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,9 @@ public:
 	std::string					getRoot(std::string);
 	std::string					getErrorPage(std::string, std::string);
 	std::vector<std::string>	getIndex(std::string);
+	//avarnier
+	std::string					getServerName();
+	std::string					getServerPort();
 	// Setters //
 	// Methods //
 	// Exceptions //
