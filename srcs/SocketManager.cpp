@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/05 07:31:25 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/10 19:44:51 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,9 @@ Server	&SocketManager::findConfig(const int &fd)
 	return (this->config.at(this->configLinker.find(this->clientLinker.find(fd)->second)->second));
 }
 
-void	SocketManager::handleHeader(SocketData &data, std::vector<unsigned char> &buff)
+void	SocketManager::handleHeader(Socket &sock, std::vector<unsigned char> &buff)
 {
+	SocketData &data = sock.data;
 	std::string	&header = data.req.rawHeader;
 	size_t oldsize = header.size();
 	header.insert(header.end(), buff.begin(), buff.end());
@@ -140,13 +141,14 @@ void	SocketManager::handleHeader(SocketData &data, std::vector<unsigned char> &b
 	if (data.req.rawHeader.size() > MAXHEADER)
 	{
 		data.req._code = "431";
-		data.rep = data.req.requestStarter();
+		data.rep = data.req.requestStarter(sock.fd);
 		data.step = SENDING;
 	}
 }
 
-void	SocketManager::handleBody(SocketData &data, std::vector<unsigned char> &buff)
+void	SocketManager::handleBody(Socket &sock, std::vector<unsigned char> &buff)
 {
+	SocketData &data = sock.data;
 	if (buff.size() + data.req.rawBody.size() <= data.bodysize)
 	{
 		data.req.rawBody.insert(data.req.rawBody.end(), buff.begin(), buff.end());
@@ -160,13 +162,14 @@ void	SocketManager::handleBody(SocketData &data, std::vector<unsigned char> &buf
 	}
 	if (data.req.rawBody.size() == data.bodysize)
 	{
-		data.rep = data.req.requestStarter();
+		data.rep = data.req.requestStarter(sock.fd);
 		data.step = SENDING;
 	}
 }
 
-void	SocketManager::handleParsing(SocketData &data)
+void	SocketManager::handleParsing(Socket &sock)
 {
+	SocketData &data = sock.data;
 	data.req.parseHeader();
 	data.bodysize = data.req.getContentLength();
 
@@ -175,7 +178,7 @@ void	SocketManager::handleParsing(SocketData &data)
 		if (data.bodysize > data.req._serverParsing.getMCBS(data.req.getUrl()))
 		{
 			data.req._code = "413";
-			data.rep = data.req.requestStarter();
+			data.rep = data.req.requestStarter(sock.fd);
 			data.step = SENDING;
 		}
 		else
@@ -183,7 +186,7 @@ void	SocketManager::handleParsing(SocketData &data)
 	}
 	else
 	{
-		data.rep = data.req.requestStarter();
+		data.rep = data.req.requestStarter(sock.fd);
 		data.step = SENDING;
 	}
 }
@@ -201,11 +204,11 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 	while (buff.size() > 0)
 	{
 		if (data.step == HEADER)
-			this->handleHeader(data, buff);
+			this->handleHeader(sock, buff);
 		if (data.step == PARSING)
-			this->handleParsing(data);
+			this->handleParsing(sock);
 		if (data.step == BODY)
-			this->handleBody(data, buff);
+			this->handleBody(sock, buff);
 		if (data.step == SENDING)
 			this->handleSending(sock);
 	}

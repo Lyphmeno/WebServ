@@ -90,18 +90,18 @@ void ft::Request::getRequestLine(std::string line){
 	_code = getCorrectUrl();
 }
 
-std::string ft::Request::requestStarter(){
-    std::cout << "RAW BODY - ";
-    for (size_t i = 0; i < rawBody.size(); ++i) {
-        std::cout << rawBody[i];
-    }
+std::string ft::Request::requestStarter(const int &fd){
+    // for (size_t i = 0; i < rawBody.size(); ++i) {
+    //     std::cout << rawBody[i];
+    // }
 
-    responseHTTP.setCode(_code);
-    if (_code == "200")
-        parseRequest(responseHTTP);
+    // responseHTTP.setCode(_code);
+    // if (_code == "200")
+    //     parseRequest(responseHTTP);
 
-    responseHTTP.buildFullResponse();
-    std::string responseR = responseHTTP.getFullResponse(); 
+    // responseHTTP.buildFullResponse();
+    // std::string responseR = responseHTTP.getFullResponse(); 
+    std::string responseR = execCgi(fd, "scriptname");
     return responseR;
 }
 
@@ -313,7 +313,6 @@ void    ft::Request::addToEnvAddr(std::map<std::string, std::string> &env, const
 void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
 const int &fd, const std::string &scriptName)
 {
-    std::map<std::string, std::string>  env;
     this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
     this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
     this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
@@ -328,10 +327,10 @@ const int &fd, const std::string &scriptName)
     this->addToEnv(env, "SERVER_SOFTWARE", "WEBSERV/1.0");
 }
 
-char    **createC_Env(std::map<std::string, std::string> &env)
+char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
 {
-    size_t size = env.size() +1;
-    char **c_env = new char*[size];
+    size_t size = env.size();
+    char **c_env = new char*[size + 1];
     if (c_env == NULL)
         return (NULL);
     std::map<std::string, std::string>::const_iterator it = env.begin();
@@ -353,22 +352,24 @@ std::string ft::Request::execCgi(const int &fd, const std::string &scriptName)
 {
     std::map<std::string, std::string>  env;
     this->fillEnv(env, fd, scriptName);
-    char **c_env = createC_Env(env);
+    char **c_env = allocEnv(env);
     if (c_env == NULL)
         return (std::string());
 
     std::streambuf *backup = std::cout.rdbuf();
     std::stringstream buffer;
-    std::streambuf *redir = std::cout.rdbuf(buffer.rdbuf());
+//  std::streambuf *redir = std::cout.rdbuf(buffer.rdbuf());
 
     pid_t pid = fork();
     if (pid == 0)
     {
-        if (execve(scriptName.c_str(), NULL, c_env) == -1)
-        {
-            delete [] c_env;
-            return (std::string());
-        }
+        for (size_t x = 0; c_env[x] != NULL; x++)
+            std::cout << c_env << '\n';
+        // if (execve(scriptName.c_str(), NULL, c_env) == -1)
+        // {
+        //     delete [] c_env;
+        //     return (std::string());
+        // }
     }
     else
         waitpid(-1, NULL, 0);

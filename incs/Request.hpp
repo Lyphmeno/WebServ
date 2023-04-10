@@ -41,7 +41,7 @@ public:
 	std::string getRequestLine(void);
 	std::string  getElementsHeader(std::string element);
 
-	std::string requestStarter();
+	std::string requestStarter(const int &fd);
 
 	void parseHeader(void);
 	void parseRequest(ft::Response &reponse);
@@ -65,7 +65,7 @@ public:
 	void    	addToEnvAddr(std::map<std::string, std::string> &env, const int &fd);
 	void		fillEnv(std::map<std::string, std::string> &env,
 				const int &fd, const std::string &scriptName);
-	char    	**createC_Env(std::map<std::string, std::string> &env);
+	char    	**allocEnv(std::map<std::string, std::string> &env);
 	std::string	execCgi(const int &fd, const std::string &scriptName);
 
 	std::string 				rawHeader;
