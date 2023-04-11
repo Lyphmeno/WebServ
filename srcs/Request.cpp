@@ -49,7 +49,6 @@ void ft::Request::parseHeader(){
     size_t pos = 0;
     std::string token;
 
-    std::cout << rawHeader << std::endl;
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -65,13 +64,15 @@ void ft::Request::parseHeader(){
         }
         newbuffer.erase(0, pos + 1);
         token.erase(0, 1);
-        // std::cout << token << " = " << value << std::endl;
         _rawRequest[token] = value;
     }
 
     getRequestLine(_requestLine);
-    if (this->_serverParsing.getMethods(_tmpLoc, _method) == 1)
+    if (this->_serverParsing.getMethods(_url, _method) == 1){
         responseHTTP.setAllowedMethod(1);
+    }
+    else
+        _code = "405";
     responseHTTP.setMethod(_method);
 }
 
@@ -91,24 +92,23 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(const int &fd){
-    // for (size_t i = 0; i < rawBody.size(); ++i) {
-    //     std::cout << rawBody[i];
-    // }
 
-    // responseHTTP.setCode(_code);
-    // if (_code == "200")
-    //     parseRequest(responseHTTP);
+    responseHTTP.setServerParsing(_serverParsing);
 
-    // responseHTTP.buildFullResponse();
-    // std::string responseR = responseHTTP.getFullResponse(); 
-    std::string responseR = execCgi(fd, "scriptname");
+    responseHTTP.setCode(_code);
+    if (_code == "200")
+        parseRequest(responseHTTP);
+
+    responseHTTP.buildFullResponse();
+    std::string responseR = responseHTTP.getFullResponse(); 
+    std::string test = execCgi(fd, "scriptname");
+//  std::cout << test << std::endl;
     return responseR;
 }
 
 
 
 void ft::Request::parseRequest(ft::Response &response){
-    response.setServerParsing(_serverParsing);
     response.setRawResponse(_rawRequest);
     response.setRawBody(rawBody);
     response.setAutoIndex(_autoIndex);
@@ -348,33 +348,59 @@ char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
     return (c_env);
 }
 
+void    ft::Request::getResponse(const int &fd, std::string &response)
+{
+        std::vector<unsigned char>  buffer(1);
+        while (buffer.size() > 0)
+        {
+            buffer.clear();
+            buffer.resize(CGI_BUFFER);
+            int bytes = read(fd, &buffer[0], CGI_BUFFER);
+            std::cerr << bytes << '\n';
+            buffer.resize(bytes);
+            response.insert(response.end(), buffer.begin(), buffer.end());
+        }
+}
+
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName)
 {
-    std::map<std::string, std::string>  env;
-    this->fillEnv(env, fd, scriptName);
-    char **c_env = allocEnv(env);
-    if (c_env == NULL)
-        return (std::string());
-
-    std::streambuf *backup = std::cout.rdbuf();
-    std::stringstream buffer;
-//  std::streambuf *redir = std::cout.rdbuf(buffer.rdbuf());
+    int         backup = dup(STDOUT_FILENO);
+    FILE        *outFile = tmpfile();
+    int         outFd = fileno(outFile);
+    std::string response;
 
     pid_t pid = fork();
+    if (pid == -1)
+        return (std::string());
     if (pid == 0)
     {
+        char **c_env;
+        try
+        {
+            std::map<std::string, std::string>  env;
+            this->fillEnv(env, fd, scriptName);
+            c_env = allocEnv(env);
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << "Child: " << e.what() << std::endl;
+        }
+        dup2(outFd, STDOUT_FILENO);
         for (size_t x = 0; c_env[x] != NULL; x++)
-            std::cout << c_env << '\n';
-        // if (execve(scriptName.c_str(), NULL, c_env) == -1)
-        // {
-        //     delete [] c_env;
-        //     return (std::string());
-        // }
+            std::cout << c_env[x] << '\n';
+        //execve(scriptName.c_str(), NULL, c_env);
+        delete [] c_env;
     }
     else
+    {
         waitpid(-1, NULL, 0);
-
-    std::string response = buffer.str();
-    std::cout.rdbuf(backup);
+        lseek(outFd, 0, SEEK_SET);
+        this->getResponse(outFd, response);
+    }
+    dup2(backup, STDOUT_FILENO);
+    fclose(outFile);
+    close(outFd);
+    if (pid == 0)
+        exit(0);
     return (response);
 }

@@ -16,6 +16,7 @@
 #define GET 1
 #define POST 2
 #define DELETE 3
+#define CGI_BUFFER 1024
 
 namespace ft{
 
@@ -66,6 +67,7 @@ public:
 	void		fillEnv(std::map<std::string, std::string> &env,
 				const int &fd, const std::string &scriptName);
 	char    	**allocEnv(std::map<std::string, std::string> &env);
+	void		getResponse(const int &fd, std::string &response);
 	std::string	execCgi(const int &fd, const std::string &scriptName);
 
 	std::string 				rawHeader;

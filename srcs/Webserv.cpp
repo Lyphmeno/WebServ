@@ -21,6 +21,9 @@
 #include "../incs/Request.hpp"
 #include <fcntl.h>
 
+#include <vector>
+#include <iomanip>
+
 namespace ft {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +34,6 @@ Webserv::Webserv(std::string filename)
 {
 
 	this->parser.parsing(filename, this->manager.config);
-	std::cout << this->manager.config.at(0).getErrorPage("/post_test/", "504fd") << std::endl;
 	this->manager.start();
 }
 

@@ -118,23 +118,38 @@ void ft::Response::setRawResponse(std::map<std::string, std::string> rr){
 */
 void ft::Response::handleErrors(){
     std::string pageName;
-
-    pageName = "html/errors_pages/" + _code;
-    pageName.append(".html");
-    std::ifstream ifs(pageName.c_str());
+    std::string retErrorPage;
     std::string buff;
-    std::string urlTmp;
 
-    std::cout << "URL LOC" << _urlLocation << std::endl;       
-    pageName = _serverParsing.getErrorPage(_urlLocation, _code);
-    if (pageName != ""){
-        pageName = _serverParsing.getRoot(_urlLocation) + pageName;
+
+    if (_urlLocation != ""){
+        retErrorPage = _serverParsing.getErrorPage(_urlLocation, _code);
+        if (retErrorPage != "")
+            pageName = _serverParsing.getRoot(_urlLocation) + "/" + retErrorPage;
     }
-    std::cout << "PageName" << pageName << std::endl;
-    while (std::getline(ifs, buff) != 0)
-    {
-        _body += buff;
-        _body += "\n";
+    else{
+        retErrorPage = _serverParsing.getErrorPage(_url, _code);
+        if (retErrorPage != "")
+            pageName = _serverParsing.getRoot(_url) + "/" + retErrorPage;
+    }
+    if (retErrorPage == ""){
+        _body = "";
+        _body +=  "<!DOCTYPE html>\n";
+        _body += "<html>\n";
+        _body += "      <head><title>Default Error Page</title></head>\n";
+        _body += "      <head><title>"+  _code + " " + _codeStatus.getStatus(_code) + "</title></head>\n";
+        _body += "      <center><h1>" + _code + " " + _codeStatus.getStatus(_code) + "</h1></center>\n";
+        _body += "  </body>\n";
+        _body += "</html>\n";
+    }
+    else{
+        std::ifstream ifs(pageName.c_str());
+        _body = "";
+        while (std::getline(ifs, buff) != 0)
+        {
+            _body += buff;
+            _body += "\n";
+        }
     }
 }
 
@@ -147,6 +162,7 @@ void ft::Response::setError(std::string code)
     _status = _codeStatus.getStatus(code);
     _contentType = "text/html";
     handleErrors();
+
 }
 
 /*
@@ -158,7 +174,6 @@ const std::string & ft::Response::addContentType(void){
     
     size_t found = _url.find(".");
     extension.insert(0, _url, found + 1);
-    std::cout << extension << std::endl;
     return (_Mime.getType(extension));
 }
 
@@ -223,7 +238,8 @@ void ft::Response::getM(const std::string & url){
             _body += buff;
             _body += "\n";
         }
-        _body.erase(_body.size() - 1,1);
+        if (_body != "")
+            _body.erase(_body.size() - 1,1);
     }
 }
 
@@ -249,13 +265,6 @@ void ft::Response::urlencoded(void){
         }
     }
     _formValues[token] = std::string(_rawBody.begin(), _rawBody.end());
-
-    std::map<std::string ,std::string>::iterator it;
-    for( it=_formValues.begin();it !=_formValues.end();++it)
-    {
-       std::cout << it->first << ' ' <<it->second << std::endl;
-    }
-
 }
 
 void ft::Response::initPostStruct(std::vector<unsigned char> fullBody){
@@ -289,7 +298,6 @@ void ft::Response::initPostStruct(std::vector<unsigned char> fullBody){
                 }
             }
             _multipartForm[token].name = token;
-            std::cout << token << " = "   <<  _multipartForm[token].name << std::endl;
             tmpName = token;
         }
     }
@@ -383,7 +391,6 @@ void ft::Response::postM(const std::string & url){
     else
         enctype = _rawResponse["Content-Type"];
 
-    std::cout << "enctype = " << enctype << std::endl;
     fPtr enc[3] = {
         &ft::Response::urlencoded,
         &ft::Response::multi,
@@ -457,17 +464,20 @@ void ft::Response::buildFullResponse(){
     if (_code != "200")
         setError(_code);
     
+
     full = _protVersion + " " + _code + " " + _status;
     full += "\n";
     full += "Date: ";
     full += date_time;
-    full += "Content-type: " + _contentType;
-    full += "\nContent-Lenght: " + itostring(_body.size()); 
+    if (_method != "POST"){
+        full += "Content-type: " + _contentType;
+        full += "\nContent-Lenght: " + itostring(_body.size());
+        full += "\n";
+    }
+    full += "Connection: close";
     full += "\n\n";
     full += _body;
 
-    std::cout << _url << std::endl;
     _responseFull = full;
-    // std::cout << "FULL RESPONSE = " << _responseFull << std::endl;
 
 }

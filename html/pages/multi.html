@@ -1,24 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Multi-part Form Data Example</title>
-</head>
-<body>
-	<h1>Multi-part Form Data Example</h1>
-	<form action="/pages/multi.html" method="post" enctype="multipart/form-data">
-	  <label for="name">Name:</label>
-	  <input type="text" id="name" name="name"><br><br>
-
-	  <label for="email">Email:</label>
-	  <input type="email" id="email" name="email"><br><br>
-
-	  <!-- <label for="avatar">Avatar:</label>
-	  <input type="file" id="avatar" name="avatar"><br><br> -->
-
-	  <label for="message">Message:</label><br>
-	  <textarea id="message" name="message"></textarea><br><br>
-
-	  <input type="submit" value="Submit">
-	</form>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Multipart Form Data</title>
+  </head>
+  <body>
+    <form action="" method="POST" enctype="multipart/form-data">
+     <h4>Browse your file</h4>
+       <input type="file" name="file" /> <br><br>
+       <input type="submit" value="Upload File"/>
+   </form>
+  </body>
 </html>
