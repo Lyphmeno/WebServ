@@ -59,6 +59,8 @@ public:
 
 	//avarnier
 	size_t		getContentLength(void) const;
+	std::string getScriptName(const std::string &url);
+	std::string getPathInfo(const std::string &path);
 	void    	addToEnvFromRequest(std::map<std::string, std::string> &env,
 				const std::string &name, const std::string &elem);
 	void		addToEnv(std::map<std::string, std::string> &env,
@@ -67,8 +69,10 @@ public:
 	void		fillEnv(std::map<std::string, std::string> &env,
 				const int &fd, const std::string &scriptName);
 	char    	**allocEnv(std::map<std::string, std::string> &env);
+	char    	**allocArg(const std::string &scriptName);
 	void		getResponse(const int &fd, std::string &response);
-	std::string	execCgi(const int &fd, const std::string &scriptName);
+	std::string	execCgi(const int &fd, const std::string &scriptName,
+				const std::string &cgiPath);
 
 	std::string 				rawHeader;
 	std::vector<unsigned char>	rawBody;

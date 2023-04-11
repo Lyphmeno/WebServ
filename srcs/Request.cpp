@@ -101,8 +101,6 @@ std::string ft::Request::requestStarter(const int &fd){
 
     responseHTTP.buildFullResponse();
     std::string responseR = responseHTTP.getFullResponse(); 
-    std::string test = execCgi(fd, "scriptname");
-//  std::cout << test << std::endl;
     return responseR;
 }
 
@@ -225,28 +223,29 @@ std::string ft::Request::checkIndexVector(std::vector<std::string> Index)
 }
 
 std::string ft::Request::getCorrectUrl(void){
+    std::string tmpQuery = this->_queryString;
     _tmpLoc = _url;
     size_t pos;
 
     _url = this->_serverParsing.getRoot(_url) + _url;
     _urlLocation =  _serverParsing.isLoc(_url);
     if ((pos = _url.find("?")) != std::string::npos){
-        _queryString = _url.substr(pos + 1);
+        tmpQuery = _url.substr(pos + 1);
         std::string token;
         std::string value;
 
-        while ((pos = _queryString.find("=")) != std::string::npos) {
-            token = _queryString.substr(0, pos);
-            _queryString.erase(0, pos + 1);
-            if ((pos = _queryString.find("&")) != std::string::npos)
+        while ((pos = tmpQuery.find("=")) != std::string::npos) {
+            token = tmpQuery.substr(0, pos);
+            tmpQuery.erase(0, pos + 1);
+            if ((pos = tmpQuery.find("&")) != std::string::npos)
             {
-                value = _queryString.substr(0, pos);
+                value = tmpQuery.substr(0, pos);
                 value.erase(std::remove(value.begin(), value.end(), 13), value.end());
             }
-            _queryString.erase(0, pos + 1);
+            tmpQuery.erase(0, pos + 1);
             _dataQuery[token] = value;
         }
-        _dataQuery[token] = _queryString;
+        _dataQuery[token] = tmpQuery;
     }
     if (Directory(_url))
     {
@@ -284,6 +283,26 @@ size_t	ft::Request::getContentLength(void) const
 	return ret;
 }
 
+std::string ft::Request::getScriptName(const std::string &url)
+{
+    size_t end = url.find(".php");
+    if (end == url.npos)
+        return (std::string());
+    size_t begin = url.rfind("/", end);
+    if (begin == url.npos)
+        return (url.substr(0, end + 4));
+    return (url.substr(begin + 1, end + 4));
+}
+
+std::string ft::Request::getPathInfo(const std::string &path)
+{
+    size_t pos = path.find(".php/");
+    if (pos == path.npos)
+        return (std::string());
+    std::string pathInfo = path.substr(pos + 5, path.npos);
+    return (pathInfo);
+}
+
 void    ft::Request::addToEnvFromRequest(std::map<std::string, std::string> &env,
 const std::string &name, const std::string &content)
 {
@@ -297,8 +316,7 @@ const std::string &name, const std::string &content)
 void    ft::Request::addToEnv(std::map<std::string, std::string> &env,
 const std::string &name, const std::string &content)
 {
-    if (content.size() != 0)
-        env.insert(env.begin(), std::map<std::string, std::string>::value_type(name, content));
+    env.insert(env.begin(), std::map<std::string, std::string>::value_type(name, content));
 }
 
 void    ft::Request::addToEnvAddr(std::map<std::string, std::string> &env, const int &fd)
@@ -310,15 +328,17 @@ void    ft::Request::addToEnvAddr(std::map<std::string, std::string> &env, const
     this->addToEnv(env, "REMOTE_ADDR", addr_string);
 }
 
+
+
 void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
 const int &fd, const std::string &scriptName)
 {
     this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
     this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
     this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
-    //path translated
-    //querry string
+    this->addToEnv(env, "PATH_INFO", this->getPathInfo(this->getUrl()));
     this->addToEnvAddr(env, fd);
+    this->addToEnv(env, "QUERY_STRING", this->_queryString);
     this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
     this->addToEnv(env, "SCRIPT_NAME", scriptName);
     this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
@@ -348,6 +368,14 @@ char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
     return (c_env);
 }
 
+char    **ft::Request::allocArg(const std::string &cgiPath)
+{
+    char **c_arg = new char*[2];
+    strcpy(c_arg[0], cgiPath.c_str());
+    c_arg[1] = NULL;
+    return (c_arg);
+}
+
 void    ft::Request::getResponse(const int &fd, std::string &response)
 {
         std::vector<unsigned char>  buffer(1);
@@ -356,13 +384,13 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
             buffer.clear();
             buffer.resize(CGI_BUFFER);
             int bytes = read(fd, &buffer[0], CGI_BUFFER);
-            std::cerr << bytes << '\n';
             buffer.resize(bytes);
             response.insert(response.end(), buffer.begin(), buffer.end());
         }
 }
 
-std::string ft::Request::execCgi(const int &fd, const std::string &scriptName)
+std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
+const std::string &cgiPath)
 {
     int         backup = dup(STDOUT_FILENO);
     FILE        *outFile = tmpfile();
@@ -374,21 +402,21 @@ std::string ft::Request::execCgi(const int &fd, const std::string &scriptName)
         return (std::string());
     if (pid == 0)
     {
+        char **c_arg;
         char **c_env;
         try
         {
             std::map<std::string, std::string>  env;
             this->fillEnv(env, fd, scriptName);
             c_env = allocEnv(env);
+            c_arg = allocArg(cgiPath);
         }
         catch(const std::exception& e)
         {
             std::cout << "Child: " << e.what() << std::endl;
         }
         dup2(outFd, STDOUT_FILENO);
-        for (size_t x = 0; c_env[x] != NULL; x++)
-            std::cout << c_env[x] << '\n';
-        //execve(scriptName.c_str(), NULL, c_env);
+        execve(cgiPath.c_str(), c_arg, c_env);
         delete [] c_env;
     }
     else
