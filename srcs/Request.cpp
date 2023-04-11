@@ -68,7 +68,8 @@ void ft::Request::parseHeader(){
     }
 
     getRequestLine(_requestLine);
-    if (this->_serverParsing.getMethods(_url, _method) == 1){
+    if (this->_serverParsing.getMethods(_urlLocation, _method) == 1){
+        std::cout << "here" << std::endl;
         responseHTTP.setAllowedMethod(1);
     }
     else
