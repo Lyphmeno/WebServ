@@ -93,7 +93,7 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(const int &fd){
-
+    (void)fd; //temporary
     responseHTTP.setServerParsing(_serverParsing);
 
     responseHTTP.setCode(_code);
