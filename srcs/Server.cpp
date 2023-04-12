@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/12 05:23:33 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/12 16:30:55 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,13 @@ std::string	Server::getRoot(std::string path)
 	if (this->getLoc(path) < 0)
 		return (this->root);
 	return (this->location.at(this->getLoc(path)).root);
+}
+
+std::string	Server::getCgiDir(std::string path)
+{
+	if (this->getLoc(path) < 0)
+		return ("");
+	return (this->location.at(this->getLoc(path)).cgi_dir);
 }
 
 std::string	Server::getErrorPage(std::string path, std::string err)
