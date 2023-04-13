@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/12 16:30:55 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/04/13 06:41:50 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,7 +223,7 @@ std::string	Server::getServerName()
 	if (this->server_names.size() == 0)
 		return (std::string(inet_ntoa(this->addr.sin_addr)));
 	else
-		return (server_names[1]);
+		return (server_names[0]);
 }
 
 std::string	Server::getServerPort()

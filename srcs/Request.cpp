@@ -1,5 +1,5 @@
 #include "../incs/Request.hpp"
-#include <dirent.h> 
+#include <dirent.h>
 #include <fstream>
 #include "../incs/Request.hpp"
 #include "../incs/Response.hpp"
@@ -69,7 +69,6 @@ void ft::Request::parseHeader(){
 
     getRequestLine(_requestLine);
     if (this->_serverParsing.getMethods(_urlLocation, _method) == 1){
-        std::cout << "here" << std::endl;
         responseHTTP.setAllowedMethod(1);
     }
     else
@@ -93,15 +92,30 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(const int &fd){
-    (void)fd; //temporary
     responseHTTP.setServerParsing(_serverParsing);
+    std::string responseR;
+    std::string url = this->_urlLocation;
+    if (url.empty() == true)
+        url = this->_url;
+    if (url.find(".php") != url.npos)
+    {
+        std::string cgidir = this->_serverParsing.getCgiDir(url);
+        if (cgidir.empty() == false)
+            responseR = execCgi(fd, this->getScriptName(url), cgidir);
+        if (responseR.empty() == true)
+            this->_code = "500";
+    }
 
-    responseHTTP.setCode(_code);
-    if (_code == "200")
-        parseRequest(responseHTTP);
+    if (responseR.empty() == true)
+    {
+        responseHTTP.setCode(_code);
+        if (_code == "200")
+            parseRequest(responseHTTP);
 
-    responseHTTP.buildFullResponse();
-    std::string responseR = responseHTTP.getFullResponse(); 
+        responseHTTP.buildFullResponse();
+        responseR = responseHTTP.getFullResponse();
+    }
+    std::cout << "response:\n" << responseR << '\n';
     return responseR;
 }
 
@@ -301,7 +315,7 @@ std::string ft::Request::getPathInfo(const std::string &path)
     if (pos == path.npos)
         return (std::string());
     std::string pathInfo = path.substr(pos + 5, path.npos);
-    return (pathInfo);
+        return (pathInfo);
 }
 
 void    ft::Request::addToEnvFromRequest(std::map<std::string, std::string> &env,
@@ -335,17 +349,17 @@ void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
 const int &fd, const std::string &scriptName)
 {
     this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
-    this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
-    this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
-    this->addToEnv(env, "PATH_INFO", this->getPathInfo(this->getUrl()));
-    this->addToEnvAddr(env, fd);
-    this->addToEnv(env, "QUERY_STRING", this->_queryString);
-    this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
-    this->addToEnv(env, "SCRIPT_NAME", scriptName);
-    this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
-    this->addToEnv(env, "SERVER_PORT", this->_serverParsing.getServerPort());
-    this->addToEnv(env, "SERVER_PROTOCOL", "HTTP/1.1");
-    this->addToEnv(env, "SERVER_SOFTWARE", "WEBSERV/1.0");
+    // this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
+    // this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
+    // this->addToEnv(env, "PATH_INFO", this->getUrl());
+    // this->addToEnvAddr(env, fd);
+    // this->addToEnv(env, "QUERY_STRING", this->_queryString);
+    // this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
+    // this->addToEnv(env, "SCRIPT_NAME", scriptName);
+    // this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
+    // this->addToEnv(env, "SERVER_PORT", this->_serverParsing.getServerPort());
+    // this->addToEnv(env, "SERVER_PROTOCOL", "HTTP/1.1");
+    // this->addToEnv(env, "SERVER_SOFTWARE", "WEBSERV/1.0");
 }
 
 char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
@@ -357,13 +371,14 @@ char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
     std::map<std::string, std::string>::const_iterator it = env.begin();
     for (size_t x = 0; x < size; x++, it++)
     {
-        c_env[x] = new char[it->second.size() + 1];
+        std::string fullvar = it->first + '=' + it->second;
+        c_env[x] = new char[fullvar.size() + 1];
         if (c_env[x] == NULL)
         {
             delete [] c_env;
             return (NULL);
         }
-        strcpy(c_env[x], it->second.c_str());
+        strcpy(c_env[x], fullvar.c_str());
     }
     c_env[size] = NULL;
     return (c_env);
@@ -371,7 +386,8 @@ char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
 
 char    **ft::Request::allocArg(const std::string &cgiPath)
 {
-    char **c_arg = new char*[2];
+    char    **c_arg = new char*[2];
+    c_arg[0] = new char[cgiPath.size() + 1];
     strcpy(c_arg[0], cgiPath.c_str());
     c_arg[1] = NULL;
     return (c_arg);
@@ -388,6 +404,13 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
             buffer.resize(bytes);
             response.insert(response.end(), buffer.begin(), buffer.end());
         }
+}
+
+void    printTab(char **tab, std::string name)
+{
+    std::cerr << name << ":" << '\n';
+    for (size_t x = 0; tab[x] != NULL; x++)
+        std::cerr << tab[x] << '\n';
 }
 
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
@@ -414,11 +437,15 @@ const std::string &cgiPath)
         }
         catch(const std::exception& e)
         {
-            std::cout << "Child: " << e.what() << std::endl;
+            std::cerr << "Child: " << e.what() << std::endl;
         }
+        printTab(c_env, "env");
         dup2(outFd, STDOUT_FILENO);
         execve(cgiPath.c_str(), c_arg, c_env);
+        std::cerr << "execve failed " << errno << '\n';
         delete [] c_env;
+        delete [] c_arg;
+        exit(0);
     }
     else
     {
@@ -429,7 +456,5 @@ const std::string &cgiPath)
     dup2(backup, STDOUT_FILENO);
     fclose(outFile);
     close(outFd);
-    if (pid == 0)
-        exit(0);
     return (response);
 }
