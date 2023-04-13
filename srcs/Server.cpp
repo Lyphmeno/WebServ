@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/13 06:41:50 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/13 22:32:26 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,8 +135,12 @@ std::string	Server::getRoot(std::string path)
 
 std::string	Server::getCgiDir(std::string path)
 {
-	if (this->getLoc(path) < 0)
-		return ("");
+	if (this->getLoc(path) < 0) {
+		if (!this->cgi_dir.empty())
+			return (this->cgi_dir);
+		else
+			return ("");
+	}
 	return (this->location.at(this->getLoc(path)).cgi_dir);
 }
 
