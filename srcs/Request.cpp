@@ -115,7 +115,6 @@ std::string ft::Request::requestStarter(const int &fd){
         responseHTTP.buildFullResponse();
         responseR = responseHTTP.getFullResponse();
     }
-    std::cout << "response:\n" << responseR << '\n';
     return responseR;
 }
 
@@ -348,18 +347,19 @@ void    ft::Request::addToEnvAddr(std::map<std::string, std::string> &env, const
 void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
 const int &fd, const std::string &scriptName)
 {
+    (void)scriptName;
     this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
-    // this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
-    // this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
-    // this->addToEnv(env, "PATH_INFO", this->getUrl());
-    // this->addToEnvAddr(env, fd);
-    // this->addToEnv(env, "QUERY_STRING", this->_queryString);
-    // this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
-    // this->addToEnv(env, "SCRIPT_NAME", scriptName);
-    // this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
-    // this->addToEnv(env, "SERVER_PORT", this->_serverParsing.getServerPort());
-    // this->addToEnv(env, "SERVER_PROTOCOL", "HTTP/1.1");
-    // this->addToEnv(env, "SERVER_SOFTWARE", "WEBSERV/1.0");
+    this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
+    this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
+    this->addToEnv(env, "PATH_INFO", this->getUrl());
+    this->addToEnvAddr(env, fd);
+    this->addToEnv(env, "QUERY_STRING", this->_queryString);
+    this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
+    //this->addToEnv(env, "SCRIPT_NAME", this->getUrl());
+    this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
+    this->addToEnv(env, "SERVER_PORT", this->_serverParsing.getServerPort());
+    this->addToEnv(env, "SERVER_PROTOCOL", "HTTP/1.1");
+    this->addToEnv(env, "SERVER_SOFTWARE", "WEBSERV/1.0");
 }
 
 char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
@@ -416,7 +416,7 @@ void    printTab(char **tab, std::string name)
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
 {
-    int         backup = dup(STDOUT_FILENO);
+    int         outBackup = dup(STDOUT_FILENO);
     FILE        *outFile = tmpfile();
     int         outFd = fileno(outFile);
     std::string response;
@@ -438,13 +438,16 @@ const std::string &cgiPath)
         catch(const std::exception& e)
         {
             std::cerr << "Child: " << e.what() << std::endl;
+            return (std::string());
         }
         printTab(c_env, "env");
         dup2(outFd, STDOUT_FILENO);
         execve(cgiPath.c_str(), c_arg, c_env);
-        std::cerr << "execve failed " << errno << '\n';
         delete [] c_env;
         delete [] c_arg;
+        fclose(outFile);
+        close(outFd);
+        close(outBackup);
         exit(0);
     }
     else
@@ -453,7 +456,7 @@ const std::string &cgiPath)
         lseek(outFd, 0, SEEK_SET);
         this->getResponse(outFd, response);
     }
-    dup2(backup, STDOUT_FILENO);
+    dup2(outBackup, STDOUT_FILENO);
     fclose(outFile);
     close(outFd);
     return (response);
