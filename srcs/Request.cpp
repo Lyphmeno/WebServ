@@ -115,6 +115,7 @@ std::string ft::Request::requestStarter(const int &fd){
         responseHTTP.buildFullResponse();
         responseR = responseHTTP.getFullResponse();
     }
+	std::cerr << "reponse:\n" << responseR << '\n';
     return responseR;
 }
 
@@ -417,8 +418,11 @@ std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
 {
     int         outBackup = dup(STDOUT_FILENO);
+	int			inBackup = dup (STDIN_FILENO);
     FILE        *outFile = tmpfile();
+    FILE        *inFile = tmpfile();
     int         outFd = fileno(outFile);
+    int         inFd = fileno(inFile);
     std::string response;
 
     pid_t pid = fork();
@@ -426,30 +430,48 @@ const std::string &cgiPath)
         return (std::string());
     if (pid == 0)
     {
-        char **c_arg;
-        char **c_env;
-        try
-        {
-            std::map<std::string, std::string>  env;
-            this->fillEnv(env, fd, scriptName);
-            c_env = allocEnv(env);
-            c_arg = allocArg(cgiPath);
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << "Child: " << e.what() << std::endl;
-            return (std::string());
-        }
-        printTab(c_env, "env");
-        dup2(outFd, STDOUT_FILENO);
-        execve(cgiPath.c_str(), c_arg, c_env);
-        delete [] c_env;
-        delete [] c_arg;
-        fclose(outFile);
-        close(outFd);
-        close(outBackup);
-        exit(0);
-    }
+		pid_t	cgiPid = fork();
+		if (cgiPid == 0)
+		{
+			char **c_arg;
+			char **c_env;
+			try
+			{
+				std::map<std::string, std::string>  env;
+				this->fillEnv(env, fd, scriptName);
+				c_env = allocEnv(env);
+			}
+			catch(const std::exception& e)
+			{
+				std::cout << "Child(c_env): " << e.what() << std::endl;
+				exit(0);
+			}
+			try
+			{
+				c_arg = allocArg(cgiPath);
+			}
+			catch(const std::exception& e)
+			{
+				std::cout << "Child(arg): " << e.what() << std::endl;
+				exit(0);
+			}
+			if (this->getMethod() == "POST")
+				write(inFd, &this->rawBody[0], this->rawBody.size());
+			execve(cgiPath.c_str(), c_arg, c_env);
+			delete [] c_env;
+			delete [] c_arg;
+		}
+		else
+		{
+			sleep(CGI_TIMEOUT);
+			exit(0);
+		}
+		pid_t exitPid = wait(NULL);
+		if (exitPid == cgiPid)
+			kill(timeoutPid, SIGKILL);
+		else
+			kill(cgiPid, SIGKILL);
+	}
     else
     {
         waitpid(-1, NULL, 0);
@@ -457,7 +479,12 @@ const std::string &cgiPath)
         this->getResponse(outFd, response);
     }
     dup2(outBackup, STDOUT_FILENO);
+    dup2(inBackup, STDIN_FILENO);
     fclose(outFile);
+    fclose(inFile);
     close(outFd);
+    close(inFd);
+    if (pid == 0)
+        exit(0);
     return (response);
 }

@@ -17,6 +17,7 @@
 #define POST 2
 #define DELETE 3
 #define CGI_BUFFER 1024
+#define CGI_TIMEOUT 1
 
 namespace ft{
 
