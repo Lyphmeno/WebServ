@@ -431,6 +431,7 @@ const std::string &cgiPath)
     if (pid == 0)
     {
 		pid_t	cgiPid = fork();
+        pid_t   timeoutPid = fork();
 		if (cgiPid == 0)
 		{
 			char **c_arg;
@@ -455,26 +456,32 @@ const std::string &cgiPath)
 				std::cout << "Child(arg): " << e.what() << std::endl;
 				exit(0);
 			}
+            dup2(outFd, STDOUT_FILENO);
+            dup2(inFd, STDIN_FILENO);
 			if (this->getMethod() == "POST")
 				write(inFd, &this->rawBody[0], this->rawBody.size());
 			execve(cgiPath.c_str(), c_arg, c_env);
 			delete [] c_env;
 			delete [] c_arg;
 		}
-		else
+        else if (timeoutPid == 0)
 		{
 			sleep(CGI_TIMEOUT);
 			exit(0);
 		}
-		pid_t exitPid = wait(NULL);
-		if (exitPid == cgiPid)
-			kill(timeoutPid, SIGKILL);
-		else
-			kill(cgiPid, SIGKILL);
+        else
+        {
+            pid_t exitPid = wait(NULL);
+            if (exitPid == cgiPid)
+                kill(timeoutPid, SIGKILL);
+            else
+                kill(cgiPid, SIGKILL);
+            exit(0);
+        }
 	}
     else
     {
-        waitpid(-1, NULL, 0);
+        waitpid(pid, NULL, 0);
         lseek(outFd, 0, SEEK_SET);
         this->getResponse(outFd, response);
     }
