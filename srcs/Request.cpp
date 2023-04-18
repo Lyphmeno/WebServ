@@ -92,6 +92,7 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(const int &fd){
+    std::cerr << "step1" << '\n';
     responseHTTP.setServerParsing(_serverParsing);
     std::string responseR;
     std::string url = this->_urlLocation;
@@ -104,10 +105,12 @@ std::string ft::Request::requestStarter(const int &fd){
             responseR = execCgi(fd, this->getScriptName(url), cgidir);
         if (responseR.empty() == true)
             this->_code = "500";
+        std::cerr << "step2 " << _code << '\n';
     }
 
     if (responseR.empty() == true)
     {
+        std::cerr << "check" << '\n';
         responseHTTP.setCode(_code);
         if (_code == "200")
             parseRequest(responseHTTP);
@@ -118,8 +121,6 @@ std::string ft::Request::requestStarter(const int &fd){
 	std::cerr << "reponse:\n" << responseR << '\n';
     return responseR;
 }
-
-
 
 void ft::Request::parseRequest(ft::Response &response){
     response.setRawResponse(_rawRequest);
@@ -407,13 +408,6 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
         }
 }
 
-void    printTab(char **tab, std::string name)
-{
-    std::cerr << name << ":" << '\n';
-    for (size_t x = 0; tab[x] != NULL; x++)
-        std::cerr << tab[x] << '\n';
-}
-
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
 {
@@ -430,58 +424,39 @@ const std::string &cgiPath)
         return (std::string());
     if (pid == 0)
     {
-		pid_t	cgiPid = fork();
-        pid_t   timeoutPid = fork();
-		if (cgiPid == 0)
-		{
-			char **c_arg;
-			char **c_env;
-			try
-			{
-				std::map<std::string, std::string>  env;
-				this->fillEnv(env, fd, scriptName);
-				c_env = allocEnv(env);
-			}
-			catch(const std::exception& e)
-			{
-				std::cout << "Child(c_env): " << e.what() << std::endl;
-				exit(0);
-			}
-			try
-			{
-				c_arg = allocArg(cgiPath);
-			}
-			catch(const std::exception& e)
-			{
-				std::cout << "Child(arg): " << e.what() << std::endl;
-				exit(0);
-			}
-            dup2(outFd, STDOUT_FILENO);
-            dup2(inFd, STDIN_FILENO);
-			if (this->getMethod() == "POST")
-				write(inFd, &this->rawBody[0], this->rawBody.size());
-			execve(cgiPath.c_str(), c_arg, c_env);
-			delete [] c_env;
-			delete [] c_arg;
-		}
-        else if (timeoutPid == 0)
-		{
-			sleep(CGI_TIMEOUT);
-			exit(0);
-		}
-        else
+        char **c_arg;
+        char **c_env;
+        try
         {
-            pid_t exitPid = wait(NULL);
-            if (exitPid == cgiPid)
-                kill(timeoutPid, SIGKILL);
-            else
-                kill(cgiPid, SIGKILL);
+            std::map<std::string, std::string>  env;
+            this->fillEnv(env, fd, scriptName);
+            c_env = allocEnv(env);
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << "Child(c_env): " << e.what() << std::endl;
             exit(0);
         }
-	}
+        try
+        {
+            c_arg = allocArg(cgiPath);
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << "Child(arg): " << e.what() << std::endl;
+            exit(0);
+        }
+        dup2(outFd, STDOUT_FILENO);
+        dup2(inFd, STDIN_FILENO);
+        if (this->getMethod() == "POST")
+            write(inFd, &this->rawBody[0], this->rawBody.size());
+        execve(cgiPath.c_str(), c_arg, c_env);
+        delete [] c_env;
+        delete [] c_arg;
+}
     else
     {
-        waitpid(pid, NULL, 0);
+        waitpid(-1, NULL, 0);
         lseek(outFd, 0, SEEK_SET);
         this->getResponse(outFd, response);
     }
