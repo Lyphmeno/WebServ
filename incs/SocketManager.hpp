@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/10 19:44:52 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/18 17:41:04 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 #define MAXEVENTS 128
 #define MAXQUEU 128
 #define MAXHEADER 8192
-#define MAXBUFF 2
+#define MAXBUFF 1024
 
 #define NOTFD 0
 #define CLI 1

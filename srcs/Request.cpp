@@ -92,25 +92,26 @@ void ft::Request::getRequestLine(std::string line){
 }
 
 std::string ft::Request::requestStarter(const int &fd){
-    std::cerr << "step1" << '\n';
     responseHTTP.setServerParsing(_serverParsing);
     std::string responseR;
     std::string url = this->_urlLocation;
     if (url.empty() == true)
         url = this->_url;
-    if (url.find(".php") != url.npos)
+    if (this->_url.find(".php") != this->_url.npos)
     {
         std::string cgidir = this->_serverParsing.getCgiDir(url);
         if (cgidir.empty() == false)
-            responseR = execCgi(fd, this->getScriptName(url), cgidir);
+        {
+            responseR = execCgi(fd, this->getScriptName(this->_url), cgidir);
+        }
         if (responseR.empty() == true)
+        {
             this->_code = "500";
-        std::cerr << "step2 " << _code << '\n';
+        }
     }
 
     if (responseR.empty() == true)
     {
-        std::cerr << "check" << '\n';
         responseHTTP.setCode(_code);
         if (_code == "200")
             parseRequest(responseHTTP);
@@ -118,7 +119,6 @@ std::string ft::Request::requestStarter(const int &fd){
         responseHTTP.buildFullResponse();
         responseR = responseHTTP.getFullResponse();
     }
-	std::cerr << "reponse:\n" << responseR << '\n';
     return responseR;
 }
 
@@ -397,63 +397,47 @@ char    **ft::Request::allocArg(const std::string &cgiPath)
 
 void    ft::Request::getResponse(const int &fd, std::string &response)
 {
-        std::vector<unsigned char>  buffer(1);
-        while (buffer.size() > 0)
-        {
-            buffer.clear();
-            buffer.resize(CGI_BUFFER);
-            int bytes = read(fd, &buffer[0], CGI_BUFFER);
-            buffer.resize(bytes);
-            response.insert(response.end(), buffer.begin(), buffer.end());
-        }
+    std::vector<unsigned char>  buffer(1);
+    while (buffer.size() > 0)
+    {
+        buffer.clear();
+        buffer.resize(CGI_BUFFER);
+        int bytes = read(fd, &buffer[0], CGI_BUFFER);
+        buffer.resize(bytes);
+        response.insert(response.end(), buffer.begin(), buffer.end());
+    }
 }
 
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
 {
+    std::string response;
     int         outBackup = dup(STDOUT_FILENO);
 	int			inBackup = dup (STDIN_FILENO);
     FILE        *outFile = tmpfile();
     FILE        *inFile = tmpfile();
     int         outFd = fileno(outFile);
     int         inFd = fileno(inFile);
-    std::string response;
+    
+    std::map<std::string, std::string>  env;
+    this->fillEnv(env, fd, scriptName);
+    char **c_env = allocEnv(env);
+    char **c_arg = allocArg(cgiPath);
+    if (this->getMethod() == "POST")
+    {
+        write(inFd, &this->rawBody[0], this->rawBody.size());
+        lseek(inFd, 0, SEEK_SET);
+    }
 
     pid_t pid = fork();
     if (pid == -1)
         return (std::string());
     if (pid == 0)
     {
-        char **c_arg;
-        char **c_env;
-        try
-        {
-            std::map<std::string, std::string>  env;
-            this->fillEnv(env, fd, scriptName);
-            c_env = allocEnv(env);
-        }
-        catch(const std::exception& e)
-        {
-            std::cout << "Child(c_env): " << e.what() << std::endl;
-            exit(0);
-        }
-        try
-        {
-            c_arg = allocArg(cgiPath);
-        }
-        catch(const std::exception& e)
-        {
-            std::cout << "Child(arg): " << e.what() << std::endl;
-            exit(0);
-        }
         dup2(outFd, STDOUT_FILENO);
         dup2(inFd, STDIN_FILENO);
-        if (this->getMethod() == "POST")
-            write(inFd, &this->rawBody[0], this->rawBody.size());
         execve(cgiPath.c_str(), c_arg, c_env);
-        delete [] c_env;
-        delete [] c_arg;
-}
+    }
     else
     {
         waitpid(-1, NULL, 0);
@@ -466,6 +450,8 @@ const std::string &cgiPath)
     fclose(inFile);
     close(outFd);
     close(inFd);
+    delete [] c_env;
+    delete [] c_arg;
     if (pid == 0)
         exit(0);
     return (response);

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/11 01:10:07 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/18 18:56:52 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,10 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 		if (data.step == BODY)
 			this->handleBody(sock, buff);
 		if (data.step == SENDING)
+		{
 			this->handleSending(sock);
+			buff.clear();
+		}
 	}
 }
 
