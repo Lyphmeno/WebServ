@@ -97,7 +97,7 @@ std::string ft::Request::requestStarter(const int &fd){
     std::string url = this->_urlLocation;
     if (url.empty() == true)
         url = this->_url;
-    if (this->_url.find(".php") != this->_url.npos)
+    if (this->_url.find(CGI_EXTENSION) != this->_url.npos)
     {
         std::string cgidir = this->_serverParsing.getCgiDir(url);
         if (cgidir.empty() == false)
@@ -301,7 +301,7 @@ size_t	ft::Request::getContentLength(void) const
 
 std::string ft::Request::getScriptName(const std::string &url)
 {
-    size_t end = url.find(".php");
+    size_t end = url.find(CGI_EXTENSION);
     if (end == url.npos)
         return (std::string());
     size_t begin = url.rfind("/", end);
@@ -312,7 +312,8 @@ std::string ft::Request::getScriptName(const std::string &url)
 
 std::string ft::Request::getPathInfo(const std::string &path)
 {
-    size_t pos = path.find(".php/");
+    std::string extension(CGI_EXTENSION);
+    size_t pos = path.find(extension + "/");
     if (pos == path.npos)
         return (std::string());
     std::string pathInfo = path.substr(pos + 5, path.npos);
@@ -366,93 +367,137 @@ const int &fd, const std::string &scriptName)
 
 char    **ft::Request::allocEnv(std::map<std::string, std::string> &env)
 {
-    size_t size = env.size();
-    char **c_env = new char*[size + 1];
-    if (c_env == NULL)
-        return (NULL);
-    std::map<std::string, std::string>::const_iterator it = env.begin();
-    for (size_t x = 0; x < size; x++, it++)
+    char **c_env = new char*[env.size() + 1];
+    int x = 0;
+
+    for (env_cit it = env.begin(); it != env.end(); it++, x++)
     {
-        std::string fullvar = it->first + '=' + it->second;
-        c_env[x] = new char[fullvar.size() + 1];
-        if (c_env[x] == NULL)
-        {
-            delete [] c_env;
-            return (NULL);
-        }
-        strcpy(c_env[x], fullvar.c_str());
+        std::string var = it->first + '=' + it->second;
+        c_env[x] = new char[var.size() + 1];
+        strcpy(c_env[x], var.c_str());
     }
-    c_env[size] = NULL;
+    c_env[x] = NULL;
+
     return (c_env);
 }
 
-char    **ft::Request::allocArg(const std::string &cgiPath)
+char    **ft::Request::allocArg(const std::string &cgiPath, const std::string &scriptName)
 {
-    char    **c_arg = new char*[2];
+    char    **c_arg = new char*[3];
     c_arg[0] = new char[cgiPath.size() + 1];
+    c_arg[1] = new char[scriptName.size() + 1];
+    c_arg[2] = NULL;
     strcpy(c_arg[0], cgiPath.c_str());
-    c_arg[1] = NULL;
+    strcpy(c_arg[1], scriptName.c_str());
     return (c_arg);
+}
+
+int    ft::Request::cgiAlloc(const int &fd, const std::string &scriptName, const std::string &cgiPath, char ***c_env, char ***c_arg)
+{
+    try
+    {
+        *c_arg = this->allocArg(cgiPath, scriptName);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return (-1);
+    }
+    try
+    {
+        env_type    env;
+        this->fillEnv(env, fd, scriptName);
+        *c_env = this->allocEnv(env);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return (-1);
+    }
+    return (0);
+}
+
+void    ft::Request::cgiDelete(char **c_env, char **c_arg)
+{
+    for (size_t x = 0; c_env[x] != NULL; x++)
+        delete[] c_env[x];
+    delete[] c_env;
+
+    for (size_t x = 0; c_arg[x] != NULL; x++)
+        delete[] c_arg[x];
+    delete[] c_arg;
 }
 
 void    ft::Request::getResponse(const int &fd, std::string &response)
 {
-    std::vector<unsigned char>  buffer(1);
-    while (buffer.size() > 0)
+    std::vector<unsigned char>  buffer(CGI_BUFFER);
+    ssize_t                     bytes = 1;
+
+    lseek(fd, SEEK_SET, 0);
+    while (bytes > 0)
     {
-        buffer.clear();
-        buffer.resize(CGI_BUFFER);
-        int bytes = read(fd, &buffer[0], CGI_BUFFER);
+        bytes = read(fd, &buffer[0], CGI_BUFFER);
+        if (!(bytes > 0))
+            break ;
         buffer.resize(bytes);
         response.insert(response.end(), buffer.begin(), buffer.end());
     }
+}
+
+void    printTab(const std::string &name, char **tab)
+{
+    std::cerr << name << ":\n";
+    for (size_t x = 0; tab[x] != NULL; x++)
+        std::cerr << tab[x] << '\n';
 }
 
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
 {
     std::string response;
-    int         outBackup = dup(STDOUT_FILENO);
-	int			inBackup = dup (STDIN_FILENO);
-    FILE        *outFile = tmpfile();
-    FILE        *inFile = tmpfile();
-    int         outFd = fileno(outFile);
-    int         inFd = fileno(inFile);
-    
-    std::map<std::string, std::string>  env;
-    this->fillEnv(env, fd, scriptName);
-    char **c_env = allocEnv(env);
-    char **c_arg = allocArg(cgiPath);
-    if (this->getMethod() == "POST")
-    {
-        write(inFd, &this->rawBody[0], this->rawBody.size());
-        lseek(inFd, 0, SEEK_SET);
-    }
+    Stream      stream;
+    int         pipeFd[2];
+    char        **c_env = NULL;
+    char        **c_arg = NULL;
+
+    if (pipe(pipeFd) != 0)
+        return ("");
 
     pid_t pid = fork();
+
     if (pid == -1)
-        return (std::string());
-    if (pid == 0)
     {
-        dup2(outFd, STDOUT_FILENO);
-        dup2(inFd, STDIN_FILENO);
-        execve(cgiPath.c_str(), c_arg, c_env);
+        close(pipeFd[0]);
+        close(pipeFd[1]);
     }
-    else
+    else if (pid == 0)
     {
-        waitpid(-1, NULL, 0);
-        lseek(outFd, 0, SEEK_SET);
-        this->getResponse(outFd, response);
+        close(pipeFd[1]);
+        if (dup2(pipeFd[0], STDIN_FILENO) == -1)
+            return ("");
+        if (dup2(stream.fd, STDOUT_FILENO) == -1)
+            return ("");
+        close(pipeFd[0]);
+        if (this->cgiAlloc(fd, scriptName, cgiPath, &c_env, &c_arg) == -1)
+            return ("");
+        printTab("env", c_env);
+        printTab("arg", c_arg);
+        execve(c_arg[0], c_arg, c_env);
+        this->cgiDelete(c_env, c_arg);
+        exit(1);
     }
-    dup2(outBackup, STDOUT_FILENO);
-    dup2(inBackup, STDIN_FILENO);
-    fclose(outFile);
-    fclose(inFile);
-    close(outFd);
-    close(inFd);
-    delete [] c_env;
-    delete [] c_arg;
-    if (pid == 0)
-        exit(0);
+    else if (pid > 0)
+    {
+        close(pipeFd[0]);
+        if (this->getMethod() == "POST")
+        {
+            if (write(pipeFd[1], &this->rawBody[0], this->rawBody.size()) == -1)
+                return ("");
+        }
+        close(pipeFd[1]);
+        wait(NULL);
+        this->getResponse(stream.fd, response);
+    }
+    std::cerr << "reponse:\n" << response << '\n';
     return (response);
 }

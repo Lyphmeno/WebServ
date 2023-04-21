@@ -10,14 +10,16 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "Parser.hpp"
-#include "Response.hpp"
+#include "../incs/Stream.hpp"
+#include "../incs/Parser.hpp"
+#include "../incs/Response.hpp"
 
 #define GET 1
 #define POST 2
 #define DELETE 3
 #define CGI_BUFFER 1024
 #define CGI_TIMEOUT 1
+#define CGI_EXTENSION ".php"
 
 namespace ft{
 
@@ -27,10 +29,15 @@ namespace ft{
 
 class Request{
 
+typedef std::map<std::string, std::string>					env_type;
+typedef std::map<std::string, std::string>::value_type		env_value;
+typedef std::map<std::string, std::string>::iterator		env_it;
+typedef std::map<std::string, std::string>::const_iterator	env_cit;
+
 public:
 	//Constructors
 	Request(const ft::Server& server);
-	Request (const Request & src);
+	Request(const Request & src);
 
 	//Destructor
 	~Request(void);
@@ -70,7 +77,9 @@ public:
 	void		fillEnv(std::map<std::string, std::string> &env,
 				const int &fd, const std::string &scriptName);
 	char    	**allocEnv(std::map<std::string, std::string> &env);
-	char    	**allocArg(const std::string &scriptName);
+	char    	**allocArg(const std::string &cgiPath, const std::string &scriptName);
+	int			cgiAlloc(const int &fd, const std::string &scriptName, const std::string &cgiPath, char ***c_env, char ***c_arg);
+	void		cgiDelete(char **c_env, char **c_arg);
 	void		getResponse(const int &fd, std::string &response);
 	std::string	execCgi(const int &fd, const std::string &scriptName,
 				const std::string &cgiPath);
