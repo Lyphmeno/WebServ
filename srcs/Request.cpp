@@ -455,29 +455,45 @@ std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
 {
     std::string response;
-    Stream      stream;
-    int         pipeFd[2];
+    int         pipeIn[2];
+    int         pipeOut[2];
     char        **c_env = NULL;
     char        **c_arg = NULL;
 
-    if (pipe(pipeFd) != 0)
+    if (pipe(pipeIn) != 0)
         return ("");
-
+    if (pipe(pipeOut) != 0)
+    {
+        close(pipeIn[0]);
+        close(pipeIn[1]);
+        return ("");
+    }
     pid_t pid = fork();
 
     if (pid == -1)
     {
-        close(pipeFd[0]);
-        close(pipeFd[1]);
+        close(pipeIn[0]);
+        close(pipeIn[1]);
+        close(pipeOut[0]);
+        close(pipeOut[1]);
     }
     else if (pid == 0)
     {
-        close(pipeFd[1]);
-        if (dup2(pipeFd[0], STDIN_FILENO) == -1)
+        close(pipeOut[0]);
+        close(pipeIn[1]);
+        if (dup2(pipeIn[0], STDIN_FILENO) == -1)
+        {
+            close(pipeIn[0]);
             return ("");
-        if (dup2(stream.fd, STDOUT_FILENO) == -1)
+        }
+        if (dup2(pipeOut[1], STDOUT_FILENO) == -1)
+        {
+            close(pipeIn[0]);
+            close(pipeOut[1]);
             return ("");
-        close(pipeFd[0]);
+        }
+        close(pipeIn[0]);
+        close(pipeOut[1]);
         if (this->cgiAlloc(fd, scriptName, cgiPath, &c_env, &c_arg) == -1)
             return ("");
         printTab("env", c_env);
@@ -488,15 +504,20 @@ const std::string &cgiPath)
     }
     else if (pid > 0)
     {
-        close(pipeFd[0]);
+        close(pipeIn[0]);
+        close(pipeOut[1]);
         if (this->getMethod() == "POST")
         {
-            if (write(pipeFd[1], &this->rawBody[0], this->rawBody.size()) == -1)
+            if (write(pipeIn[1], &this->rawBody[0], this->rawBody.size()) == -1)
+            {
+                close(pipeIn[1]);
+                close(pipeOut[0]);
                 return ("");
+            }
         }
-        close(pipeFd[1]);
+        close(pipeIn[1]);
         wait(NULL);
-        this->getResponse(stream.fd, response);
+        this->getResponse(pipeOut[0], response);
     }
     std::cerr << "reponse:\n" << response << '\n';
     return (response);
