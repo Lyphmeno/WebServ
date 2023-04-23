@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/18 18:56:52 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/23 05:55:22 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,11 @@ void	SocketManager::addServer(const conf_cit &configIt)
 	this->configLinker.insert(link_val(sock.fd, configIt - this->config.begin()));
 }
 
-void	SocketManager::addClient(const int &sfd, const Socket &sock)
+void	SocketManager::addClient(const int &sfd, Socket &sock)
 {
+	std::cerr << "Add " << sock.fd << '\n';
+	if (gettimeofday(&sock.time, NULL) == -1)
+		throw std::runtime_error("Runetime error: Can't get socket creation time");
 	this->setNoBlock(sock.fd);
 	this->addEp(sock.fd);
 	this->clients.find(sfd)->second.insert(sock_val(sock.fd, sock));
@@ -194,12 +197,15 @@ void	SocketManager::handleParsing(Socket &sock)
 void	SocketManager::handleSending(Socket &sock)
 {
 	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
-	this->close(sock.fd);
+	//clear req
+	//clear rep
 }
 
 void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 {
 	Socket &sock = this->findClient(fd);
+	if (gettimeofday(&sock.time, NULL) == -1)
+		throw std::runtime_error("Runtime error: Can't get current time");
 	SocketData &data = sock.data;
 	while (buff.size() > 0)
 	{
@@ -217,8 +223,33 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 	}
 }
 
+void	SocketManager::checkTimeout()
+{
+	timeval				now;
+	std::vector<int>	timeoutFd;
+	if (gettimeofday(&now, NULL) == -1)
+		throw std::runtime_error("Runtime error: Can't get current time");
+	for (srv_it srv_it = this->clients.begin(); srv_it != this->clients.end(); srv_it++)
+	{
+		for (sock_it cli_it = srv_it->second.begin();
+		cli_it != srv_it->second.end(); cli_it++)
+		{
+			if (difftime(now.tv_sec, cli_it->second.time.tv_sec) >= SOCK_TIMEOUT)
+				timeoutFd.push_back(cli_it->second.fd);
+		}
+	}
+	while (timeoutFd.empty() == false)
+	{
+		//send 408
+		std::cerr << "Timeout on" << timeoutFd[0] << '\n';
+		this->close(timeoutFd[0]);
+		timeoutFd.erase(timeoutFd.begin());
+	}
+}
+
 void	SocketManager::close(const int &fd)
 {
+	std::cerr << "Close " << fd << '\n';
 	if (this->isServer(fd) == true)
 	{
 		srv_it sit = this->clients.find(fd);

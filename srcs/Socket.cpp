@@ -19,11 +19,11 @@ namespace ft {
 //                                constructor                                 //
 ////////////////////////////////////////////////////////////////////////////////
 
-Socket::Socket(const Server &config) : fd(-1), addr(), data(config)
+Socket::Socket(const Server &config) : fd(-1), addr(), data(config), time()
 {
 }
 
-Socket::Socket(const Socket &x) : fd(x.fd), addr(x.addr), data(x.data)
+Socket::Socket(const Socket &x) : fd(x.fd), addr(x.addr), data(x.data), time(x.time)
 {
 }
 
@@ -34,6 +34,7 @@ Socket &Socket::operator=(const Socket &x)
 		this->fd = x.fd;
 		this->addr = x.addr;
 		this->data = x.data;
+		this->time = x.time;
 	}
 	return (*this);
 }

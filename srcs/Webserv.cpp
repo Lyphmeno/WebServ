@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/05 07:26:17 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/23 05:44:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	Webserv::run()
 {
 	for (;;)
 	{
-		int n = epoll_wait(this->manager.epfd, this->manager.epev, MAXEVENTS, -1);
+		int n = epoll_wait(this->manager.epfd, this->manager.epev, MAXEVENTS, 1);
 		if (n == -1)
 			throw std::runtime_error("Runtime error: epoll_wait failed");
 		for (int i = 0; i < n; i++)
@@ -58,7 +58,7 @@ void	Webserv::run()
 			uint32_t event = this->manager.epev[i].events;
 			if ((event & EPOLLERR) || (event & EPOLLHUP) || (!(event & EPOLLIN)))
 				this->manager.close(fd);
-			
+
 			if (this->manager.isServer(fd) == true)
 			{
 				Socket		sock(this->manager.findConfig(fd));
@@ -81,6 +81,7 @@ void	Webserv::run()
 					this->manager.close(fd);
 			}
 		}
+		this->manager.checkTimeout();
 	}
 }
 }

@@ -10,7 +10,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "../incs/Stream.hpp"
 #include "../incs/Parser.hpp"
 #include "../incs/Response.hpp"
 
@@ -62,7 +61,8 @@ public:
 
 	bool Directory(std::string url);
 	std::string getCorrectUrl(void);
-	std::string createAutoIndexHtmlPage(const std::string& directoryPath, const std::string & tmp_loc);
+	std::string createAutoIndexHtmlPage(const std::string& directoryPath,
+				const std::string & tmp_loc);
 	std::string checkIndexVector(std::vector<std::string> Index);
 
 	//avarnier
@@ -78,7 +78,8 @@ public:
 				const int &fd, const std::string &scriptName);
 	char    	**allocEnv(std::map<std::string, std::string> &env);
 	char    	**allocArg(const std::string &cgiPath, const std::string &scriptName);
-	int			cgiAlloc(const int &fd, const std::string &scriptName, const std::string &cgiPath, char ***c_env, char ***c_arg);
+	int			cgiAlloc(const int &fd, const std::string &scriptName,
+				const std::string &cgiPath, char ***c_env, char ***c_arg);
 	void		cgiDelete(char **c_env, char **c_arg);
 	void		getResponse(const int &fd, std::string &response);
 	std::string	execCgi(const int &fd, const std::string &scriptName,
@@ -95,8 +96,8 @@ public:
 private:
 
 	//Request line
-	std::string  _method;
-	std::string _url;
+	std::string	_method;
+	std::string	_url;
 	std::string _urlLocation;
 	std::string _protocolVersion;
 

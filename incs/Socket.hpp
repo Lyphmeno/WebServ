@@ -21,6 +21,7 @@ public:
 	int			fd;
 	sockaddr_in	addr;
 	SocketData	data;
+	timeval		time;
 };
 
 }

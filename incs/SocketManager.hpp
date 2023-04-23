@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/18 17:41:04 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/23 01:13:47 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <string>
 #include "../incs/Socket.hpp"
 #include "../incs/Request.hpp"
@@ -28,6 +29,7 @@
 #define MAXQUEU 128
 #define MAXHEADER 8192
 #define MAXBUFF 1024
+#define SOCK_TIMEOUT 30
 
 #define NOTFD 0
 #define CLI 1
@@ -64,7 +66,7 @@ public:
 
 	void	start();
 	void	addServer(const conf_cit &configIt);
-	void	addClient(const int &sfd, const Socket &sock);
+	void	addClient(const int &sfd, Socket &sock);
 	void	addEp(const int &fd) const;
 	void	setNoBlock(const int &fd) const;
 	bool	isServer(const int &fd) const;
@@ -75,6 +77,7 @@ public:
 	void	handleParsing(Socket &sock);
 	void	handleSending(Socket &sock);
 	void	getData(const int &fd, std::vector<unsigned char> &buff);
+	void	checkTimeout();
 	void	close(const int &fd);
 
 private:
