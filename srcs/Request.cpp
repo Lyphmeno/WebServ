@@ -473,6 +473,25 @@ const std::string &cgiPath)
         return ("");
     }
 
+    pid_t timeout = fork();
+    if (timeout == -1)
+    {
+        close(pipeIn[0]);
+        close(pipeIn[1]);
+        close(pipeOut[0]);
+        close(pipeOut[1]);
+        return("");
+    }
+    if (timeout == 0)
+    {
+        close(pipeIn[0]);
+        close(pipeIn[1]);
+        close(pipeOut[0]);
+        close(pipeOut[1]);
+        sleep(CGI_TIMEOUT);
+        exit(0);
+    }
+
     pid_t cgi = fork();
     if (cgi == -1)
     {
@@ -480,6 +499,7 @@ const std::string &cgiPath)
         close(pipeIn[1]);
         close(pipeOut[0]);
         close(pipeOut[1]);
+        return ("");
     }
     if (cgi == 0)
     {
@@ -505,20 +525,6 @@ const std::string &cgiPath)
         execve(c_arg[0], c_arg, c_env);
         this->cgiDelete(c_env, c_arg);
         exit(1);
-    }
-
-    pid_t timeout = fork();
-    if (timeout == -1)
-    {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        close(pipeOut[0]);
-        close(pipeOut[1]);
-    }
-    if (timeout == 0)
-    {
-        sleep(CGI_TIMEOUT);
-        exit(0);
     }
 
     if (timeout > 0 && cgi > 0)

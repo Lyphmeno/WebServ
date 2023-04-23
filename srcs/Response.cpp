@@ -474,8 +474,7 @@ void ft::Response::buildFullResponse(){
         full += "\nContent-Lenght: " + itostring(_body.size());
         full += "\n";
     }
-    full += "Connection: close";
-    full += "\n\n";
+    full += "\n";
     full += _body;
 
     _responseFull = full;

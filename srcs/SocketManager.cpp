@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/23 20:23:47 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/23 21:58:10 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ void	SocketManager::addServer(const conf_cit &configIt)
 
 void	SocketManager::addClient(const int &sfd, Socket &sock)
 {
-	std::cerr << "Add " << sock.fd << '\n';
 	if (gettimeofday(&sock.time, NULL) == -1)
 		throw std::runtime_error("Runetime error: Can't get socket creation time");
 	this->setNoBlock(sock.fd);
@@ -212,13 +211,25 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 	while (buff.size() > 0)
 	{
 		if (data.step == HEADER)
+		{
+			std::cerr << "[" << fd << "]: header\n";
 			this->handleHeader(sock, buff);
+		}
 		if (data.step == PARSING)
+		{
+			std::cerr << "[" << fd << "]: parsing\n";
 			this->handleParsing(sock);
+		}
 		if (data.step == BODY)
+		{
+			std::cerr << "[" << fd << "]: body\n";
 			this->handleBody(sock, buff);
+		}
 		if (data.step == SENDING)
+		{
+			std::cerr << "[" << fd << "]: sending\n";
 			this->handleSending(sock);
+		}
 	}
 }
 
@@ -240,7 +251,7 @@ void	SocketManager::checkTimeout()
 	while (timeoutFd.empty() == false)
 	{
 		//send 408
-		std::cerr << "Timeout on" << timeoutFd[0] << '\n';
+		std::cerr << "[" << timeoutFd[0] << "]" << "socket timeout" << '\n';
 		this->close(timeoutFd[0]);
 		timeoutFd.erase(timeoutFd.begin());
 	}
@@ -248,7 +259,6 @@ void	SocketManager::checkTimeout()
 
 void	SocketManager::close(const int &fd)
 {
-	std::cerr << "Close " << fd << '\n';
 	if (this->isServer(fd) == true)
 	{
 		srv_it sit = this->clients.find(fd);
