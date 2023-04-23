@@ -71,6 +71,7 @@ public:
         void createAutoIndexHtmlPage(const std::string& directoryPath);
 
         void initPostStruct(std::vector<unsigned char> fullBody);
+        //avarnier
         void	clear();
         
 private:

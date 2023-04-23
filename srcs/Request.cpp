@@ -290,6 +290,10 @@ std::string ft::Request::getCorrectUrl(void){
 }
 
 //avarnier
+void    ft::Request::clear()
+{
+}
+
 size_t	ft::Request::getContentLength(void) const
 {
 	size_t ret = 0;
@@ -444,12 +448,12 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
     }
 }
 
-void    printTab(const std::string &name, char **tab)
-{
-    std::cerr << name << ":\n";
-    for (size_t x = 0; tab[x] != NULL; x++)
-        std::cerr << tab[x] << '\n';
-}
+// void    printTab(const std::string &name, char **tab)
+// {
+//     std::cerr << name << ":\n";
+//     for (size_t x = 0; tab[x] != NULL; x++)
+//         std::cerr << tab[x] << '\n';
+// }
 
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)
@@ -468,16 +472,16 @@ const std::string &cgiPath)
         close(pipeIn[1]);
         return ("");
     }
-    pid_t pid = fork();
 
-    if (pid == -1)
+    pid_t cgi = fork();
+    if (cgi == -1)
     {
         close(pipeIn[0]);
         close(pipeIn[1]);
         close(pipeOut[0]);
         close(pipeOut[1]);
     }
-    else if (pid == 0)
+    if (cgi == 0)
     {
         close(pipeOut[0]);
         close(pipeIn[1]);
@@ -496,13 +500,28 @@ const std::string &cgiPath)
         close(pipeOut[1]);
         if (this->cgiAlloc(fd, scriptName, cgiPath, &c_env, &c_arg) == -1)
             return ("");
-        printTab("env", c_env);
-        printTab("arg", c_arg);
+        // printTab("env", c_env);
+        // printTab("arg", c_arg);
         execve(c_arg[0], c_arg, c_env);
         this->cgiDelete(c_env, c_arg);
         exit(1);
     }
-    else if (pid > 0)
+
+    pid_t timeout = fork();
+    if (timeout == -1)
+    {
+        close(pipeIn[0]);
+        close(pipeIn[1]);
+        close(pipeOut[0]);
+        close(pipeOut[1]);
+    }
+    if (timeout == 0)
+    {
+        sleep(CGI_TIMEOUT);
+        exit(0);
+    }
+
+    if (timeout > 0 && cgi > 0)
     {
         close(pipeIn[0]);
         close(pipeOut[1]);
@@ -516,7 +535,14 @@ const std::string &cgiPath)
             }
         }
         close(pipeIn[1]);
-        wait(NULL);
+        pid_t exitChild = wait(NULL);
+        if (exitChild == cgi)
+            kill(timeout, SIGKILL);
+        else
+        {
+            kill(cgi, SIGKILL);
+            return ("");
+        }
         this->getResponse(pipeOut[0], response);
     }
     std::cerr << "reponse:\n" << response << '\n';

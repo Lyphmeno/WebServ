@@ -481,3 +481,8 @@ void ft::Response::buildFullResponse(){
     _responseFull = full;
 
 }
+
+//avarnier
+void    ft::Response::clear()
+{
+}

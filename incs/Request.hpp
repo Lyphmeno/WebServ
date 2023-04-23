@@ -17,7 +17,7 @@
 #define POST 2
 #define DELETE 3
 #define CGI_BUFFER 1024
-#define CGI_TIMEOUT 1
+#define CGI_TIMEOUT 60
 #define CGI_EXTENSION ".php"
 
 namespace ft{
@@ -66,6 +66,7 @@ public:
 	std::string checkIndexVector(std::vector<std::string> Index);
 
 	//avarnier
+	void		clear();
 	size_t		getContentLength(void) const;
 	std::string getScriptName(const std::string &url);
 	std::string getPathInfo(const std::string &path);

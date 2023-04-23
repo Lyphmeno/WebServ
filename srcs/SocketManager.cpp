@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/23 05:55:22 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/23 20:23:47 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,8 +197,10 @@ void	SocketManager::handleParsing(Socket &sock)
 void	SocketManager::handleSending(Socket &sock)
 {
 	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
-	//clear req
-	//clear rep
+	sock.data.step = HEADER;
+	sock.data.bodysize = 0;
+	sock.data.rep.clear();
+	sock.data.req.clear();
 }
 
 void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
@@ -216,10 +218,7 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 		if (data.step == BODY)
 			this->handleBody(sock, buff);
 		if (data.step == SENDING)
-		{
 			this->handleSending(sock);
-			buff.clear();
-		}
 	}
 }
 
