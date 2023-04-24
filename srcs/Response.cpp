@@ -465,20 +465,17 @@ void ft::Response::buildFullResponse(){
         setError(_code);
     
 
-    full = _protVersion + " " + _code + " " + _status;
-    full += "\n";
-    full += "Date: ";
-    full += date_time;
+    full = _protVersion + " " + _code + " " + _status + "\r\n";
+    full += "Date: " ;
+	full += date_time;
+	full += "\r\n";
     if (_method != "POST"){
-        full += "Content-type: " + _contentType;
-        full += "\nContent-Lenght: " + itostring(_body.size());
-        full += "\n";
+        full += "Content-type: " + _contentType + "\r\n";
+        full += "Content-Lenght: " + itostring(_body.size()) + "\r\n";
     }
-    full += "\n";
+    full += "Connection: Keep-Alive\r\n";
+    full += "\r\n";
     full += _body;
-
-    _responseFull = full;
-
 }
 
 //avarnier
