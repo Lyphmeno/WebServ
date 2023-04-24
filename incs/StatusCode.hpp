@@ -34,6 +34,7 @@ public:
         const std::string & getStatus(std::string code);
 
         void initStruct(std::string code, std::string status);
+		void	clear();
 private:
 
        std::map<std::string, t_status> _statusCode;

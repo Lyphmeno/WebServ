@@ -456,29 +456,35 @@ void ft::Response::createBody(const std::string & url){
 */
 void ft::Response::buildFullResponse(){
     std::string full;
-    time_t now = std::time(0);
-
-    std::string lenght = itostring(_contentLenght);
-    char* date_time = std::ctime(&now);
-
-    if (_code != "200")
-        setError(_code);
-    
-
-    full = _protVersion + " " + _code + " " + _status + "\r\n";
-    full += "Date: " ;
-	full += date_time;
-	full += "\r\n";
-    if (_method != "POST"){
-        full += "Content-type: " + _contentType + "\r\n";
-        full += "Content-Lenght: " + itostring(_body.size()) + "\r\n";
-    }
-    full += "Connection: Keep-Alive\r\n";
-    full += "\r\n";
-    full += _body;
+	_responseFull = "HTTP\1.1 200 OK\r\n";
+	_responseFull += "Server: Webserv\r\n";
+	_responseFull += "Content-Type: text/html\r\n";
+	_responseFull += "Content-Length: " + itostring(_body.size()) + "\r\n";
+	_responseFull += "\r\n";
+    _responseFull += _body;
 }
 
 //avarnier
 void    ft::Response::clear()
 {
+	this->_protVersion.clear();
+	this->_url.clear();
+	this->_method.clear();
+	this->_urlLocation.clear();
+	this->_contentType.clear();
+	this->_server.clear();
+	this->_body.clear();
+	this->filename.clear();
+	this->_contentLenght = 0;
+	this->_autoIndex = false;
+	this->_Mime.clear();
+	this->_code.clear();
+	this->_status.clear();
+	this->_codeStatus.clear();
+	this->_responseFull.clear();
+	this->_rawResponse.clear();
+	this->_multipartForm.clear();
+	this->_formValues.clear();
+	this->_rawBody.clear();
+	this->tmpName.clear();
 }

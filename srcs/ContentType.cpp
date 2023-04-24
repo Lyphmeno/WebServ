@@ -86,6 +86,11 @@ ft::ContentType::ContentType(void){
 //                               DESTRUCTOR                                   //
 ////////////////////////////////////////////////////////////////////////////////
 
+void	ft::ContentType::clear()
+{
+	this->_mimeType.clear();
+}
+
 ft::ContentType::~ContentType(void){
 }
 
