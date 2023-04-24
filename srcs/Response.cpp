@@ -458,7 +458,6 @@ void ft::Response::buildFullResponse(){
     std::string full;
     time_t now = std::time(0);
 
-    std::string lenght = itostring(_contentLenght);
     char* date_time = std::ctime(&now);
 
     if (_code != "200")
@@ -479,6 +478,35 @@ void ft::Response::buildFullResponse(){
 
     _responseFull = full;
 
+}
+
+std::string ft::Response::buildCGIresponse(std::string cgiRep){
+    std::string reponse = cgiRep;
+    std::string value;
+    size_t pos;
+
+    time_t now = std::time(0);
+
+    char* date_time = std::ctime(&now);
+
+    if ((pos = cgiRep.find(":")) != std::string::npos) {
+        cgiRep.erase(0, pos + 2);
+        if ((pos = cgiRep.find(13)) != std::string::npos)
+            value = cgiRep.substr(0, pos);
+        cgiRep.erase(0, pos + 1);
+        cgiRep = "\nContent-Type: text/html; charset=utf-8";
+        reponse = "HTTP/1.1 ";
+        reponse += value;
+        reponse += cgiRep;
+        reponse += "\n";
+        reponse += "Date: ";
+        reponse += date_time;
+        reponse += "Connection: close\n";
+        reponse += "\r\n";
+        reponse += _body;
+    }
+    std::cout << reponse << std::endl;
+    return reponse;
 }
 
 //avarnier
