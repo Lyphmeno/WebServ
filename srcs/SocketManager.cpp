@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/24 17:27:07 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/25 12:29:16 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ void	SocketManager::handleHeader(Socket &sock, std::vector<unsigned char> &buff)
 	size_t oldsize = header.size();
 	header.insert(header.end(), buff.begin(), buff.end());
 	size_t pos = header.find("\r\n\r\n");
+
 	if (pos != header.npos)
 	{
 		buff.erase(buff.begin(), buff.begin() + (pos + 4 - oldsize));

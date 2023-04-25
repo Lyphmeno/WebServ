@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/24 15:24:49 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/25 12:29:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	Webserv::run()
 					buff.resize(bytes);
 					this->manager.getData(fd, buff);
 				}
-				else if (bytes == -1)
+				else
 				{
 					std::cerr << "[" << fd << "]: closed with recv =" << bytes << '\n';
 					this->manager.close(fd);
