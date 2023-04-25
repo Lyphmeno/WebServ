@@ -102,7 +102,7 @@ std::string ft::Request::requestStarter(const int &fd){
         std::string cgidir = this->_serverParsing.getCgiDir(url);
         if (cgidir.empty() == false)
         {
-            responseR = execCgi(fd, this->getScriptName(this->_url), cgidir);
+            responseR = execCgi(fd, cgidir);
         }
         if (responseR.empty() == true)
         {
@@ -330,6 +330,11 @@ std::string ft::Request::getScriptName(const std::string &url)
     return (url.substr(begin + 1, end + 4));
 }
 
+std::string	ft::Request::getScriptFilename(const std::string &url)
+{
+	return (url);
+}
+
 std::string ft::Request::getPathInfo(const std::string &path)
 {
     std::string extension(CGI_EXTENSION);
@@ -371,14 +376,16 @@ void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
 const int &fd, const std::string &scriptName)
 {
     (void)scriptName;
-    this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
+    this->addToEnv(env, "REDIRECT_STATUS", "CGI");
+	this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
     this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
     this->addToEnv(env, "GATEWAY_INTERFACE", "CGI/1.1");
-    this->addToEnv(env, "PATH_INFO", this->getUrl());
+    this->addToEnv(env, "PATH_INFO", this->getPathInfo(this->_url));
     this->addToEnvAddr(env, fd);
     this->addToEnv(env, "QUERY_STRING", this->_queryString);
     this->addToEnv(env, "REQUEST_METHOD", this->getMethod());
-    //this->addToEnv(env, "SCRIPT_NAME", this->getUrl());
+    this->addToEnv(env, "SCRIPT_FILENAME", this->getScriptFilename(this->_url));
+    this->addToEnv(env, "SCRIPT_NAME", this->getScriptName(this->_url));
     this->addToEnv(env, "SERVER_NAME", this->_serverParsing.getServerName());
     this->addToEnv(env, "SERVER_PORT", this->_serverParsing.getServerPort());
     this->addToEnv(env, "SERVER_PROTOCOL", "HTTP/1.1");
@@ -471,8 +478,7 @@ void    printTab(const std::string &name, char **tab)
         std::cerr << tab[x] << '\n';
 }
 
-std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
-const std::string &cgiPath)
+std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
 {
     std::string response;
     int         pipeIn[2];
@@ -534,10 +540,10 @@ const std::string &cgiPath)
         }
         close(pipeIn[0]);
         close(pipeOut[1]);
-        if (this->cgiAlloc(fd, scriptName, cgiPath, &c_env, &c_arg) == -1)
+        if (this->cgiAlloc(fd, this->getScriptName(this->_url), cgiPath, &c_env, &c_arg) == -1)
             return ("");
-        // printTab("env", c_env);
-        // printTab("arg", c_arg);
+        printTab("env", c_env);
+        printTab("arg", c_arg);
         execve(c_arg[0], c_arg, c_env);
         this->cgiDelete(c_env, c_arg);
         exit(1);

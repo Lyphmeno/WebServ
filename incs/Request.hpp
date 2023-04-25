@@ -69,6 +69,7 @@ public:
 	void		clear();
 	size_t		getContentLength(void) const;
 	std::string getScriptName(const std::string &url);
+	std::string getScriptFilename(const std::string &url);
 	std::string getPathInfo(const std::string &path);
 	void    	addToEnvFromRequest(std::map<std::string, std::string> &env,
 				const std::string &name, const std::string &elem);
@@ -83,8 +84,7 @@ public:
 				const std::string &cgiPath, char ***c_env, char ***c_arg);
 	void		cgiDelete(char **c_env, char **c_arg);
 	void		getResponse(const int &fd, std::string &response);
-	std::string	execCgi(const int &fd, const std::string &scriptName,
-				const std::string &cgiPath);
+	std::string	execCgi(const int &fd, const std::string &cgiPath);
 
 	std::string 				rawHeader;
 	std::vector<unsigned char>	rawBody;
