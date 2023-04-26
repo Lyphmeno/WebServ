@@ -98,6 +98,8 @@ std::string ft::Request::requestStarter(const int &fd){
     if (this->_url.find(CGI_EXTENSION) != this->_url.npos)
     {
         std::string cgidir = this->_serverParsing.getCgiDir(url);
+        if (cgidir.empty() == true)
+            std::cerr << "no cgi_dir\n";
         if (cgidir.empty() == false)
             responseR = execCgi(fd, cgidir);
         if (responseR.empty() == true)
@@ -319,7 +321,7 @@ std::string ft::Request::getScriptName(const std::string &url)
 {
     size_t end = url.find(CGI_EXTENSION);
     if (end == url.npos)
-        return (std::string());
+        return ("");
     size_t begin = url.rfind("/", end);
     if (begin == url.npos)
         return (url.substr(0, end + 4));
@@ -328,7 +330,10 @@ std::string ft::Request::getScriptName(const std::string &url)
 
 std::string	ft::Request::getScriptFilename(const std::string &url)
 {
-	return (url);
+    size_t end = url.find(CGI_EXTENSION);
+    if (end == url.npos)
+        return ("");
+    return (url.substr(0, end + 4));
 }
 
 std::string ft::Request::getPathInfo(const std::string &path)
@@ -418,7 +423,7 @@ int    ft::Request::cgiAlloc(const int &fd, const std::string &cgiPath, char ***
 {
     try
     {
-        *c_arg = this->allocArg(cgiPath, this->getScriptName(this->_url));
+        *c_arg = this->allocArg(cgiPath, this->getScriptFilename(this->_url));
     }
     catch(const std::exception& e)
     {
@@ -568,6 +573,6 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         }
         this->getResponse(pipeOut[0], response);
     }
-    std::cerr << "reponse:\n" << response << '\n';
+    std::cerr << "reponse:\n" << response << "\nend\n";
     return (response);
 }
