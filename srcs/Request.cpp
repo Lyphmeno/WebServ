@@ -101,6 +101,7 @@ std::string ft::Request::requestStarter(const int &fd){
         if (cgidir.empty() == false)
         {
             responseR = execCgi(fd, this->getScriptName(this->_url), cgidir);
+            std::cout << responseR;
             // responseR = responseHTTP.buildCGIresponse(responseR);
         }
         if (responseR.empty() == true)

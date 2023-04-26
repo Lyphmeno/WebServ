@@ -476,6 +476,28 @@ void ft::Response::buildFullResponse(){
     _responseFull += _body;
 }
 
+std::string ft::Response::buildCGIresponse(std::string cgiRep){
+    std::string reponse = cgiRep;
+    std::string value;
+    size_t pos;
+
+    if ((pos = cgiRep.find(":")) != std::string::npos) {
+        cgiRep.erase(0, pos + 2);
+        if ((pos = cgiRep.find(13)) != std::string::npos)
+            value = cgiRep.substr(0, pos);
+        cgiRep.erase(0, pos + 1);
+        cgiRep = "\r\nContent-Type: text/html; charset=utf-8";
+        reponse = "HTTP/1.1 ";
+        reponse += value;
+        reponse += cgiRep;
+        reponse += "\r\n";
+        reponse += "\r\n";
+        reponse += _body;
+    }
+    std::cout << reponse << std::endl;
+    return reponse;
+ }
+
 //avarnier
 void    ft::Response::clear()
 {
