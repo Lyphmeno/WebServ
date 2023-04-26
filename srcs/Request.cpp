@@ -45,10 +45,8 @@ void ft::Request::parseHeader(){
     std::string value;
     newbuffer = rawHeader;
 
-
     size_t pos = 0;
     std::string token;
-
     if ((pos = newbuffer.find(13)) != std::string::npos)
     {
         _requestLine = newbuffer.substr(0, pos);
@@ -103,7 +101,7 @@ std::string ft::Request::requestStarter(const int &fd){
         if (cgidir.empty() == false)
         {
             responseR = execCgi(fd, this->getScriptName(this->_url), cgidir);
-            responseR = responseHTTP.buildCGIresponse(responseR);
+            // responseR = responseHTTP.buildCGIresponse(responseR);
         }
         if (responseR.empty() == true)
         {
