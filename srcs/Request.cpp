@@ -369,9 +369,8 @@ void    ft::Request::addToEnvAddr(std::map<std::string, std::string> &env, const
 
 
 void    ft::Request::fillEnv(std::map<std::string, std::string> &env,
-const int &fd, const std::string &scriptName)
+const int &fd)
 {
-    (void)scriptName;
     this->addToEnv(env, "REDIRECT_STATUS", "CGI");
 	this->addToEnvFromRequest(env, "CONTENT_TYPE", "Content-Type");
     this->addToEnvFromRequest(env, "CONTENT_LENGTH", "Content-Length");
@@ -415,11 +414,11 @@ char    **ft::Request::allocArg(const std::string &cgiPath, const std::string &s
     return (c_arg);
 }
 
-int    ft::Request::cgiAlloc(const int &fd, const std::string &scriptName, const std::string &cgiPath, char ***c_env, char ***c_arg)
+int    ft::Request::cgiAlloc(const int &fd, const std::string &cgiPath, char ***c_env, char ***c_arg)
 {
     try
     {
-        *c_arg = this->allocArg(cgiPath, scriptName);
+        *c_arg = this->allocArg(cgiPath, this->getScriptName(this->_url));
     }
     catch(const std::exception& e)
     {
@@ -429,7 +428,7 @@ int    ft::Request::cgiAlloc(const int &fd, const std::string &scriptName, const
     try
     {
         env_type    env;
-        this->fillEnv(env, fd, scriptName);
+        this->fillEnv(env, fd);
         *c_env = this->allocEnv(env);
     }
     catch(const std::exception& e)
@@ -536,7 +535,7 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         }
         close(pipeIn[0]);
         close(pipeOut[1]);
-        if (this->cgiAlloc(fd, this->getScriptName(this->_url), cgiPath, &c_env, &c_arg) == -1)
+        if (this->cgiAlloc(fd, cgiPath, &c_env, &c_arg) == -1)
             return ("");
         printTab("env", c_env);
         printTab("arg", c_arg);

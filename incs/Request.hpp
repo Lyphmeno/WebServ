@@ -76,12 +76,11 @@ public:
 	void		addToEnv(std::map<std::string, std::string> &env,
 				const std::string &name, const std::string &content);
 	void    	addToEnvAddr(std::map<std::string, std::string> &env, const int &fd);
-	void		fillEnv(std::map<std::string, std::string> &env,
-				const int &fd, const std::string &scriptName);
+	void		fillEnv(std::map<std::string, std::string> &env, const int &fd);
 	char    	**allocEnv(std::map<std::string, std::string> &env);
 	char    	**allocArg(const std::string &cgiPath, const std::string &scriptName);
-	int			cgiAlloc(const int &fd, const std::string &scriptName,
-				const std::string &cgiPath, char ***c_env, char ***c_arg);
+	int			cgiAlloc(const int &fd, const std::string &cgiPath,
+				char ***c_env, char ***c_arg);
 	void		cgiDelete(char **c_env, char **c_arg);
 	void		getResponse(const int &fd, std::string &response);
 	std::string	execCgi(const int &fd, const std::string &cgiPath);

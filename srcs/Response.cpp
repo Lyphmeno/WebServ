@@ -465,7 +465,7 @@ void ft::Response::buildFullResponse(){
         setError(_code);
     
     _responseFull = _protVersion + " " + _code + " " + _status  + "\r\n";
-	_responseFull += "Server: Webserv\r\n";
+	_responseFull += "Server: WEBSERV/1.0\r\n";
     if (_method != "POST"){
         if (_contentType == "")
             _contentType = addContentType();
