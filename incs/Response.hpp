@@ -65,6 +65,8 @@ public:
         const std::string & addContentType(void);
         void createBody(const std::string & url);
         void buildFullResponse();
+        std::string buildCGIresponse(std::string cgiRep);
+
         void handleErrors();
         void setError(std::string code);
         

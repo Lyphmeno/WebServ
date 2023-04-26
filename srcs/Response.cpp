@@ -169,11 +169,15 @@ void ft::Response::setError(std::string code)
     Check extension to add the content type
 */
 const std::string & ft::Response::addContentType(void){
-
     std::string extension = "";
+    std::string tmp = _url;
+    size_t found;
     
-    size_t found = _url.find(".");
-    extension.insert(0, _url, found + 1);
+    if ((found = tmp.find("./")) != std::string::npos)
+        tmp.erase(0, found + 2);
+    found = tmp.find(".");
+    extension.insert(0, tmp, found + 1);
+
     return (_Mime.getType(extension));
 }
 
@@ -455,12 +459,20 @@ void ft::Response::createBody(const std::string & url){
     Final response for the client
 */
 void ft::Response::buildFullResponse(){
-    std::string full;
-	_responseFull = "HTTP\1.1 200 OK\r\n";
+    std::string lenght = itostring(_contentLenght);
+
+    if (_code != "200")
+        setError(_code);
+    
+    _responseFull = _protVersion + " " + _code + " " + _status  + "\r\n";
 	_responseFull += "Server: Webserv\r\n";
-	_responseFull += "Content-Type: text/html\r\n";
-	_responseFull += "Content-Length: " + itostring(_body.size()) + "\r\n";
-	_responseFull += "\r\n";
+    if (_method != "POST"){
+        if (_contentType == "")
+            _contentType = addContentType();
+        _responseFull += "Content-type: " + _contentType  + "\r\n";
+        _responseFull += "Content-Lenght: " + itostring(_body.size()) + "\r\n";
+    }
+    _responseFull += "\r\n";
     _responseFull += _body;
 }
 
