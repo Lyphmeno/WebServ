@@ -293,6 +293,22 @@ std::string ft::Request::getCorrectUrl(void){
 //avarnier
 void    ft::Request::clear()
 {
+	this->rawHeader.clear();
+	this->rawBody.clear();
+	this->_code.clear();
+	this->_method.clear();
+	this->_url.clear();
+	this->_urlLocation.clear();
+	this->_protocolVersion.clear();
+	this->_tmpLoc.clear();
+	this->_requestLine.clear();
+	this->_requestFull.clear();
+	this->_root.clear();
+	this->_index.clear();
+	this->_queryString.clear();
+	this->_dataQuery.clear();
+	this->_autoIndexBody.clear();
+	this->_autoIndex = false;
 }
 
 size_t	ft::Request::getContentLength(void) const
@@ -449,12 +465,12 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
     }
 }
 
-// void    printTab(const std::string &name, char **tab)
-// {
-//     std::cerr << name << ":\n";
-//     for (size_t x = 0; tab[x] != NULL; x++)
-//         std::cerr << tab[x] << '\n';
-// }
+void    printTab(const std::string &name, char **tab)
+{
+    std::cerr << name << ":\n";
+    for (size_t x = 0; tab[x] != NULL; x++)
+        std::cerr << tab[x] << '\n';
+}
 
 std::string ft::Request::execCgi(const int &fd, const std::string &scriptName,
 const std::string &cgiPath)

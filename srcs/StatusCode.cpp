@@ -29,11 +29,14 @@ ft::StatusCode::StatusCode(const StatusCode & src){
     *this = src;
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //                               DESTRUCTOR                                   //
 ////////////////////////////////////////////////////////////////////////////////
+
+void	ft::StatusCode::clear()
+{
+	this->_statusCode.clear();
+}
 
 ft::StatusCode::~StatusCode(void){
 }

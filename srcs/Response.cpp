@@ -458,58 +458,48 @@ void ft::Response::buildFullResponse(){
     std::string full;
     time_t now = std::time(0);
 
+    std::string lenght = itostring(_contentLenght);
     char* date_time = std::ctime(&now);
 
     if (_code != "200")
         setError(_code);
     
-
     full = _protVersion + " " + _code + " " + _status;
-    full += "\n";
-    full += "Date: ";
-    full += date_time;
+    full += "\r\n";
+	_responseFull += "Server: Webserv\r\n";
     if (_method != "POST"){
         full += "Content-type: " + _contentType;
-        full += "\nContent-Lenght: " + itostring(_body.size());
-        full += "\n";
+        full += "\r\nContent-Lenght: " + itostring(_body.size());
+        full += "\r\n";
     }
-    full += "\n";
+    full += "\r\n\r\n";
     full += _body;
 
     _responseFull = full;
 
 }
 
-std::string ft::Response::buildCGIresponse(std::string cgiRep){
-    std::string reponse = cgiRep;
-    std::string value;
-    size_t pos;
-
-    time_t now = std::time(0);
-
-    char* date_time = std::ctime(&now);
-
-    if ((pos = cgiRep.find(":")) != std::string::npos) {
-        cgiRep.erase(0, pos + 2);
-        if ((pos = cgiRep.find(13)) != std::string::npos)
-            value = cgiRep.substr(0, pos);
-        cgiRep.erase(0, pos + 1);
-        cgiRep = "\nContent-Type: text/html; charset=utf-8";
-        reponse = "HTTP/1.1 ";
-        reponse += value;
-        reponse += cgiRep;
-        reponse += "\n";
-        reponse += "Date: ";
-        reponse += date_time;
-        reponse += "Connection: close\n";
-        reponse += "\r\n";
-        reponse += _body;
-    }
-    std::cout << reponse << std::endl;
-    return reponse;
-}
-
 //avarnier
 void    ft::Response::clear()
 {
+	this->_protVersion.clear();
+	this->_url.clear();
+	this->_method.clear();
+	this->_urlLocation.clear();
+	this->_contentType.clear();
+	this->_server.clear();
+	this->_body.clear();
+	this->filename.clear();
+	this->_contentLenght = 0;
+	this->_autoIndex = false;
+	this->_Mime.clear();
+	this->_code.clear();
+	this->_status.clear();
+	this->_codeStatus.clear();
+	this->_responseFull.clear();
+	this->_rawResponse.clear();
+	this->_multipartForm.clear();
+	this->_formValues.clear();
+	this->_rawBody.clear();
+	this->tmpName.clear();
 }

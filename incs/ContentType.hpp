@@ -29,6 +29,7 @@ public:
         const std::string & getType(std::string extension);
 
         void initMime(std::string ext, std::string type);
+		void	clear();
 private:
 
        std::map<std::string, t_data> _mimeType;
