@@ -483,6 +483,7 @@ void    ft::Response::clear()
 	this->_url.clear();
 	this->_method.clear();
 	this->_urlLocation.clear();
+    this->_allowedMethod = 0;
 	this->_contentType.clear();
 	this->_server.clear();
 	this->_body.clear();

@@ -117,6 +117,7 @@ std::string ft::Request::requestStarter(const int &fd){
         responseHTTP.buildFullResponse();
         responseR = responseHTTP.getFullResponse();
     }
+    std::cerr << "[" << fd << "]: " << this->_url << "\n";
     return responseR;
 }
 
@@ -290,9 +291,11 @@ std::string ft::Request::getCorrectUrl(void){
 //avarnier
 void    ft::Request::clear()
 {
+	this->_rawRequest.clear();
 	this->rawHeader.clear();
 	this->rawBody.clear();
 	this->_code.clear();
+    this->responseHTTP.clear();
 	this->_method.clear();
 	this->_url.clear();
 	this->_urlLocation.clear();
@@ -542,8 +545,8 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         close(pipeOut[1]);
         if (this->cgiAlloc(fd, cgiPath, &c_env, &c_arg) == -1)
             return ("");
-        printTab("env", c_env);
-        printTab("arg", c_arg);
+        // printTab("env", c_env);
+        // printTab("arg", c_arg);
         execve(c_arg[0], c_arg, c_env);
         this->cgiDelete(c_env, c_arg);
         exit(1);
@@ -573,6 +576,5 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         }
         this->getResponse(pipeOut[0], response);
     }
-    std::cerr << "reponse:\n" << response << "\nend\n";
     return (response);
 }

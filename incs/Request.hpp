@@ -17,7 +17,7 @@
 #define POST 2
 #define DELETE 3
 #define CGI_BUFFER 1024
-#define CGI_TIMEOUT 2
+#define CGI_TIMEOUT 1
 #define CGI_EXTENSION ".php"
 
 namespace ft{
@@ -56,8 +56,6 @@ public:
 
 	void getRequestLine(std::string line);
 	void checkMethodAllowed(ft::Response &response, std::string method);
-	std::map<std::string, std::string> _rawRequest;
-
 
 	bool Directory(std::string url);
 	std::string getCorrectUrl(void);
@@ -85,39 +83,37 @@ public:
 	void		getResponse(const int &fd, std::string &response);
 	std::string	execCgi(const int &fd, const std::string &cgiPath);
 
-	std::string 				rawHeader;
-	std::vector<unsigned char>	rawBody;
-	ft::Server	_serverParsing;
-	std::string _code;
-
-
-    ft::Response responseHTTP;
+	std::map<std::string, std::string>	_rawRequest;
+	std::string 						rawHeader;
+	std::vector<unsigned char>			rawBody;
+	ft::Server							_serverParsing;
+	std::string 						_code;
+    ft::Response 						responseHTTP;
 
 private:
 
 	//Request line
 	std::string	_method;
 	std::string	_url;
-	std::string _urlLocation;
-	std::string _protocolVersion;
-
-	std::string _tmpLoc;
-
-	std::string _requestLine;
+	std::string	_urlLocation;
+	std::string	_protocolVersion;
+	std::string	_tmpLoc;
+	std::string	_requestLine;
 
 	//Raw
-	std::vector<std::string> _requestFull;
+	std::vector<std::string>	_requestFull;
 	
 	//Conf file
-	std::string _root;
-	std::string _index;
+	std::string	_root;
+	std::string	_index;
 	
-	std::string _queryString;
-	std::map<std::string, std::string> _dataQuery;
+	std::string 						_queryString;
+	std::map<std::string, std::string>	_dataQuery;
+	
 	//int _code;
-	std::string _autoIndexBody;
-	bool _autoIndex;
-
+	std::string	_autoIndexBody;
+	bool		_autoIndex;
+	
 	// int isAllowed;
 
 };
