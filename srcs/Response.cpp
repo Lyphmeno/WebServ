@@ -470,7 +470,7 @@ void ft::Response::buildFullResponse(){
         if (_contentType == "")
             _contentType = addContentType();
         _responseFull += "Content-type: " + _contentType  + "\r\n";
-        _responseFull += "Content-Lenght: " + itostring(_body.size()) + "\r\n";
+        _responseFull += "Content-Length: " + itostring(_body.size()) + "\r\n";
     }
     _responseFull += "\r\n";
     _responseFull += _body;
