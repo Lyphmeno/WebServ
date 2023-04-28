@@ -98,14 +98,12 @@ std::string ft::Request::requestStarter(const int &fd){
     if (this->_url.find(CGI_EXTENSION) != this->_url.npos)
     {
         std::string cgidir = this->_serverParsing.getCgiDir(url);
-        if (cgidir.empty() == true)
-            std::cerr << "no cgi_dir\n";
         if (cgidir.empty() == false)
             responseR = execCgi(fd, cgidir);
         if (responseR.empty() == true)
             this->_code = "500";
-        // else
-        //     responseR = responseHTTP.buildCGIresponse(responseR);
+        else
+            responseR = responseHTTP.buildCgiResponse(responseR);
     }
 
     if (responseR.empty() == true)
@@ -117,7 +115,7 @@ std::string ft::Request::requestStarter(const int &fd){
         responseHTTP.buildFullResponse();
         responseR = responseHTTP.getFullResponse();
     }
-    std::cerr << "[" << fd << "]: " << this->_url << "\n";
+    std::cerr << "Response: " << responseR << "\n";
     return responseR;
 }
 
@@ -474,13 +472,6 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
     }
 }
 
-void    printTab(const std::string &name, char **tab)
-{
-    std::cerr << name << ":\n";
-    for (size_t x = 0; tab[x] != NULL; x++)
-        std::cerr << tab[x] << '\n';
-}
-
 std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
 {
     std::string response;
@@ -498,24 +489,24 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         return ("");
     }
 
-    pid_t timeout = fork();
-    if (timeout == -1)
-    {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        close(pipeOut[0]);
-        close(pipeOut[1]);
-        return("");
-    }
-    if (timeout == 0)
-    {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        close(pipeOut[0]);
-        close(pipeOut[1]);
-        sleep(CGI_TIMEOUT);
-        exit(0);
-    }
+    // pid_t timeout = fork();
+    // if (timeout == -1)
+    // {
+    //     close(pipeIn[0]);
+    //     close(pipeIn[1]);
+    //     close(pipeOut[0]);
+    //     close(pipeOut[1]);
+    //     return("");
+    // }
+    // if (timeout == 0)
+    // {
+    //     close(pipeIn[0]);
+    //     close(pipeIn[1]);
+    //     close(pipeOut[0]);
+    //     close(pipeOut[1]);
+    //     sleep(CGI_TIMEOUT);
+    //     exit(0);
+    // }
 
     pid_t cgi = fork();
     if (cgi == -1)
@@ -545,14 +536,13 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         close(pipeOut[1]);
         if (this->cgiAlloc(fd, cgiPath, &c_env, &c_arg) == -1)
             return ("");
-        // printTab("env", c_env);
-        // printTab("arg", c_arg);
         execve(c_arg[0], c_arg, c_env);
         this->cgiDelete(c_env, c_arg);
         exit(1);
     }
 
-    if (timeout > 0 && cgi > 0)
+    // if (timeout > 0 && cgi > 0)
+    if (cgi > 0)
     {
         close(pipeIn[0]);
         close(pipeOut[1]);
@@ -566,15 +556,17 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
             }
         }
         close(pipeIn[1]);
-        pid_t exitChild = wait(NULL);
-        if (exitChild == cgi)
-            kill(timeout, SIGKILL);
-        else
-        {
-            kill(cgi, SIGKILL);
-            return ("");
-        }
+        // pid_t exitChild = wait(NULL);
+        // if (exitChild == cgi)
+        //     kill(timeout, SIGKILL);
+        // else
+        // {
+        //     std::cerr << "CGI timeout\n";
+        //     kill(cgi, SIGKILL);
+        //     return ("");
+        // }
         this->getResponse(pipeOut[0], response);
     }
+    std::cerr << "CGI: " << response << '\n';
     return (response);
 }

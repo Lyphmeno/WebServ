@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/27 18:18:17 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/27 20:24:27 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ void	Webserv::run()
 			}
 			else
 			{
-				std::cerr << "[" << fd << "]: epoll read event\n";
 				std::vector<unsigned char>	buff(MAXBUFF);
 				ssize_t bytes = recv(fd, &buff[0], MAXBUFF, 0);
 				if (bytes > 0)

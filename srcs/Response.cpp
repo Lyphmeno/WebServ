@@ -476,6 +476,42 @@ void ft::Response::buildFullResponse(){
     _responseFull += _body;
 }
 
+std::string ft::Response::buildCgiResponse(std::string &cgiResponse){
+    std::string header;
+    std::string status = " 200 OK";
+    std::string body = cgiResponse.substr(cgiResponse.find("\r\n\r\n") + 4, cgiResponse.npos);
+    cgiResponse.erase(cgiResponse.find("\r\n\r\n") + 4, cgiResponse.npos);
+
+    std::string key;
+    size_t      start;
+    size_t      end;
+
+    key = "Status:";
+    start = cgiResponse.find(key);
+    end = cgiResponse.find("\r\n", start);
+    if (start != cgiResponse.npos)
+    {
+        status = cgiResponse.substr(start + key.size(), end);
+        cgiResponse.erase(start, end + 2);
+    }
+    
+    header = "HTTP/1.1" + status + "\r\n";
+    header += "Server: WEBSERV/1.0\r\n";
+    
+    key = "Content-Type:";
+    start = cgiResponse.find(key);
+    end = cgiResponse.find("\r\n", start);
+    if (start != cgiResponse.npos)
+    {
+        header += cgiResponse.substr(start, end) + "\r\n";
+        cgiResponse.erase(start, end + 2);
+    }
+    if (start != cgiResponse.npos || body.empty() == false)
+        header += "Content-Length: " + itostring(body.size()) + "\r\n";
+    header += "\r\n";
+    return (header + body);
+}
+
 //avarnier
 void    ft::Response::clear()
 {

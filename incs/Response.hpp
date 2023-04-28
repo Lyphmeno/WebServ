@@ -62,10 +62,10 @@ public:
         void deleteM(const std::string & url);
 
         //Functions
-        const std::string & addContentType(void);
-        void createBody(const std::string & url);
-        void buildFullResponse();
-        std::string buildCGIresponse(std::string cgiRep);
+        const           std::string & addContentType(void);
+        void            createBody(const std::string & url);
+        void            buildFullResponse();
+        std::string     buildCgiResponse(std::string &cgiResponse);
 
         void handleErrors();
         void setError(std::string code);
