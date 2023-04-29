@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/06 16:11:25 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/31 19:09:14 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/28 21:07:25 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 #include <exception>
 #include <csignal>
 
-void    signalHandler(int sig)
+bool	sig = false;
+
+void    signalHandler(int signal)
 {
-    if (sig == SIGINT)
-    	throw std::runtime_error("SIGINT received");
+    if (signal == SIGINT)
+		sig = true;
 }
 
 int main(int ac, char **av)
