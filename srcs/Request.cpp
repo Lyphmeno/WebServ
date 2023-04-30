@@ -473,65 +473,36 @@ void    ft::Request::getResponse(const int &fd, std::string &response)
 std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
 {
     std::string response;
-    int         pipeIn[2];
-    int         pipeOut[2];
+	TmpFd		tmpIn;
+	TmpFd		tmpOut;
     char        **c_env = NULL;
     char        **c_arg = NULL;
 
-    if (pipe(pipeIn) != 0)
-        return ("");
-    if (pipe(pipeOut) != 0)
-    {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        return ("");
-    }
-
     pid_t timeout = fork();
     if (timeout == -1)
-    {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        close(pipeOut[0]);
-        close(pipeOut[1]);
         return("");
-    }
     if (timeout == 0)
     {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        close(pipeOut[0]);
-        close(pipeOut[1]);
         sleep(CGI_TIMEOUT);
         exit(0);
     }
 
     pid_t cgi = fork();
     if (cgi == -1)
-    {
-        close(pipeIn[0]);
-        close(pipeIn[1]);
-        close(pipeOut[0]);
-        close(pipeOut[1]);
         return ("");
-    }
     if (cgi == 0)
     {
-        close(pipeOut[0]);
-        close(pipeIn[1]);
-        if (dup2(pipeIn[0], STDIN_FILENO) == -1)
-        {
-            close(pipeIn[0]);
+		if (this->_method == "POST")
+		{
+			if (write(tmpIn.fd, &this->rawBody[0], this->rawBody.size()) == -1)
+				return ("");
+			if (lseek(tmpIn.fd, SEEK_SET, 0) == -1)
+				return ("");
+		}
+		if (dup2(tmpIn.fd, STDIN_FILENO) == -1)
             return ("");
-        }
-        if (dup2(pipeOut[1], STDOUT_FILENO) == -1)
-        {
-            close(pipeIn[0]);
-            close(pipeOut[1]);
+        if (dup2(tmpOut.fd, STDOUT_FILENO) == -1)
             return ("");
-        }
-        close(pipeIn[0]);
-        close(pipeOut[1]);
         if (this->cgiAlloc(fd, cgiPath, &c_env, &c_arg) == -1)
             return ("");
         execve(c_arg[0], c_arg, c_env);
@@ -541,20 +512,6 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
 
     if (timeout > 0 && cgi > 0)
     {
-        close(pipeIn[0]);
-        close(pipeOut[1]);
-        if (this->getMethod() == "POST")
-        {
-            if (write(pipeIn[1], &this->rawBody[0], this->rawBody.size()) == -1)
-            {
-                close(pipeIn[1]);
-                close(pipeOut[0]);
-                return ("");
-            }
-        }
-        close(pipeIn[1]);
-        this->getResponse(pipeOut[0], response);
-        close(pipeOut[0]);
         pid_t exitChild = wait(NULL);
         if (exitChild == cgi)
             kill(timeout, SIGKILL);
@@ -564,6 +521,9 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
             kill(cgi, SIGKILL);
         }
         wait(NULL);
+		if (lseek(tmpOut.fd, SEEK_SET, 0) == -1)
+			return ("");
+		this->getResponse(tmpOut.fd, response);
     }
     std::cerr << "CGI:\n" << response << '\n';
     return (response);

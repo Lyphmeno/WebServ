@@ -12,6 +12,7 @@
 
 #include "../incs/Parser.hpp"
 #include "../incs/Response.hpp"
+#include "../incs/TmpFd.hpp"
 
 #define GET 1
 #define POST 2
@@ -40,7 +41,6 @@ public:
 
 	//Destructor
 	~Request(void);
-
 
 	//Getters
 	std::string getMethod(void);
