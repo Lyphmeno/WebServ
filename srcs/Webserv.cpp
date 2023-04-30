@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/28 21:05:12 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/30 14:47:11 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	Webserv::run()
 	for (;;)
 	{
 		int n = epoll_wait(this->manager.epfd, this->manager.epev, MAXEVENTS, 1);
-		if (n == -1 && sig == true)
+		if (sig == true)
 			throw std::runtime_error("Runtime error: Signal interruption");
 		else if (n == -1)
 			throw std::runtime_error("Runtime error: epoll_wait failed");
