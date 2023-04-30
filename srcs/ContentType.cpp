@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ContentType.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/04/30 14:50:49 by avarnier          #+#    #+#             */
+/*   Updated: 2023/04/30 14:51:32 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incs/ContentType.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,7 +18,7 @@
 
 void ft::ContentType::initMime(std::string ext, std::string type)
 {
-    _mimeType[ext]._ext = ext;;
+    _mimeType[ext]._ext = ext;
     _mimeType[ext]._type = type;
 }
 

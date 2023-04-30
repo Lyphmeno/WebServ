@@ -6,23 +6,11 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/30 14:47:11 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/04/30 14:49:25 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Webserv.hpp"
-
-#include <stdio.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <string.h>
-#include "../incs/Request.hpp"
-#include <fcntl.h>
-
-#include <vector>
-#include <iomanip>
 
 extern bool	sig;
 
