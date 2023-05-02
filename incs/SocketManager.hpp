@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 16:35:50 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 21:56:00 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ public:
 	std::string	getHostport(const std::string &header);
 	std::string	getHostname(const std::string &header);
 	std::string	getHost(const std::string &header);
-	Server		getConf(const Socket &sock);
+	int			getConf(Socket &sock);
 	void		getData(const int &fd, std::vector<unsigned char> &buff);
 	void		checkTimeout();
 	void		close(const int &fd);

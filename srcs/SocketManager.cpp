@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 17:15:32 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 22:43:26 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,57 +126,75 @@ std::string	SocketManager::getHostname(const std::string &host)
 	std::string	strEnd = ":";
 	size_t start = host.find_first_not_of(key);
 	size_t end = host.find_first_of(strEnd);
-	if (start == host.npos || end == host.npos)
+	if (start == host.npos)
 		return ("");
-	return (host.substr(start, end));
+	return (host.substr(start, end - start));
 }
 
 std::string	SocketManager::getHostport(const std::string &host)
 {
+	if (host.find(":") == host.npos)
+		return ("80");
 	std::string key = ":";
 	std::string	strEnd = " ";
 	size_t start = host.find(key) + key.size();
 	size_t end = host.find_first_of(strEnd);
 
-	if (end != host.npos)
-	{
-		if (host.find_first_not_of(strEnd) != host.npos)
-			return ("");
-	}
-	if (start == host.npos)
-		return ("");
-	return (host.substr(start, end));
+	// if (end != host.npos)
+	// {
+	// 	if (host.find_first_not_of(strEnd) != host.npos)
+	// 		return ("");
+	// }
+	// if (start == host.npos)
+	// 	return ("");
+	return (host.substr(start, end - start));
 }
 
 std::string	SocketManager::getHost(const std::string &header)
 {
+	std::cerr << header << std::endl;
 	std::string key = "Host:";
 	std::string	strEnd = "\r\n";
 	size_t start = header.find(key);
 	size_t end = header.find(strEnd, start);
 	if (start == header.npos || end == header.npos)
 		return ("");
-	return (header.substr(start, end));
+	return (header.substr(start + key.size(), end - (start + key.size())));
 }
 
-Server	SocketManager::getConf(const Socket &sock)
+int	SocketManager::getConf(Socket &sock)
 {
-	bool name = false;
-	bool port = false;
 	std::string host = getHost(sock.data.req.rawHeader);
 	if (host.empty() == true)
-		return (sock.conf);
+		return (-1);
+	std::cerr << host << std::endl;
 	std::string hostname = getHostname(host);
+	if (hostname.empty() == true)
+		return (-1);
+	std::cerr << hostname << std::endl;
 	std::string hostport = getHostport(host);
-	if (hostname == "0.0.0.0")
-		name = true;
-	else
+	if (hostport.empty() == true)
+		return (-1);
+	std::cerr << hostport << std::endl;
+	for (conf_cit conf = this->config.begin(); conf != this->config.end(); conf++)
 	{
-		for (conf_cit it = this->config.begin(); it != this->config.end(); it++)
+		std::cerr << '|' << conf->port << "| |" << hostport << '|';
+		if (conf->port == hostport || hostport.empty() == true)
 		{
-			if (it->port == 0 || it->port == hostport)
+			for (std::vector<std::string>::const_iterator name = conf->server_names.begin();
+			name != conf->server_names.end(); name++)
+			{
+				std::cerr << '|' << *name << "| |" << hostname << '|';
+ 				if (*name == hostname)
+				{
+					sock.data.req._serverParsing = *conf;
+					return (0);
+				}
+			}
 		}
 	}
+	std::cerr << "pas de conf\n";
+	return (-1);
 }
 
 void	SocketManager::handleHeader(Socket &sock, std::vector<unsigned char> &buff)
@@ -191,7 +209,14 @@ void	SocketManager::handleHeader(Socket &sock, std::vector<unsigned char> &buff)
 	{
 		buff.erase(buff.begin(), buff.begin() + (pos + 4 - oldsize));
 		header.erase(pos + 4, header.npos);
-		data.step = PARSING;
+		if (getConf(sock) == -1)
+		{
+			data.req._code = "400";
+			data.rep = data.req.requestStarter(sock.fd);
+			data.step = SENDING;
+		}
+		else
+			data.step = PARSING;
 	}
 	else
 		buff.clear();
