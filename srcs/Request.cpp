@@ -17,7 +17,7 @@ static int stringtoint(std::string toConvert){
 ////////////////////////////////////////////////////////////////////////////////
 
 
-ft::Request::Request(const ft::Server & server) : _serverParsing(server), _code("0"), _root(), _index("index.html"), _autoIndex(false){
+ft::Request::Request() : _serverParsing(), _code("0"), _root(), _index("index.html"), _autoIndex(false){
 }
 
 ft::Request::Request(const Request & src){
@@ -516,15 +516,11 @@ std::string ft::Request::execCgi(const int &fd, const std::string &cgiPath)
         if (exitChild == cgi)
             kill(timeout, SIGKILL);
         else
-        {
-            std::cerr << "TIMEOUT\n";
             kill(cgi, SIGKILL);
-        }
         wait(NULL);
 		if (lseek(tmpOut.fd, SEEK_SET, 0) == -1)
 			return ("");
 		this->getResponse(tmpOut.fd, response);
     }
-    std::cerr << "CGI:\n" << response << '\n';
     return (response);
 }

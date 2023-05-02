@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/27 20:29:30 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 12:27:28 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,22 @@ void	SocketManager::start()
 
 void	SocketManager::addServer(const conf_cit &configIt)
 {
-	Socket	sock(*configIt);
+	Socket	sock;
 	sock.addr = configIt->addr;
+	sock.defaultConf = *configIt;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sock.fd == -1)
 		throw std::runtime_error("Runtime error: Socket creation failed");
-	int on = 1;
-	setsockopt(sock.fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &on, sizeof(int));
 	this->setNoBlock(sock.fd);
 
 	if (bind(sock.fd, reinterpret_cast<sockaddr *>(&sock.addr), sizeof(sock.addr)) == -1)
 	{
-		throw std::runtime_error("Runtime error: Can't bind socket");
+		std::cerr << configIt->listen << ": Can't bind socket" << '\n';
+		close(sock.fd);
+		return ;
 	}
+	std::cerr << configIt->listen << ": Socket successfully bind" << '\n';
 
 	if (listen(sock.fd, MAXQUEU) == -1)
 		throw std::runtime_error("Runtime error: Can't listen socket");
@@ -72,11 +74,12 @@ void	SocketManager::addServer(const conf_cit &configIt)
 	this->addEp(sock.fd);
 	this->servers.insert(sock_val(sock.fd, sock));
 	this->clients.insert(srv_val(sock.fd, sock_type()));
-	this->configLinker.insert(link_val(sock.fd, configIt - this->config.begin()));
 }
 
 void	SocketManager::addClient(const int &sfd, Socket &sock)
 {
+	sock.defaultConf = this->servers.find(sfd)->second.defaultConf;
+	sock.data.req._serverParsing = sock.defaultConf;
 	if (gettimeofday(&sock.time, NULL) == -1)
 		throw std::runtime_error("Runetime error: Can't get socket creation time");
 	this->setNoBlock(sock.fd);
@@ -115,13 +118,6 @@ bool	SocketManager::isServer(const int &fd) const
 Socket	&SocketManager::findClient(const int &fd)
 {
 	return (this->clients.find((this->clientLinker.find(fd)->second))->second.find(fd)->second);
-}
-
-Server	&SocketManager::findConfig(const int &fd)
-{
-	if (this->clientLinker.find(fd) == this->clientLinker.end())
-		return (this->config.at(this->configLinker.find(fd)->second));
-	return (this->config.at(this->configLinker.find(this->clientLinker.find(fd)->second)->second));
 }
 
 void	SocketManager::handleHeader(Socket &sock, std::vector<unsigned char> &buff)
@@ -206,6 +202,7 @@ void	SocketManager::handleSending(Socket &sock)
 void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 {
 	Socket &sock = this->findClient(fd);
+	std::cerr << sock.defaultConf.listen << '\n';
 	if (gettimeofday(&sock.time, NULL) == -1)
 		throw std::runtime_error("Runtime error: Can't get current time");
 	SocketData &data = sock.data;

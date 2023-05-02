@@ -10,18 +10,17 @@ namespace ft {
 struct Socket
 {
 public:
-	Socket(const Server &config);
+	Socket();
 	Socket(const Socket &x);
 	Socket	&operator=(const Socket &x);
 	~Socket();
-private:
-	Socket();
 
 public:
 	int			fd;
 	sockaddr_in	addr;
 	SocketData	data;
 	timeval		time;
+	Server		defaultConf;
 };
 
 }

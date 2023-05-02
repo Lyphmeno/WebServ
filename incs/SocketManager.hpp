@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/04/25 12:29:14 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 12:17:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ public:
 	int			epfd;
 	epoll_event	epev[MAXEVENTS];
 	link_type	clientLinker;
-	link_type	configLinker;
 	sock_type	servers;
 	srv_type	clients;
 	conf_type	config;

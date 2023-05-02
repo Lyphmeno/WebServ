@@ -36,7 +36,7 @@ typedef std::map<std::string, std::string>::const_iterator	env_cit;
 
 public:
 	//Constructors
-	Request(const ft::Server& server);
+	Request();
 	Request(const Request & src);
 
 	//Destructor

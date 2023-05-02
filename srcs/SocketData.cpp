@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 18:28:32 by avarnier          #+#    #+#             */
-/*   Updated: 2023/03/31 19:54:05 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 12:19:25 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 namespace ft {
 
-SocketData::SocketData(const Server &config)
-: step(0), bodysize(0), req(config), rep()
+SocketData::SocketData()
+: step(0), bodysize(0), req(), rep()
 {
 }
 

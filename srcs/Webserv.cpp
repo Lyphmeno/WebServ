@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/30 14:49:25 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 12:19:36 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ namespace ft {
 
 Webserv::Webserv(std::string filename)
 {
-
 	this->parser.parsing(filename, this->manager.config);
 	this->manager.start();
 }
@@ -56,7 +55,7 @@ void	Webserv::run()
 
 			if (this->manager.isServer(fd) == true)
 			{
-				Socket		sock(this->manager.findConfig(fd));
+				Socket		sock;
 				socklen_t	len = 0;
 				sock.fd = accept(fd,
 				reinterpret_cast<sockaddr *>(&sock.addr), &len);
