@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/05/02 22:45:42 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 22:46:25 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ public:
 	size_t									max_client_body_size;
 	// avarnier
 	sockaddr_in								addr;
-	std::string 							port;
 public:
 	// Coplien //
 	Server();

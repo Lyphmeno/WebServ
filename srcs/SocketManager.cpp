@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 22:43:26 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 23:22:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ void	SocketManager::start()
 	
 	for (conf_cit cit = this->config.begin(); cit != this->config.end(); cit++)
 		this->addServer(cit);
-	
-
 }
 
 void	SocketManager::addServer(const conf_cit &configIt)
@@ -63,7 +61,7 @@ void	SocketManager::addServer(const conf_cit &configIt)
 	if (bind(sock.fd, reinterpret_cast<sockaddr *>(&sock.addr), sizeof(sock.addr)) == -1)
 	{
 		std::cerr << configIt->listen << ": Can't bind socket" << '\n';
-		close(sock.fd);
+		::close(sock.fd);
 		return ;
 	}
 	std::cerr << configIt->listen << ": Socket successfully bind" << '\n';
@@ -139,20 +137,11 @@ std::string	SocketManager::getHostport(const std::string &host)
 	std::string	strEnd = " ";
 	size_t start = host.find(key) + key.size();
 	size_t end = host.find_first_of(strEnd);
-
-	// if (end != host.npos)
-	// {
-	// 	if (host.find_first_not_of(strEnd) != host.npos)
-	// 		return ("");
-	// }
-	// if (start == host.npos)
-	// 	return ("");
 	return (host.substr(start, end - start));
 }
 
 std::string	SocketManager::getHost(const std::string &header)
 {
-	std::cerr << header << std::endl;
 	std::string key = "Host:";
 	std::string	strEnd = "\r\n";
 	size_t start = header.find(key);
@@ -167,24 +156,19 @@ int	SocketManager::getConf(Socket &sock)
 	std::string host = getHost(sock.data.req.rawHeader);
 	if (host.empty() == true)
 		return (-1);
-	std::cerr << host << std::endl;
 	std::string hostname = getHostname(host);
 	if (hostname.empty() == true)
 		return (-1);
-	std::cerr << hostname << std::endl;
 	std::string hostport = getHostport(host);
 	if (hostport.empty() == true)
 		return (-1);
-	std::cerr << hostport << std::endl;
 	for (conf_cit conf = this->config.begin(); conf != this->config.end(); conf++)
 	{
-		std::cerr << '|' << conf->port << "| |" << hostport << '|';
 		if (conf->port == hostport || hostport.empty() == true)
 		{
 			for (std::vector<std::string>::const_iterator name = conf->server_names.begin();
 			name != conf->server_names.end(); name++)
 			{
-				std::cerr << '|' << *name << "| |" << hostname << '|';
  				if (*name == hostname)
 				{
 					sock.data.req._serverParsing = *conf;
@@ -193,7 +177,6 @@ int	SocketManager::getConf(Socket &sock)
 			}
 		}
 	}
-	std::cerr << "pas de conf\n";
 	return (-1);
 }
 

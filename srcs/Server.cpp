@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/13 22:32:26 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 23:14:17 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ Server &Server::operator=(const Server &rhs)
 		this->index = rhs.index;
 		this->err_page = rhs.err_page;
 		this->listen = rhs.listen;
+		this->port = rhs.port;
 		this->root = rhs.root;
 		this->id = rhs.id;
 		this->auto_index = rhs.auto_index;
