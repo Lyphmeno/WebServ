@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 12:27:28 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 13:09:50 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	SocketManager::addServer(const conf_cit &configIt)
 {
 	Socket	sock;
 	sock.addr = configIt->addr;
-	sock.defaultConf = *configIt;
+	sock.conf = *configIt;
 	sock.fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sock.fd == -1)
@@ -78,8 +78,8 @@ void	SocketManager::addServer(const conf_cit &configIt)
 
 void	SocketManager::addClient(const int &sfd, Socket &sock)
 {
-	sock.defaultConf = this->servers.find(sfd)->second.defaultConf;
-	sock.data.req._serverParsing = sock.defaultConf;
+	sock.conf = this->servers.find(sfd)->second.conf;
+	sock.data.req._serverParsing = sock.conf;
 	if (gettimeofday(&sock.time, NULL) == -1)
 		throw std::runtime_error("Runetime error: Can't get socket creation time");
 	this->setNoBlock(sock.fd);
@@ -197,12 +197,12 @@ void	SocketManager::handleSending(Socket &sock)
 	sock.data.bodysize = 0;
 	sock.data.rep.clear();
 	sock.data.req.clear();
+	sock.data.req._serverParsing = sock.conf;
 }
 
 void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 {
 	Socket &sock = this->findClient(fd);
-	std::cerr << sock.defaultConf.listen << '\n';
 	if (gettimeofday(&sock.time, NULL) == -1)
 		throw std::runtime_error("Runtime error: Can't get current time");
 	SocketData &data = sock.data;

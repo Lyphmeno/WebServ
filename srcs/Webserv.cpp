@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/05/02 12:19:36 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 12:52:46 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ void	Webserv::run()
 {
 	for (;;)
 	{
+		if (this->manager.servers.empty() == true)
+			throw std::runtime_error("Closing: No server are running");
 		int n = epoll_wait(this->manager.epfd, this->manager.epev, MAXEVENTS, 1);
 		if (sig == true)
 			throw std::runtime_error("Runtime error: Signal interruption");

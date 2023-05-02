@@ -20,7 +20,7 @@ public:
 	sockaddr_in	addr;
 	SocketData	data;
 	timeval		time;
-	Server		defaultConf;
+	Server		conf;
 };
 
 }
