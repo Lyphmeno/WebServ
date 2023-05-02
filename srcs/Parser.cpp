@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/31 09:51:52 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/05/02 15:07:36 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -493,6 +493,14 @@ void	Parser::p_listen(std::vector<Server> &servers)
 			this->p_listen_hp(tmp);
 		}
 	}
+
+	std::istringstream	issname(tmp);
+	std::string	hoststr;
+	std::string	portstr;
+	std::getline(issname, hoststr, ':');
+	std::getline(issname, portstr, ':');
+	servers.back().server_names.push_back(hoststr);
+	servers.back().port = portstr;
 	servers.back().listen = tmp;
 	servers.back().addr.sin_addr.s_addr = htonl((hostint.at(0) << 24) + (hostint.at(1) << 16) + (hostint.at(2) << 8) + (hostint.at(3)));
 	servers.back().addr.sin_port = htons(this->portint);

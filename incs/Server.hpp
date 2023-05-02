@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 12:40:48 by hlevi             #+#    #+#             */
-/*   Updated: 2023/04/12 16:29:27 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/05/02 15:05:36 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ public:
 	std::vector<std::string>				index;
 	std::vector<std::vector<std::string> >	err_page;
 	std::string								listen;
+	std::string								port;
 	std::string								root;
     std::string								auto_index;
     std::string								cgi_dir;
