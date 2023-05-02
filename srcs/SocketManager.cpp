@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 13:09:50 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 17:15:32 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,65 @@ bool	SocketManager::isServer(const int &fd) const
 Socket	&SocketManager::findClient(const int &fd)
 {
 	return (this->clients.find((this->clientLinker.find(fd)->second))->second.find(fd)->second);
+}
+
+std::string	SocketManager::getHostname(const std::string &host)
+{
+	std::string key = " ";
+	std::string	strEnd = ":";
+	size_t start = host.find_first_not_of(key);
+	size_t end = host.find_first_of(strEnd);
+	if (start == host.npos || end == host.npos)
+		return ("");
+	return (host.substr(start, end));
+}
+
+std::string	SocketManager::getHostport(const std::string &host)
+{
+	std::string key = ":";
+	std::string	strEnd = " ";
+	size_t start = host.find(key) + key.size();
+	size_t end = host.find_first_of(strEnd);
+
+	if (end != host.npos)
+	{
+		if (host.find_first_not_of(strEnd) != host.npos)
+			return ("");
+	}
+	if (start == host.npos)
+		return ("");
+	return (host.substr(start, end));
+}
+
+std::string	SocketManager::getHost(const std::string &header)
+{
+	std::string key = "Host:";
+	std::string	strEnd = "\r\n";
+	size_t start = header.find(key);
+	size_t end = header.find(strEnd, start);
+	if (start == header.npos || end == header.npos)
+		return ("");
+	return (header.substr(start, end));
+}
+
+Server	SocketManager::getConf(const Socket &sock)
+{
+	bool name = false;
+	bool port = false;
+	std::string host = getHost(sock.data.req.rawHeader);
+	if (host.empty() == true)
+		return (sock.conf);
+	std::string hostname = getHostname(host);
+	std::string hostport = getHostport(host);
+	if (hostname == "0.0.0.0")
+		name = true;
+	else
+	{
+		for (conf_cit it = this->config.begin(); it != this->config.end(); it++)
+		{
+			if (it->port == 0 || it->port == hostport)
+		}
+	}
 }
 
 void	SocketManager::handleHeader(Socket &sock, std::vector<unsigned char> &buff)

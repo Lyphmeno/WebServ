@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 12:17:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/02 16:35:50 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,21 +64,25 @@ public:
 	SocketManager();
 	~SocketManager();
 
-	void	start();
-	void	addServer(const conf_cit &configIt);
-	void	addClient(const int &sfd, Socket &sock);
-	void	addEp(const int &fd) const;
-	void	setNoBlock(const int &fd) const;
-	bool	isServer(const int &fd) const;
-	Socket	&findClient(const int &fd);
-	Server	&findConfig(const int &fd);
-	void	handleHeader(Socket &sock, std::vector<unsigned char> &buff);
-	void	handleBody(Socket &sock, std::vector<unsigned char> &buff);
-	void	handleParsing(Socket &sock);
-	void	handleSending(Socket &sock);
-	void	getData(const int &fd, std::vector<unsigned char> &buff);
-	void	checkTimeout();
-	void	close(const int &fd);
+	void		start();
+	void		addServer(const conf_cit &configIt);
+	void		addClient(const int &sfd, Socket &sock);
+	void		addEp(const int &fd) const;
+	void		setNoBlock(const int &fd) const;
+	bool		isServer(const int &fd) const;
+	Socket		&findClient(const int &fd);
+	Server		&findConfig(const int &fd);
+	void		handleHeader(Socket &sock, std::vector<unsigned char> &buff);
+	void		handleBody(Socket &sock, std::vector<unsigned char> &buff);
+	void		handleParsing(Socket &sock);
+	void		handleSending(Socket &sock);
+	std::string	getHostport(const std::string &header);
+	std::string	getHostname(const std::string &header);
+	std::string	getHost(const std::string &header);
+	Server		getConf(const Socket &sock);
+	void		getData(const int &fd, std::vector<unsigned char> &buff);
+	void		checkTimeout();
+	void		close(const int &fd);
 
 private:
 	SocketManager(const SocketManager &x);
