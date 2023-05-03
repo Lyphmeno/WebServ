@@ -171,7 +171,6 @@ void ft::Response::handleErrors(){
 void ft::Response::setError(std::string code)
 {
     _code = code;
-    _status = _codeStatus.getStatus(code);
     _contentType = "text/html";
     handleErrors();
 
@@ -541,7 +540,7 @@ void    ft::Response::clear()
 	this->_Mime.clear();
 	this->_code.clear();
 	this->_status.clear();
-	this->_codeStatus.clear();
+	// this->_codeStatus.clear();
 	this->_responseFull.clear();
 	this->_rawResponse.clear();
 	this->_multipartForm.clear();

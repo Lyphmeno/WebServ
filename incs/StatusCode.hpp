@@ -37,7 +37,7 @@ public:
 		void	clear();
 private:
 
-       std::map<std::string, t_status> _statusCode;
+       std::map<std::string, t_status> codeStatus;
 
 };
 

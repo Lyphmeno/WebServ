@@ -18,12 +18,11 @@
 
 void ft::StatusCode::initStruct(std::string code, std::string status)
 {
-    _statusCode[code]._code = code;;
-    _statusCode[code]._status = status;
+    codeStatus[code]._code = code;
+    codeStatus[code]._status = status;
 }
 
 ft::StatusCode::StatusCode(void){
-
     initStruct("200", "OK");
     initStruct("201", "Created");
     initStruct("202", "Accepted");
@@ -33,6 +32,7 @@ ft::StatusCode::StatusCode(void){
     initStruct("403", "Forbidden");
     initStruct("404", "Not Found");
     initStruct("405", "Method Not Allowed");
+    initStruct("413", "Body Size Too Large");
     initStruct("431", "Request Header Fields Too Large");
     initStruct("500", "Internal Server Error");
 }
@@ -47,7 +47,7 @@ ft::StatusCode::StatusCode(const StatusCode & src){
 
 void	ft::StatusCode::clear()
 {
-	this->_statusCode.clear();
+	this->codeStatus.clear();
 }
 
 ft::StatusCode::~StatusCode(void){
@@ -67,5 +67,5 @@ ft::StatusCode & ft::StatusCode::operator=(StatusCode const & value) {
 }
 
 const std::string & ft::StatusCode::getStatus(std::string code){
-    return _statusCode[code]._status;
+    return codeStatus[code]._status;
 }
