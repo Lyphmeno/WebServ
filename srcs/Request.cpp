@@ -97,14 +97,19 @@ std::string ft::Request::requestStarter(const int &fd){
         url = this->_url;
     if (this->_url.find(CGI_EXTENSION) != this->_url.npos)
     {
-        std::string cgidir = this->_serverParsing.getCgiDir(url);
-        if (cgidir.empty() == false)
-            responseR = execCgi(fd, cgidir);
-        if (responseR.empty() == true)
-            this->_code = "500";
+		if (this->_method != "POST" && this->_method != "GET")
+			this->_code = "405";
         else
-            responseR = responseHTTP.buildCgiResponse(responseR);
-    }
+		{
+			std::string cgidir = this->_serverParsing.getCgiDir(url);
+        	if (cgidir.empty() == false)
+        	    responseR = execCgi(fd, cgidir);
+        	if (responseR.empty() == true)
+        	    this->_code = "500";
+        	else
+        	    responseR = responseHTTP.buildCgiResponse(responseR);
+		}
+	}
 
     if (responseR.empty() == true)
     {

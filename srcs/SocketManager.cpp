@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 23:22:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/03 13:02:48 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,7 +315,6 @@ void	SocketManager::checkTimeout()
 	}
 	while (timeoutFd.empty() == false)
 	{
-		//send 408
 		std::cerr << "[" << timeoutFd[0] << "]" << "socket timeout" << '\n';
 		this->close(timeoutFd[0]);
 		timeoutFd.erase(timeoutFd.begin());
