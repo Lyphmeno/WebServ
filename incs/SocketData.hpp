@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 18:25:01 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/02 12:17:16 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/03 14:57:59 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #define PARSING 1
 #define BODY 2
 #define SENDING 3
+#define SENDING_CLOSE 4
 
 namespace ft {
 

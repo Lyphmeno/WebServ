@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/03 13:02:48 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/03 15:01:03 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,7 +245,7 @@ void	SocketManager::handleParsing(Socket &sock)
 		{
 			data.req._code = "413";
 			data.rep = data.req.requestStarter(sock.fd);
-			data.step = SENDING;
+			data.step = SENDING_CLOSE;
 		}
 		else
 			data.step = BODY;	
@@ -260,11 +260,16 @@ void	SocketManager::handleParsing(Socket &sock)
 void	SocketManager::handleSending(Socket &sock)
 {
 	send(sock.fd, sock.data.rep.c_str(), sock.data.rep.size(), 0);
-	sock.data.step = HEADER;
-	sock.data.bodysize = 0;
-	sock.data.rep.clear();
-	sock.data.req.clear();
-	sock.data.req._serverParsing = sock.conf;
+	if (sock.data.step == SENDING_CLOSE)
+		this->close(sock.fd);
+	else
+	{
+		sock.data.step = HEADER;
+		sock.data.bodysize = 0;
+		sock.data.rep.clear();
+		sock.data.req.clear();
+		sock.data.req._serverParsing = sock.conf;
+	}
 }
 
 void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
@@ -290,9 +295,11 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 			std::cerr << "[" << fd << "]: body\n";
 			this->handleBody(sock, buff);
 		}
-		if (data.step == SENDING)
+		if (data.step == SENDING || data.step == SENDING_CLOSE)
 		{
 			std::cerr << "[" << fd << "]: sending\n";
+			if (data.step == SENDING_CLOSE)
+				buff.clear();
 			this->handleSending(sock);
 		}
 	}
