@@ -6,7 +6,7 @@
 /*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 15:34:18 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/05/05 14:48:06 by hlevi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #define SERVER 1
 #define SLOC 2
 
-#define PRINT_INFO 1
+#define PRINT_INFO 0
 
 	// Colors //
 #define NC   "\033[0m"
