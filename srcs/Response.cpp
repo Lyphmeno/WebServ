@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/30 14:49:54 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/05 13:42:40 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/05 14:36:10 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -448,8 +448,6 @@ void ft::Response::buildFullResponse(){
     _responseFull += "Content-Length: " + itostring(_body.size()) + "\r\n";
     _responseFull += "\r\n";
     _responseFull += _body;
-
-    std::cout << _responseFull << std::endl;
 }
 
 std::string ft::Response::buildCgiResponse(std::string &cgiResponse){

@@ -114,7 +114,7 @@ private:
 	std::string	_autoIndexBody;
 	bool		_autoIndex;
 	
-	// int isAllowed;
+	// int isAllowed;e /pages/multi.html
 
 };
 
