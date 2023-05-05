@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/24 10:22:03 by hlevi             #+#    #+#             */
-/*   Updated: 2023/05/02 23:14:17 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/05 13:37:57 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,12 +98,12 @@ int	Server::getMethods(std::string path, std::string method)
 				return (1);
 		return (0);
 	}
-	for (std::vector<std::string>::const_iterator it = this->allow_methods.begin(); it != this->allow_methods.end(); it++)
-		if (!(*it).compare(method))
-			return (1);
-	for (std::vector<std::string>::const_iterator it = this->location.at(this->getLoc(path)).allow_methods.begin(); it != this->location.at(this->getLoc(path)).allow_methods.end(); it++)
-		if (!(*it).compare(method))
-			return (1);
+	else
+	{
+		for (std::vector<std::string>::const_iterator it = this->location.at(this->getLoc(path)).allow_methods.begin(); it != this->location.at(this->getLoc(path)).allow_methods.end(); it++)
+			if (!(*it).compare(method))
+				return (1);
+	}
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/03 15:03:48 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/05 13:25:58 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,8 @@ int	SocketManager::getConf(Socket &sock)
 			for (std::vector<std::string>::const_iterator name = conf->server_names.begin();
 			name != conf->server_names.end(); name++)
 			{
+				if (hostname == "localhost" && *name == "127.0.0.1")
+					return (0);
  				if (*name == hostname)
 				{
 					sock.data.req._serverParsing = *conf;

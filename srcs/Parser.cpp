@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/05/02 15:07:36 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/05/05 13:52:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -786,6 +786,8 @@ void	Parser::parse_mandatory(std::vector<Server> &servers)
 					itl->root = it->root;
 				if (!itl->id.at(BL_AUTOINDEX))
 					itl->auto_index = it->auto_index;
+				if (!itl->id.at(BL_METHODS))
+					itl->allow_methods = it->allow_methods;
 			}
 		}
 	}
