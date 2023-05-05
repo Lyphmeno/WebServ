@@ -55,14 +55,13 @@
 <body>
 	<a href="/"><h1><span>AAH Webserv</span></h1></a>
         <div class="card">
-            <h2>Download your animal !</a>
+            <h2>Download your pic then go <a href="../uploads/"><h2>here</h2></a></h2>
                 <p>(or something else)</p>
                 <form action="" method="POST" enctype="multipart/form-data">
-                    <!-- <label for="name">What is its name?</label>
-                    <input type="text" id="name" name="name"><br><br> -->
-                    <input type="file" id="picture" name="picture"><br><br>
-    
-                    <input type="submit" value="Submit">
+                    <form action="." method="post" enctype="multipart/form-data">
+                        <h4>Browse your file</h4>
+                          <input type="file" name="file" accept="image/*"/> <br><br>
+                          <input type="submit" value="Upload File"/>
                   </form>
         </div>
 </body>

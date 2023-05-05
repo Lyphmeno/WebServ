@@ -192,43 +192,6 @@ const std::string & ft::Response::addContentType(void){
     return (_Mime.getType(extension));
 }
 
-void ft::Response::createAutoIndexHtmlPage(const std::string& directoryPath) {
-    // Get the list of HTML files in the directory
-    std::vector<std::string> htmlFiles;
-
-    DIR* dir = opendir(directoryPath.c_str());
-    struct dirent* entry;
-    while ((entry = readdir(dir))) {
-        std::string filename = entry->d_name;
-        if (filename.find(".html") != std::string::npos) {
-            htmlFiles.push_back(filename);
-        }
-    }
-    closedir(dir);
-
-    // Sort the list of HTML files
-    sort(htmlFiles.begin(), htmlFiles.end());
-
-    // Create the autoindex HTML page
-    std::ofstream outputFile((directoryPath + "/index.html").c_str());
-    outputFile << "<!DOCTYPE html>\n";
-    outputFile << "<html>\n";
-    outputFile << "  <head>\n";
-    outputFile << "    <title>Autoindex</title>\n";
-    outputFile << "  </head>\n";
-    outputFile << "  <body>\n";
-    outputFile << "    <h1>Index of " << directoryPath << "</h1>\n";
-    outputFile << "    <ul>\n";
-    for (std::vector<std::string>::const_iterator it = htmlFiles.begin(); it != htmlFiles.end(); ++it) {
-        outputFile << "      <li><a href=\"" << *it << "\">" << *it << "</a></li>\n";
-    }
-    outputFile << "    </ul>\n";
-    outputFile << "  </body>\n";
-    outputFile << "</html>\n";
-}
-
-
-
 /*..............................................................................
 ..                                 METHODS                                    ..
 ..............................................................................*/
@@ -280,7 +243,7 @@ void ft::Response::urlencoded(void){
         }
     }
     _formValues[token] = std::string(_rawBody.begin(), _rawBody.end());
-}
+}  
 
 void ft::Response::initPostStruct(std::vector<unsigned char> fullBody){
 
@@ -485,6 +448,8 @@ void ft::Response::buildFullResponse(){
     }
     _responseFull += "\r\n";
     _responseFull += _body;
+
+    // std::cout << _responseFull << std::endl;
 }
 
 std::string ft::Response::buildCgiResponse(std::string &cgiResponse){
@@ -537,10 +502,8 @@ void    ft::Response::clear()
 	this->filename.clear();
 	this->_contentLenght = 0;
 	this->_autoIndex = false;
-	this->_Mime.clear();
 	this->_code.clear();
 	this->_status.clear();
-	// this->_codeStatus.clear();
 	this->_responseFull.clear();
 	this->_rawResponse.clear();
 	this->_multipartForm.clear();
