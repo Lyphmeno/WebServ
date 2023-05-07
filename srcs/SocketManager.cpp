@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/05 14:34:16 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 19:26:10 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,6 +319,17 @@ void	SocketManager::checkTimeout()
 	}
 }
 
+void	SocketManager::eraseClient(const int &fd)
+{
+	link_it linker = this->clientLinker.find(fd);
+	if (linker == this->clientLinker.end())
+		return ;
+	srv_it server = this->clients.find(linker->second);
+	if (server == this->clients.end())
+		return;
+	server->second.erase(fd);
+}
+
 void	SocketManager::close(const int &fd)
 {
 	if (this->isServer(fd) == true)
@@ -336,7 +347,7 @@ void	SocketManager::close(const int &fd)
 	else
 	{
 		::close(fd);
-		this->clients.find((this->clientLinker.find(fd)->second))->second.erase(fd);
+		this->eraseClient(fd);
 		this->clientLinker.erase(fd);
 	}
 }

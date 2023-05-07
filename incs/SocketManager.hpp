@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/07 17:09:40 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 19:26:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ public:
 	int			getConf(Socket &sock);
 	void		getData(const int &fd, std::vector<unsigned char> &buff);
 	void		checkTimeout();
+	void		eraseClient(const int &fd);
 	void		close(const int &fd);
 
 private:
