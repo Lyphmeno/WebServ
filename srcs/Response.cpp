@@ -6,19 +6,18 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/30 14:49:54 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/05 14:36:10 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 16:52:27 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Response.hpp"
-#include <dirent.h> 
-#include <algorithm>
-
 
 static std::string itostring(int toConvert){
-    std::ostringstream tm;
-    tm << toConvert;
-    return tm.str();
+    std::stringstream   ss;
+    std::string         str;
+    ss << toConvert;
+    ss >> str;
+    return (str);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,11 +201,6 @@ void ft::Response::getM(const std::string & url){
     std::ifstream ifs(url.c_str());
     std::string buff;
 
-    // if (!ifs.is_open() && _autoIndex == false)
-    // {
-    //     setError("404");
-    //     return ;
-    // }
     _code = "200";
     _status = _codeStatus.getStatus("200");
     if (_body == "")

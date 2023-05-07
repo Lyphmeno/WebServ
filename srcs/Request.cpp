@@ -1,12 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Request.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/07 17:03:55 by avarnier          #+#    #+#             */
+/*   Updated: 2023/05/07 17:05:10 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incs/Request.hpp"
-#include <dirent.h>
-#include <fstream>
-#include "../incs/Request.hpp"
-#include "../incs/Response.hpp"
 
 static int stringtoint(std::string toConvert){
     std::istringstream is(toConvert);
-    int i;
+    int i = 0;
 
     is >> i;
     return i;
@@ -102,13 +110,20 @@ std::string ft::Request::requestStarter(const int &fd){
         else
 		{
 			std::string cgidir = this->_serverParsing.getCgiDir(url);
-        	if (cgidir.empty() == false)
-        	    responseR = execCgi(fd, cgidir);
-        	if (responseR.empty() == true)
-        	    this->_code = "500";
-        	else
-        	    responseR = responseHTTP.buildCgiResponse(responseR);
-		}
+        	FILE *check = fopen(this->_url.c_str(), "r");
+            if (check == NULL)
+                this->_code = "404";
+            else
+            {
+                fclose(check);
+                if (cgidir.empty() == false)
+        	        responseR = execCgi(fd, cgidir);
+        	    if (responseR.empty() == true)
+        	        this->_code = "500";
+        	    else
+        	        responseR = responseHTTP.buildCgiResponse(responseR);
+            }
+        }
 	}
 
     if (responseR.empty() == true)

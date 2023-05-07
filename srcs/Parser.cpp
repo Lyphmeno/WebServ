@@ -6,20 +6,11 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:58 by hlevi             #+#    #+#             */
-/*   Updated: 2023/05/05 13:52:15 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 16:52:36 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incs/Parser.hpp"
-#include <cstddef>
-#include <cstdlib>
-#include <exception>
-#include <iostream>
-#include <netinet/in.h>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 namespace ft {
 /////////////////////////////
