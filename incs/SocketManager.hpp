@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:22 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/03 13:05:11 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 19:26:15 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #define MAXQUEU 128
 #define MAXHEADER 8192
 #define MAXBUFF 1024
-#define SOCK_TIMEOUT 30
+#define SOCK_TIMEOUT 60
 
 #define NOTFD 0
 #define CLI 1
@@ -82,6 +82,7 @@ public:
 	int			getConf(Socket &sock);
 	void		getData(const int &fd, std::vector<unsigned char> &buff);
 	void		checkTimeout();
+	void		eraseClient(const int &fd);
 	void		close(const int &fd);
 
 private:

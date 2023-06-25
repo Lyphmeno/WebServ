@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Request.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/07 17:04:58 by avarnier          #+#    #+#             */
+/*   Updated: 2023/05/07 17:08:27 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
@@ -9,6 +21,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <dirent.h>
 
 #include "../incs/Parser.hpp"
 #include "../incs/Response.hpp"
@@ -18,7 +31,7 @@
 #define POST 2
 #define DELETE 3
 #define CGI_BUFFER 1024
-#define CGI_TIMEOUT 10
+#define CGI_TIMEOUT 1
 #define CGI_EXTENSION ".php"
 
 namespace ft{
@@ -114,7 +127,7 @@ private:
 	std::string	_autoIndexBody;
 	bool		_autoIndex;
 	
-	// int isAllowed;
+	// int isAllowed;e /pages/multi.html
 
 };
 

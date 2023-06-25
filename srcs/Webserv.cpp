@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/17 14:41:02 by hlevi             #+#    #+#             */
-/*   Updated: 2023/05/02 23:13:42 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 19:26:00 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,7 @@ void	Webserv::run()
 			int fd = this->manager.epev[i].data.fd;
 			uint32_t event = this->manager.epev[i].events;
 			if ((event & EPOLLERR) || (event & EPOLLHUP) || (!(event & EPOLLIN)))
-			{
-				std::cerr << "[" << fd << "]: closed with event =" << event << '\n';
 				this->manager.close(fd);
-			}
-
 			if (this->manager.isServer(fd) == true)
 			{
 				Socket		sock;
@@ -62,10 +58,7 @@ void	Webserv::run()
 				sock.fd = accept(fd,
 				reinterpret_cast<sockaddr *>(&sock.addr), &len);
 				if (sock.fd != -1)
-				{
-					std::cerr << "[" << sock.fd << "]: added to epoll" << '\n';
 					this->manager.addClient(fd, sock);
-				}
 			}
 			else
 			{
@@ -77,10 +70,7 @@ void	Webserv::run()
 					this->manager.getData(fd, buff);
 				}
 				else
-				{
-					std::cerr << "[" << fd << "]: closed with recv =" << bytes << '\n';
 					this->manager.close(fd);
-				}
 			}
 		}
 		this->manager.checkTimeout();

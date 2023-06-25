@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hlevi <hlevi@student.42.fr>                +#+  +:+       +#+        */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 12:12:56 by hlevi             #+#    #+#             */
-/*   Updated: 2023/03/13 15:34:18 by hlevi            ###   ########.fr       */
+/*   Updated: 2023/05/07 16:49:42 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,12 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <cstddef>
+#include <cstdlib>
+#include <exception>
+#include <netinet/in.h>
+#include <stdexcept>
+
 #include "../incs/Server.hpp"
 
 #define FNUM 10
@@ -29,7 +35,7 @@
 #define SERVER 1
 #define SLOC 2
 
-#define PRINT_INFO 1
+#define PRINT_INFO 0
 
 	// Colors //
 #define NC   "\033[0m"

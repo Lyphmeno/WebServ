@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/07 17:04:24 by avarnier          #+#    #+#             */
+/*   Updated: 2023/05/07 17:05:08 by avarnier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
@@ -10,6 +22,8 @@
 #include <stdlib.h>
 #include <ctime>
 #include <sstream>
+#include <dirent.h> 
+#include <algorithm>
 
 typedef struct s_data1{
         std::vector<unsigned char> value;

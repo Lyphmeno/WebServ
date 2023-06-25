@@ -6,7 +6,7 @@
 /*   By: avarnier <avarnier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/21 16:02:18 by avarnier          #+#    #+#             */
-/*   Updated: 2023/05/05 13:25:58 by avarnier         ###   ########.fr       */
+/*   Updated: 2023/05/07 19:26:10 by avarnier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,23 +283,13 @@ void	SocketManager::getData(const int &fd, std::vector<unsigned char> &buff)
 	while (buff.size() > 0)
 	{
 		if (data.step == HEADER)
-		{
-			std::cerr << "[" << fd << "]: header\n";
 			this->handleHeader(sock, buff);
-		}
 		if (data.step == PARSING)
-		{
-			std::cerr << "[" << fd << "]: parsing\n";
 			this->handleParsing(sock);
-		}
 		if (data.step == BODY)
-		{
-			std::cerr << "[" << fd << "]: body\n";
 			this->handleBody(sock, buff);
-		}
 		if (data.step == SENDING || data.step == SENDING_CLOSE)
 		{
-			std::cerr << "[" << fd << "]: sending\n";
 			if (data.step == SENDING_CLOSE)
 				buff.clear();
 			this->handleSending(sock);
@@ -324,10 +314,20 @@ void	SocketManager::checkTimeout()
 	}
 	while (timeoutFd.empty() == false)
 	{
-		std::cerr << "[" << timeoutFd[0] << "]" << "socket timeout" << '\n';
 		this->close(timeoutFd[0]);
 		timeoutFd.erase(timeoutFd.begin());
 	}
+}
+
+void	SocketManager::eraseClient(const int &fd)
+{
+	link_it linker = this->clientLinker.find(fd);
+	if (linker == this->clientLinker.end())
+		return ;
+	srv_it server = this->clients.find(linker->second);
+	if (server == this->clients.end())
+		return;
+	server->second.erase(fd);
 }
 
 void	SocketManager::close(const int &fd)
@@ -347,7 +347,7 @@ void	SocketManager::close(const int &fd)
 	else
 	{
 		::close(fd);
-		this->clients.find((this->clientLinker.find(fd)->second))->second.erase(fd);
+		this->eraseClient(fd);
 		this->clientLinker.erase(fd);
 	}
 }
