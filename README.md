@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <h1>WebServ Project : <a href="https://github.com/JaeSeoKim/badge42"><img src="https://badge42.vercel.app/api/v2/cljbd5ceo007308mltneinai5/project/2956659" alt="hlevi's 42 webserv Score" /></a></h1>
+  <h1>WebServ Project :</a></h1>
   <p>Welcome to the WebServ project !</p>
   <p>This project involves creating an HTTP server in C++98 with various features and functionalities.</p>
     
